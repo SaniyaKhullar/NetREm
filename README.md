@@ -108,6 +108,7 @@ $$
 
 
 ### Summary of main inputs needed:
+
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | edge_list       | list of lists: [[source$_{1}$, target$_{1}$, weight$_{1}$], ..., [source$_{Z}$, target$_{Z}$, weight$_{Z}$]] | value needed |
@@ -123,6 +124,7 @@ $$
 Please note these parameters that can be adjusted as needed for user needs and specifications. 
 
 * Parameters for the graph prior network:
+
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | default_edge_weight  | If an edge is missing an edge weight, this is weight assigned to that edge | 0.1 |
