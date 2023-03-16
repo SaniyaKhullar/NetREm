@@ -1,5 +1,6 @@
 # By: Saniya Khullar, Xiang Huang, Daifeng Wang
 # University of Wisconsin - Madison
+# GRegulNetwork
 
 import pandas as pd
 import numpy as np
@@ -33,7 +34,6 @@ Which is converted to lasso
 where M = n_samples and N is the dimension of c.
 Check compute_X_tilde_y_tilde() to see how we make sure above normalization is applied using Lasso of sklearn
 """
-
 
 class DiagonalLinearOperator(LinearOperator):
     """Construct a diagonal matrix as a linear operator instead a full numerical matirx np.diag(d).
