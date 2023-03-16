@@ -92,6 +92,8 @@ The edge_list will be represented by:
 
 * *beta_network_val*:  A numerical value for $\beta_{network} \geq 0$. 
 
+<!-- * *cv_for_alpha_lasso_model_bool*: A boolean value (True or False). This parameter asks the user if the user wants GRegulNet to perform cross-validation (CV) on the training data to determine the optimal alpha_lasso_val ($\alpha_{lasso} \geq 0$). The default value is False, which means that the user wants to specify the value of $\alpha_{lasso}$.  -->
+
 * *cv_for_alpha_lasso_model_bool*:
 
 $$ = \begin{cases}
@@ -101,6 +103,13 @@ $$ = \begin{cases}
 $$
 
 
+
+<!-- $$ = \begin{cases}
+  \text{default: user wants to specify the value of }  \alpha_{lasso} & \text{if cv_for_alpha_lasso_model_bool = } False \\
+  \text{GRegulNet will perform cross-validation (CV) on training data to determine optimal } \alpha_{lasso} & \text{if cv_for_alpha_lasso_model_bool = } True \\
+\end{cases}
+$$
+ -->
 ##### If *cv_for_alpha_lasso_model_bool* is False, we need to specify alpha_lasso_val $\alpha_{lasso}$ #####
 
 * *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. Thus, if *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, please note that if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used. 
@@ -116,8 +125,42 @@ $$
 
 
 
+
+                 
+
+<!-- Hence, please note that these are the minimum arguments needed:
+ -->
+<!-- geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val)
+ -->
+
+
+
+
+<!-- $$
+\begin{cases}
+  \text{geneRegulatNet(edge_list, beta_network_val, cross_validation_for_alpha_lasso_model_bool = False, alpha_lasso_val)} & \text{if cross_validation_for_alpha_lasso_model_bool = False} \\
+  geneRegulatNet(edge_list, beta_network_val, cross_validation_for_alpha_lasso_model_bool = True) & \text{if } cross_validation_for_alpha_lasso_model_bool = True \\
+\end{cases}
+$$ -->
+
+
+<!-- If $cross\_validation\_for\_alpha\_lasso\_model\_bool=False$, then 
+
+$$geneRegulatNet(edge\_list, beta\_network\_val, cross\_validation\_for\_alpha\_lasso\_model\_bool = False, alpha\_lasso\_val)$$ 
+
+is run. 
+
+Otherwise, if $cross\_validation\_for\_alpha\_lasso\_model\_bool=True$, then 
+
+$$geneRegulatNet(edge\_list, beta\_network\_val, cross\_validation\_for\_alpha\_lasso\_model\_bool = True)$$ 
+
+is run. -->
+
+
+<!-- enhancer: a data frame containing chr,start,end for enhancers
+ -->
  
-### Default parameters: ###
+### Default parameters ###
 
 Please note these parameters that can be adjusted as needed for user needs and specifications. 
 
@@ -175,6 +218,105 @@ There are several attributes available for objects in the GRegulNet class.
 We can fit our GRegulNet estimator on $X$ and $y$ training data and retrieve coefficients for the GRegulNet network-regularized linear model. Then, we can evaluate our model performance capabilities on testing data.  We evaluate our model predictive performance using the Mean Squared Error (MSE). 
 
 
+
+
+<!-- | use_edge_weight_values_for_degrees_bool  | For Degree Matrix D. True: edge weights used; False: threshold used | False|
+| consider_self_loops  | For Degree Matrix D. True: Add 1 to each degree (for self-loops)| False|
+| pseudocount_for_diagonal_matrix  | For Degree Matrix D. Pseudocount to add for each degree (node). | 0.001 |
+| default_edge_weight  | If an edge is missing an edge weight, this is weight assigned to that edge | 0.1 | -->
+
+
+<!-- | Parameter | Definition | Default |
+| --------- | ---------- | ---------- |
+| $N$       | # of predictors | value needed |
+| $M$       | # of samples | value needed |
+| edge_list       | list of lists: [[source$_{1}$, target$_{1}$, weight$_{1}$], ..., [source$_{Z}$, target$_{Z}$, weight$_{Z}$]] | value needed |
+| $\beta_{network}$  | Regularization parameter for network penalization | value needed |
+| $\alpha_{lasso}$  | Regularization parameter for lasso | value needed |
+
+
+| use_edge_weight_values_for_degrees_bool  | For Degree Matrix D. True: edge weights used; False: threshold used | False|
+| consider_self_loops  | For Degree Matrix D. True: Add 1 to each degree (for self-loops)| False|
+| pseudocount_for_diagonal_matrix  | For Degree Matrix D. Pseudocount to add for each degree (node). | 0.001 |
+| default_edge_weight  | If an edge is missing an edge weight, this is weight assigned to that edge | 0.1 |
+ -->
+
+
+<!-- data frame containing gene, gene_chr, promoter_start, promoter_end,
+enh_chr,enh_start,enh_end
+
+The function, scGRNom_interaction inputs the chromatin interaction data (e.g., Hi-C) and predicts all possible interactions between enhancers and promoters in the data or the user-provided list; i.e., ones from Topologically Associating Domains (TADs) in Hi-C data. In addition, the function uses an R package, GenomicInteractions [2] to annotate interacting regions and link them to genes. The genome annotation was from TxDb.Hsapiens.UCSC.hg19.knownGene [3]. -->
+
+
+
+<!-- geneRegulatNet(edge_list, beta_network_val, alpha_lasso_val = 0.1, cross_validation_for_alpha_lasso_model_bool = False
+
+
+**geneRegulatNet(edge_list, beta_network_val, alpha_lasso_val)**
+ -->
+
+
+
+<!-- $y = \tilde{y}$, $X = \tilde{X}$
+enables the training of a machine learning model based on a variant form of Lasso Regression on the original data. 
+
+so that the machine learning models are built using a variant of Lasso Regression 
+
+
+
+
+based on whether the user wants to specify an alpha_lasso_val or have that value be selected by cross-validation on the training data. 
+
+* 
+
+and an alpha_lasso_val ($\alpha_{lasso} \geq 0$) that scales the lasso regularization on the overall 
+
+
+
+
+alpha_lasso_val, and a beta_network_val
+
+
+At the minimum, you need to specify these 3 parameters: 
+* 1. edge_list: [[source$_{1}$, target$_{1}$, weight$_{1}$], [source$_{2}$, target$_{2}$, weight$_{2}$], ..., [source$_{Z}$, target$_{Z}$, weight$_{Z}$]]. 
+
+If the weights are missing for any edge, then the default_weight will be used for that respective edge. 
+
+* 2. alpha_lasso_val: $\alpha_{lasso} \geq 0$
+* 3. beta_network_val: $\beta_{network} \geq 0$ -->
+
+<!-- Let $f(x)$ be defined as:
+
+$$
+f(x) =
+\begin{cases}
+  0 & \text{if } x < 0 \\
+  1 & \text{if } 0 \leq x < 1 \\
+  2 & \text{if } x \geq 1
+\end{cases}
+$$ -->
+
+<!-- | Parameter | Definition | Default |
+| --------- | ---------- | ---------- |
+| $N$       | # of predictors | value needed |
+| $M$       | # of samples | value needed |
+| edge_list       | list of lists: [[source$_{1}$, target$_{1}$, weight$_{1}$], ..., [source$_{Z}$, target$_{Z}$, weight$_{Z}$]] | value needed |
+| $\beta_{network}$  | Regularization parameter for network penalization | value needed |
+| $\alpha_{lasso}$  | Regularization parameter for lasso | value needed |
+| use_edge_weight_values_for_degrees_bool  | For Degree Matrix D. True: edge weights used; False: threshold used | False|
+| consider_self_loops  | For Degree Matrix D. True: Add 1 to each degree (for self-loops)| False|
+| pseudocount_for_diagonal_matrix  | For Degree Matrix D. Pseudocount to add for each degree (node). | 0.001 |
+| default_edge_weight  | If an edge is missing an edge weight, this is weight assigned to that edge | 0.1 |
+
+
+<!-- use_edge_weight_values_for_degrees_bool = False,
+                  consider_self_loops = False, pseudocount_for_diagonal_matrix = 1e-3, 
+                  default_edge_weight = 0.1, square_root_weights_for_degree_sum_bool = False, 
+                  squaring_weights_for_degree_sum_bool = False, threshold_for_degree = 0.5,
+                 use_cross_validation_for_model_bool = False, num_cv_folds = 5, 
+                model_type = "Lasso", use_network = True, fit_y_intercept_bool = False,
+                   max_lasso_iterations = 10000 --> 
+
 ## Demo (Toy Example) of GRegulNet:
 
 Suppose we have gene expression data for 5 Transcription Factors (TFs), [$TF_{1}$, $TF_{2}$, $TF_{3}$, $TF_{4}$, and $TF_{5}$] that are our respective predictors [$X_{1}$, $X_{2}$, $X_{3}$, $X_{4}$, and $X_{5}$]. We also have gene expression data for our target gene (TG), our response variable $y$.  We want to build a model to predict the expression of our $y$ based on the gene expression data of these 5 TFs. Our GRegulNet estimator will also incorporate a prior biological network of relationships among the TFs based on a Protein-Protein Interaction (PPI) network. 
@@ -184,6 +326,26 @@ Here, we build the GRegulNet estimator based on an **undirected prior graph netw
 
 
 
+```python
+from gregulnetClasses import * # to load our package, GRegulNet
+edge_list = [[1, 2, 0.9], [4, 5, 0.75], [1, 3], [1, 4], [1, 5], 
+              [2, 3], [2, 4], [2, 5], [3, 4], [3, 5]]
+beta_network_val = 10
+# by default, cv_for_alpha_lasso_model_bool is False, so alpha_lasso_val will be specified.
+alpha_lasso_val = 0.01
+
+# Building the network regularized regression model. 
+gregulnet_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = beta_network_val,
+                          alpha_lasso_val = alpha_lasso_val)
+```
+
+    :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
+    :) We also add 0.001 as a pseudocount to our degree value for each node.
+    
+    
+
+
+    
 ![png](output_12_1.png)
     
 
