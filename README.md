@@ -3,6 +3,7 @@
 ## Gene Regular(ized/atory) Network
 
 #### By: Saniya Khullar, Xiang Huang, Daifeng Wang
+##### Daifeng Wang Lab 
 
 ## Summary
 
