@@ -27,7 +27,7 @@ The analysis is based on Python 3.10.6. Please note that larger prior graph netw
 
 ## Software Requirements
 
-Please open a terminal window or command prompt window and navigate to your project directory using the command line or terminal. Please ensure you have cloned or downloaded our GRegulNet Github code and package.  Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
+Please ensure you have cloned or downloaded our GRegulNet Github code and package. Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
 
 In short, we need to import the following Python packages needed to run our code: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda prompt.
 
