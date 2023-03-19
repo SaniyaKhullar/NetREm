@@ -345,15 +345,12 @@ X_train_df.head(10)
 
 
 
-To see all of the parameters (specified and default) that are used for the GRegulNet model:
-
+We view the first 5 parameters (specified and default) that are used for the GRegulNet model:
 
 
 ```python
-gregulnet_demo.parameters_df
+gregulnet_demo.parameters_df.head(5)
 ```
-
-
 
 
 <div>
