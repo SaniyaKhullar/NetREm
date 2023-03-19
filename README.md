@@ -101,7 +101,7 @@ $$ -->
 
 <!-- * *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used.  -->
 
-### Summary of main inputs needed:
+### Main inputs:
 
 <!-- | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
@@ -113,7 +113,7 @@ $$ -->
 
 | Parameter | Definition | More information |
 | --------- | ---------- | ---------- |
-| edge_list       | A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized.  | We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. If  weights are missing for any edge, then the default_weight will be used for that respective edge. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and the other direction will be assumed automatically).  |
+| edge_list       | A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized.  | We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. The default_weight will be used for any edge with missing weight information. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and the other direction will be assumed automatically). |
 | $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | value needed, which scales strength of network penalization |
 | cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | Default boolean value: False |
 | $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
@@ -244,8 +244,6 @@ X_train_df.head(10)
 
     
     
-
-
 
 
 <div>
@@ -482,28 +480,18 @@ gregulnet_demo.fit(X_train, y_train)
 
     network used
     Training GRegulNet :)
-    
-
-
-
 
     <gregulnetClasses.GRegulNet at 0x215f0fa2200>
 
 
-
 To view and extract the predicted model coefficients for the predictors: 
-
 
 ```python
 gregulnet_demo.coef
 ```
 
 
-
-
     array([ 0.23655573,  0.11430656,  0.00148755, -0.03512912, -0.16009479])
-
-
 
 
 ```python
