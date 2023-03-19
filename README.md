@@ -19,9 +19,7 @@ Regression techniques often face the challenge of dealing with correlated predic
 
 *Pipeline image of Gregulnet*
 
-Alternate names:
-* LassoRegNet
-* LassoNet
+Alternate names: LassoRegNet or LassoNet
 
 ## Hardware Requirements
 
@@ -30,19 +28,9 @@ The analysis is based on Python 3.10.6. Please note that larger prior graph netw
 ## Software Requirements
 
 
-Please open a terminal window or command prompt window and navigate to your project directory using the command line or terminal.
+Please open a terminal window or command prompt window and navigate to your project directory using the command line or terminal. Please ensure you have cloned or downloaded our GRegulNet Github code and package.  Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
 
-Please ensure you have cloned or downloaded our GRegulNet Github code and package.  We have provided a *requirements.txt* file, which lists the key packages and respective versions needed. To install these packages properly, please run the following command in the terminal or command prompt window to install the packages specified in the *requirements.txt* file:
-
-**pip install -r requirements.txt**
-
-This command will install all the packages listed in the *requirements.txt* file, including any specified versions or dependencies.
-
-In short, please note that we need to import the following Python packages needed to run our code:
-
-* matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings
-
-To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda prompt.
+In short, we need to import the following Python packages needed to run our code: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda prompt.
 
 ## Functions in the GRegulNet pipeline
 
@@ -59,14 +47,14 @@ Ultimately, this function builds an estimator object from the class GRegulNet, w
 
 The basic version of geneRegulatNet requires that the user is aware of at least the following 4 parameters, which we list and explain in the *Main Input* section. That is, *geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool, alpha_lasso_val)*. At minimum, the user needs to specify just 3 parameters. 
 
-$$
+<!-- $$
 \begin{cases}
   \text{geneRegulatNet(edge_list, } \beta_{network}, \text{cv_for_alpha_lasso_model_bool = } False, \alpha_{lasso}\text{)} & \text{if cv_for_alpha_lasso_model_bool = } False \\
   \text{geneRegulatNet(edge_list, } \beta_{network}, \text{cv_for_alpha_lasso_model_bool = } True) & \text{if cv_for_alpha_lasso_model_bool = } True \\
 \end{cases}
 $$
 
-There are several additional parameters that can be adjusted in the geneRegulatNet function, which will be explained later in the *Default Parameters* section. 
+There are several additional parameters that can be adjusted in the geneRegulatNet function, which will be explained later in the *Default Parameters* section.  -->
 
 ### Main Input:
 
@@ -96,11 +84,20 @@ The edge_list will be represented by:
 
 * *cv_for_alpha_lasso_model_bool*:
 
-$$ = \begin{cases}
+False (default): user wants to specify the value of $\alpha_{lasso}$
+True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$
+
+<!-- $$ = \begin{cases}
   \text{if cv_for_alpha_lasso_model_bool = } False & \text{default: user wants to specify the value of }  \alpha_{lasso}  \\
   \text{if cv_for_alpha_lasso_model_bool = } True & \text{GRegulNet will perform cross-validation (CV) on training data to determine optimal } \alpha_{lasso} \\
 \end{cases}
-$$
+$$ -->
+
+<!-- $$ = \begin{cases}
+  \text{if cv_for_alpha_lasso_model_bool = } False & \text{default: user wants to specify the value of }  \alpha_{lasso}  \\
+  \text{if cv_for_alpha_lasso_model_bool = } True & \text{GRegulNet will perform cross-validation (CV) on training data to determine optimal } \alpha_{lasso} \\
+\end{cases}
+$$ -->
 
 
 ##### If *cv_for_alpha_lasso_model_bool* is False, we need to specify alpha_lasso_val $\alpha_{lasso}$ #####
