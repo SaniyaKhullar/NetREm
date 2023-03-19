@@ -27,7 +27,6 @@ The analysis is based on Python 3.10.6. Please note that larger prior graph netw
 
 ## Software Requirements
 
-
 Please open a terminal window or command prompt window and navigate to your project directory using the command line or terminal. Please ensure you have cloned or downloaded our GRegulNet Github code and package.  Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
 
 In short, we need to import the following Python packages needed to run our code: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda prompt.
@@ -40,7 +39,7 @@ The function, **geneRegulatNet**, inputs the edge list of the prior graph networ
 * default: the user may specify an alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
 * alternative: the user may opt for GRegulNet to select alpha_lasso_val ($\alpha_{lasso} \geq 0$) based on cross-validation on training data (if *cv_for_alpha_lasso_model_bool = True*)
 
-Ultimately, this function builds an estimator object from the class GRegulNet, which then takes in input $X$ and $y$ data and transforms them to $\tilde{X}$ and $\tilde{y}$, respectively based on the prior network edge lists and $\beta_{network}$ value. Next, the estimator can fit a Lasso regression model on $\tilde{X}$ and $\tilde{y}$ using the regularization value of alpha_lasso_val. Overall, the trained and fitted models are more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
+Ultimately, this function uses a prior network edge list and $\beta_{network}$ to build an estimator object from the class GRegulNet. This estimator can then take in input $X$ and $y$ data:  transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Overall, the trained model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
 
 
 **geneRegulatNet**:
@@ -62,22 +61,22 @@ There are several additional parameters that can be adjusted in the geneRegulatN
 
 For instance:
 
-[[source$_{1}$, target$_{1}$, weight$_{1}$], [source$_{2}$, target$_{2}$, weight$_{2}$], ..., [source$_{Z}$, target$_{Z}$, weight$_{Z}$]]. 
+[[source$_{1}$, target$_{1}$, weight$_{1}$], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. 
 
-Where weight$_{1}$, weight$_{2}$, ..., weight$_{3}$ are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized. 
+Where weight$_{1}$, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized. 
 
 The edge_list will be represented by:
 
 | Source | Target |  Weight |
 | --------- | ---------- | ---------- |
 |source<sub>1</sub>   | target<sub>1</sub> | weight<sub>1</sub>|
-|source$_{2}$    | target$_{2}$ | weight$_{2}$ |
+|source<sub>2</sub>   | target<sub>2</sub> | weight<sub>2</sub> |
 |...    | ... | ... |
-|source$_{Z}$    | target$_{Z}$ | weight$_{Z}$ |
-|target$_{1}$    | source$_{1}$ | weight$_{1}$ |
-|target$_{2}$    | source$_{2}$ | weight$_{2}$ |
+|source<sub>Z</sub>    | target<sub>Z</sub> | weight<sub>Z</sub>|
+|target<sub>1</sub>   | source<sub>1</sub> | weight<sub>1</sub> |
+|target<sub>2</sub>    | source<sub>2</sub> | weight<sub>2</sub> |
 |...    | ... | ... |
-|target$_{Z}$    | source$_{Z}$ | weight$_{Z}$ |
+|target<sub>Z</sub>    | source<sub>Z</sub> | weight<sub>Z</sub> |
 
 * *beta_network_val*:  A numerical value for $\beta_{network} \geq 0$. 
 
@@ -107,7 +106,7 @@ $$ -->
 
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
-| edge_list       | list of lists: [[source$_{1}$, target$_{1}$, weight$_{1}$], ..., [source$_{Z}$, target$_{Z}$, weight$_{Z}$]] | value needed |
+| edge_list       | list of lists: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]] | value needed |
 | $\beta_{network}$  | Regularization parameter for network penalization | value needed |
 | cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$  | False |
 | $\alpha_{lasso}$  | Regularization parameter for lasso | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
