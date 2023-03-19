@@ -70,7 +70,7 @@ The edge_list will be represented by:
 
 | Source | Target |  Weight |
 | --------- | ---------- | ---------- |
-|source$s_{1}$    | target$t_{1}$ | weight$_{1}$ |
+|source $\s_{1}$    | target $\t_{1}$ | weight$_{1}$ |
 |source$_{2}$    | target$_{2}$ | weight$_{2}$ |
 |...    | ... | ... |
 |source$_{Z}$    | target$_{Z}$ | weight$_{Z}$ |
