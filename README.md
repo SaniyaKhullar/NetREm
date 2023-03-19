@@ -115,8 +115,7 @@ $$ -->
 | --------- | ---------- | ---------- |
 | edge_list       | list of lists: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]] | value needed |
 | $\beta_{network}$  | Regularization parameter for network penalization | value needed |
-| cv_for_alpha_lasso_model_bool  |   * False (default): user wants to specify the value of $\alpha_{lasso}$ <br>
-  * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | False |
+| cv_for_alpha_lasso_model_bool  | * False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | False |
 | $\alpha_{lasso}$  | Regularization parameter for lasso | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
  
 ### Default parameters ###
