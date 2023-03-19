@@ -57,13 +57,13 @@ There are several additional parameters that can be adjusted in the geneRegulatN
 
 ### Main Input:
 
-* *edge_list*: A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges. We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. If the weights are missing for any edge, then the default_weight will be used for that respective edge. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and the other direction will be assumed automatically). 
+* *edge_list*: A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges. We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. If  weights are missing for any edge, then the default_weight will be used for that respective edge. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and the other direction will be assumed automatically). 
 
 For instance:
 
-[[source$_{1}$, target$_{1}$, weight$_{1}$], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. 
+[[source<sub>1</sub>$, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. 
 
-Where weight$_{1}$, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized. 
+Where weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized. 
 
 The edge_list will be represented by:
 
@@ -121,19 +121,18 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | default_edge_weight  | If an edge is missing an edge weight, this is weight assigned to that edge | 0.1 |
-| consider_self_loops  | For Degree Matrix D. True: Add 1 to each degree (for self-loops)| False|
-| pseudocount_for_diagonal_matrix  | For Degree Matrix D. Pseudocount to add for each degree (node). | 0.001 |
-| use_edge_weight_values_for_degrees_bool  | For Degree Matrix D. True: edge weights used; False: threshold used | False|
-
+| consider_self_loops  | True: Add 1 to each degree (for self-loops)| False|
+| pseudocount_for_diagonal_matrix  | Pseudocount to add for each degree (node). | 0.001 |
+| use_edge_weight_values_for_degrees_bool  | True: edge weights used for node degree; False: threshold used | False|
 
 If *use_edge_weight_values_for_degrees_bool is False*, we will use a threshold to assign degrees:
 
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
-| threshold_for_degree  | For Degree Matrix D. Edges with weight > threshold_for_degree are counted as 1 towards degree | 0.5 |
+| threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards degree | 0.5 |
 
 
-If *use_edge_weight_values_for_degrees_bool is True*, we can use the edge weights $w$ directly, $\sqrt{w}$, or $w^{2}$ for the degree:
+If *use_edge_weight_values_for_degrees_bool is True*, we can use edge weights $w$ directly, $\sqrt{w}$, or $w^{2}$ for the degree:
 
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
@@ -164,23 +163,16 @@ If *cv_for_alpha_lasso_model_bool is True*:
 
 ### Output ###
 
-* A Fitted Estimator from the GRegulNet class.
-
-There are several attributes available for objects in the GRegulNet class. 
+* A Fitted Estimator from the GRegulNet class with several attributes available. 
 
 We can fit our GRegulNet estimator on $X$ and $y$ training data and retrieve coefficients for the GRegulNet network-regularized linear model. Then, we can evaluate our model performance capabilities on testing data.  We evaluate our model predictive performance using the Mean Squared Error (MSE). 
 
 
-
-
-
 ## Demo (Toy Example) of GRegulNet:
 
-Suppose we have gene expression data for 5 Transcription Factors (TFs), [$TF_{1}$, $TF_{2}$, $TF_{3}$, $TF_{4}$, and $TF_{5}$] that are our respective predictors [$X_{1}$, $X_{2}$, $X_{3}$, $X_{4}$, and $X_{5}$]. We also have gene expression data for our target gene (TG), our response variable $y$.  We want to build a model to predict the expression of our $y$ based on the gene expression data of these 5 TFs. Our GRegulNet estimator will also incorporate a prior biological network of relationships among the TFs based on a Protein-Protein Interaction (PPI) network. 
-
+Suppose we have gene expression data for 5 Transcription Factors (TFs), [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, and $TF_{5}$] that are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, and $X_{5}$]. We also have gene expression data for our target gene (TG), our response variable $y$.  We want to build a model to predict the expression of our $y$ based on the gene expression data of these 5 TFs. Our GRegulNet estimator will also incorporate a prior biological network of relationships among the TFs based on a Protein-Protein Interaction (PPI) network. 
 
 Here, we build the GRegulNet estimator based on an **undirected prior graph network** of the relationships among our 5 Transcription Factors (TFs). As shown below, there is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. We specify the remaining relationships among the other TFs to be the default edge weight of 0.1.
-
 
 
 ```python
@@ -199,20 +191,11 @@ gregulnet_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = beta_n
     :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
     :) We also add 0.001 as a pseudocount to our degree value for each node.
     
-    
-
-
-    
+  
 <!-- ![png](README_python_files/README_python_12_1.png) -->
 ![png](output_12_1.png)
 
-
-
-We can specify our $X$ and $y$ data to train our GRegulNet object using the *DemoDataBuilderXandY* class to generate random data. We specify *num_samples_M* is 100 samples. Further, we want the correlations of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF$_{1}$, y) = 0.9, cor(TF$_{2}$, y) = 0.5, cor(TF$_{3}$, y) = 0.1, cor(TF$_{4}$, y) = -0.2, cor(TF$_{5}$, y) = -0.8]. Since *same_train_and_test_data_bool* is False, we will separate the data with 70% for training and 30% for testing. There are additional parameters that we can adjust for, but we wanted to retain simplicity. Please note that we explain more details about this class in *DemoDataBuilderXandY_explanation.ipynb*.
-    
-
-
-
+In our demo, we use the *DemoDataBuilderXandY* class to generate random data for our $X$ and $y$ to train our GRegulNet object We specify *num_samples_M* is 100 samples. Further, we want the correlations of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF$_{1}$, y) = 0.9, cor(TF$_{2}$, y) = 0.5, cor(TF$_{3}$, y) = 0.1, cor(TF$_{4}$, y) = -0.2, cor(TF$_{5}$, y) = -0.8]. Since *same_train_and_test_data_bool* is False, we will separate the data with 70% for training and 30% for testing. Please note that we explain more details about this class (and additional parameters we can adjust for) in *DemoDataBuilderXandY_explanation.ipynb*.
 
 ```python
 demo_dict = {"num_samples_M": 100,
