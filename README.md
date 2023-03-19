@@ -406,62 +406,6 @@ gregulnet_demo.parameters_df.head(5)
       <td>0.5</td>
       <td>PriorGraphNetwork</td>
     </tr>
-    <tr>
-      <th>5</th>
-      <td>model_type</td>
-      <td>set of options</td>
-      <td>which model type should be used for geneRegula...</td>
-      <td>Lasso</td>
-      <td>GRegulNet</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>max_lasso_iterations</td>
-      <td>&gt;= 1</td>
-      <td>the maximum # of iterations for Lasso</td>
-      <td>Lasso</td>
-      <td>GRegulNet</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>use_cross_validation_for_model_bool</td>
-      <td>boolean</td>
-      <td>should we use cross validation for training th...</td>
-      <td>False</td>
-      <td>GRegulNet</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>alpha_lasso</td>
-      <td>&gt;= 0</td>
-      <td>value for alpha for the lasso problem</td>
-      <td>0.01</td>
-      <td>GRegulNet</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>use_network</td>
-      <td>boolean</td>
-      <td>perform network regularization using a network...</td>
-      <td>True</td>
-      <td>GRegulNet</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>beta_network</td>
-      <td>&gt;= 0</td>
-      <td>value of beta for the network regularization p...</td>
-      <td>10</td>
-      <td>GRegulNet</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>fit_y_intercept_bool</td>
-      <td>boolean</td>
-      <td>fit a y-intercept for our regression problem</td>
-      <td>False</td>
-      <td>GRegulNet</td>
-    </tr>
   </tbody>
 </table>
 </div>
