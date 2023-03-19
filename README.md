@@ -199,7 +199,7 @@ gregulnet_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = beta_n
 <!-- ![png](README_python_files/README_python_12_1.png) -->
 ![png](output_12_1.png)
 
-In our demo, we use the *DemoDataBuilderXandY* class to generate random data for our $X$ and $y$ to train our GRegulNet object We specify *num_samples_M* is 100 samples. Further, we want the correlations of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF$_{2}$, $y$) = 0.5, cor(TF$_{3}$, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF$_{5}$, $y$) = -0.8]. Since *same_train_and_test_data_bool* is False, we will separate the data with 70% for training and 30% for testing. Please note that we explain more details about this class (and additional parameters we can adjust for) in *DemoDataBuilderXandY_explanation.ipynb*.
+In our demo, we use the *DemoDataBuilderXandY* class to generate random data for our $X$ and $y$ to train our GRegulNet object We specify *num_samples_M* is 100 samples. Further, we want the correlations of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. Since *same_train_and_test_data_bool* is False, we will separate the data with 70% for training and 30% for testing. Please note that we explain more details about this class (and additional parameters we can adjust for) in *DemoDataBuilderXandY_explanation.ipynb*.
 
 ```python
 demo_dict = {"num_samples_M": 100,
