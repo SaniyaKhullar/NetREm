@@ -83,9 +83,8 @@ The edge_list will be represented by:
 
 
 * *cv_for_alpha_lasso_model_bool*:
-
-False (default): user wants to specify the value of $\alpha_{lasso}$
-True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$
+- False (default): user wants to specify the value of $\alpha_{lasso}$
+- True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$
 
 <!-- $$ = \begin{cases}
   \text{if cv_for_alpha_lasso_model_bool = } False & \text{default: user wants to specify the value of }  \alpha_{lasso}  \\
