@@ -70,7 +70,7 @@ The edge_list will be represented by:
 
 | Source | Target |  Weight |
 | --------- | ---------- | ---------- |
-|source $\s_{1}$    | target $\t_{1}$ | weight$_{1}$ |
+|source<sub>1</sub>   | target<sub>1</sub> | weight<sub>1</sub>|
 |source$_{2}$    | target$_{2}$ | weight$_{2}$ |
 |...    | ... | ... |
 |source$_{Z}$    | target$_{Z}$ | weight$_{Z}$ |
@@ -80,7 +80,6 @@ The edge_list will be represented by:
 |target$_{Z}$    | source$_{Z}$ | weight$_{Z}$ |
 
 * *beta_network_val*:  A numerical value for $\beta_{network} \geq 0$. 
-
 
 * *cv_for_alpha_lasso_model_bool*:
   - False (default): user wants to specify the value of $\alpha_{lasso}$
