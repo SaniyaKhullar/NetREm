@@ -177,7 +177,7 @@ We can fit our GRegulNet estimator on $X$ and $y$ training data and retrieve coe
 
 ## Demo (Toy Example) of GRegulNet:
 
-Suppose we have gene expression data for 5 Transcription Factors (TFs), [$TF$ <sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, and $TF_{5}$] that are our respective predictors [$X$ <sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, and $X_{5}$]. We also have gene expression data for our target gene (TG), our response variable $y$.  We want to build a model to predict the expression of TG $y$ based on the gene expression data of these 5 TFs. Our GRegulNet estimator  also incorporates an **undirected prior graph network**  of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network. There is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. The remaining relationships among the other TFs is assumed to be the default (edge weight of 0.1).
+Suppose we have gene expression data for 5 Transcription Factors (TFs), [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, and $TF_{5}$] that are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, and $X_{5}$]. We also have gene expression data for our target gene (TG), our response variable $y$.  We want to build a model to predict the expression of TG $y$ based on the gene expression data of these 5 TFs. Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network. There is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. The remaining relationships among the other TFs is assumed to be the default (edge weight of 0.1).
 
 ```python
 from gregulnetClasses import * # to load our package, GRegulNet
@@ -347,11 +347,11 @@ X_train_df.head(10)
 
 
 
-We view the first 5 parameters (specified and default) that are used for the GRegulNet model:
+We view the first 4 parameters (specified and default) that are used for the GRegulNet model:
 
 
 ```python
-gregulnet_demo.parameters_df.head(5)
+gregulnet_demo.parameters_df.head(4)
 ```
 
 
@@ -398,14 +398,6 @@ gregulnet_demo.parameters_df.head(5)
       <td>boolean</td>
       <td>if False, we use a threshold instead to derive...</td>
       <td>False</td>
-      <td>PriorGraphNetwork</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>threshold_for_degree</td>
-      <td>&gt;= 0</td>
-      <td>edge weights &gt; 0.5 are counted as 1 for the de...</td>
-      <td>0.5</td>
       <td>PriorGraphNetwork</td>
     </tr>
   </tbody>
