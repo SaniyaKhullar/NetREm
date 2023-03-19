@@ -46,13 +46,19 @@ To install these packages manually, please run *pip install [package]* or *pip3 
 
 ## Functions in the GRegulNet pipeline
 
+
+<!-- 
+# * parameter 1: edge_list
+# * beta_network_val
+# * alpha_lasso_val, beta_network_val.  -->
+
 Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python.
 
 The function, **geneRegulatNet**, inputs the edge list of the prior graph network (to be used to constrain the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$) that scales the network-based regularization penalty. The user has 2 options with respect to the lasso regularization on the overall model: 
-* default: the user may specify an alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
-* alternative: the user may opt for GRegulNet to select alpha_lasso_val ($\alpha_{lasso} \geq 0$) based on cross-validation on training data (if *cv_for_alpha_lasso_model_bool = True*)
+* default option: the user may  specify an alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used as the default. 
+* alternative option: the user may opt for GRegulNet to select the alpha_lasso_val ($\alpha_{lasso} \geq 0$) based on cross-validation on the training data (if *cv_for_alpha_lasso_model_bool = True*)
 
-Ultimately, this function builds an estimator object from the class GRegulNet, which then takes in input $X$ and $y$ data and transforms them to $\tilde{X}$ and $\tilde{y}$, respectively based on the prior network edge lists and $\beta_{network}$ value. Next, the estimator can fit a Lasso regression model on $\tilde{X}$ and $\tilde{y}$ using the regularization value of alpha_lasso_val. Overall, the trained and fitted models are more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
+Ultimately, this function builds an estimator object from the class GRegulNet. This estimator is then able to take in input $X$ and $y$ data and transform those data inputs (to $\tilde{X}$ and $\tilde{y}$, respectively) based on the prior network edge lists and $\beta_{network}$ value. Next, the estimator can fit a Lasso regression model on $\tilde{X}$ and $\tilde{y}$ using the regularization value of alpha_lasso_val ($\alpha_{lasso} \geq 0$), which is either provided by the user (if *cv_for_alpha_lasso_model_bool = False*) or determined by GRegulNet (based on cross-validation on training data, if *cv_for_alpha_lasso_model_bool = True*). Overall, the trained and fitted models are more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
 
 
 **geneRegulatNet**:
@@ -117,6 +123,10 @@ $$
 | cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$  | False |
 | $\alpha_{lasso}$  | Regularization parameter for lasso | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
 
+
+
+
+        
  
 ### Default parameters ###
 
@@ -213,7 +223,7 @@ gregulnet_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = beta_n
     
 
 
-We can specify our $X$ and $y$ data to train our GRegulNet object using the *DemoDataBuilderXandY* class to generate random data. We specify *num_samples_M* is 100 samples. Further, we want the correlations of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF$_{1}$, y) = 0.9, cor(TF$_{2}$, y) = 0.5, cor(TF$_{3}$, y) = 0.1, cor(TF$_{4}$, y) = -0.2, cor(TF$_{5}$, y) = -0.8]. Since *same_train_and_test_data_bool* is False, we will separate the data with 70% for training and 30% for testing. There are additional parameters that we can adjust for, but we wanted to retain simplicity. Please note that we explain more details about this class in *DemoDataBuilderXandY_explanation.ipynb*.
+We can specify our $X$ and $y$ data to train our GRegulNet object using the *DemoDataBuilderXandY* class. In our demo, we utilize the *demo_dict* dictionary below to encode values for 3 parameters for our demo. Our class generates random data based on *num_samples_M* and *corrVals*. We specify *num_samples_M* is 100 samples. Further, we want the correlations of each of our predictors with the $y$ variable to be as provided by *corrVals*: [cor(TF$_{1}$, y) = 0.9, cor(TF$_{2}$, y) = 0.5, cor(TF$_{3}$, y) = 0.1, cor(TF$_{4}$, y) = -0.2, cor(TF$_{5}$, y) = -0.8]. Since *same_train_and_test_data_bool* is False, we will separate the data with 70% for training and 30% for testing.  There are additional parameters that we can adjust for our demo, but we wanted to retain simplicity. Please note that we explain more details about this class in *DemoDataBuilderXandY_explanation.ipynb*.
     
 
 

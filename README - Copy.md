@@ -46,13 +46,19 @@ To install these packages manually, please run *pip install [package]* or *pip3 
 
 ## Functions in the GRegulNet pipeline
 
+
+<!-- 
+# * parameter 1: edge_list
+# * beta_network_val
+# * alpha_lasso_val, beta_network_val.  -->
+
 Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python.
 
 The function, **geneRegulatNet**, inputs the edge list of the prior graph network (to be used to constrain the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$) that scales the network-based regularization penalty. The user has 2 options with respect to the lasso regularization on the overall model: 
-* default: the user may specify an alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
-* alternative: the user may opt for GRegulNet to select alpha_lasso_val ($\alpha_{lasso} \geq 0$) based on cross-validation on training data (if *cv_for_alpha_lasso_model_bool = True*)
+* default option: the user may  specify an alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used as the default. 
+* alternative option: the user may opt for GRegulNet to select the alpha_lasso_val ($\alpha_{lasso} \geq 0$) based on cross-validation on the training data (if *cv_for_alpha_lasso_model_bool = True*)
 
-Ultimately, this function builds an estimator object from the class GRegulNet, which then takes in input $X$ and $y$ data and transforms them to $\tilde{X}$ and $\tilde{y}$, respectively based on the prior network edge lists and $\beta_{network}$ value. Next, the estimator can fit a Lasso regression model on $\tilde{X}$ and $\tilde{y}$ using the regularization value of alpha_lasso_val. Overall, the trained and fitted models are more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
+Ultimately, this function builds an estimator object from the class GRegulNet. This estimator is then able to take in input $X$ and $y$ data and transform those data inputs (to $\tilde{X}$ and $\tilde{y}$, respectively) based on the prior network edge lists and $\beta_{network}$ value. Next, the estimator can fit a Lasso regression model on $\tilde{X}$ and $\tilde{y}$ using the regularization value of alpha_lasso_val ($\alpha_{lasso} \geq 0$), which is either provided by the user (if *cv_for_alpha_lasso_model_bool = False*) or determined by GRegulNet (based on cross-validation on training data, if *cv_for_alpha_lasso_model_bool = True*). Overall, the trained and fitted models are more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
 
 
 **geneRegulatNet**:
