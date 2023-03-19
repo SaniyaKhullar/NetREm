@@ -57,7 +57,7 @@ There are several additional parameters that can be adjusted in the geneRegulatN
 
 ### Main Input:
 
-* *edge_list*: A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges. We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. If  weights are missing for any edge, then the default_weight will be used for that respective edge. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and the other direction will be assumed automatically). 
+<!-- * *edge_list*: A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges. We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. If  weights are missing for any edge, then the default_weight will be used for that respective edge. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and the other direction will be assumed automatically). 
 
 For instance:
 
@@ -76,13 +76,13 @@ The edge_list will be represented by:
 |target<sub>1</sub>   | source<sub>1</sub> | weight<sub>1</sub> |
 |target<sub>2</sub>    | source<sub>2</sub> | weight<sub>2</sub> |
 |...    | ... | ... |
-|target<sub>Z</sub>    | source<sub>Z</sub> | weight<sub>Z</sub> |
+|target<sub>Z</sub>    | source<sub>Z</sub> | weight<sub>Z</sub> | -->
 
-* *beta_network_val*:  A numerical value for $\beta_{network} \geq 0$. 
+<!-- * *beta_network_val*:  A numerical value for $\beta_{network} \geq 0$.  -->
 
-* *cv_for_alpha_lasso_model_bool*:
+<!-- * *cv_for_alpha_lasso_model_bool*:
   - False (default): user wants to specify the value of $\alpha_{lasso}$
-  - True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$
+  - True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$ -->
 
 <!-- $$ = \begin{cases}
   \text{if cv_for_alpha_lasso_model_bool = } False & \text{default: user wants to specify the value of }  \alpha_{lasso}  \\
@@ -97,9 +97,9 @@ $$ -->
 $$ -->
 
 
-##### If *cv_for_alpha_lasso_model_bool* is False, we need to specify alpha_lasso_val $\alpha_{lasso}$ #####
+<!-- ##### If *cv_for_alpha_lasso_model_bool* is False, we need to specify alpha_lasso_val $\alpha_{lasso}$ ##### -->
 
-* *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used. 
+<!-- * *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used.  -->
 
 ### Summary of main inputs needed:
 
@@ -111,12 +111,12 @@ $$ -->
 | $\alpha_{lasso}$  | Regularization parameter for lasso | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 | -->
 
 
-| Parameter | Definition | Default |
+| Parameter | Definition | More information |
 | --------- | ---------- | ---------- |
-| edge_list       | list of lists: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]] | value needed |
-| $\beta_{network}$  | Regularization parameter for network penalization | value needed |
-| cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | False |
-| $\alpha_{lasso}$  | Regularization parameter for lasso | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
+| edge_list       | list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized.  |  A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges. We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. If  weights are missing for any edge, then the default_weight will be used for that respective edge. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and the other direction will be assumed automatically).  |
+| $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | value needed, which scales strength of network penalization |
+| cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | Default boolean value: False |
+| $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
  
 ### Default parameters ###
 
