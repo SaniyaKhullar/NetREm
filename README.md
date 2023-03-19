@@ -1,8 +1,8 @@
----
+<!-- ---
 layout: default
 ---
 
-{% include mathjax.html %}
+{% include mathjax.html %} -->
 
 # GRegulNet
 
@@ -61,7 +61,7 @@ There are several additional parameters that can be adjusted in the geneRegulatN
 
 For instance:
 
-[[source<sub>1</sub>$, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. 
+[[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. 
 
 Where weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. If an edge is missing its respective edge weight, then the default edge weights will be utilized. 
 
@@ -99,8 +99,7 @@ $$ -->
 
 ##### If *cv_for_alpha_lasso_model_bool* is False, we need to specify alpha_lasso_val $\alpha_{lasso}$ #####
 
-* *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. Thus, if *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, please note that if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used. 
-
+* *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used. 
 
 ### Summary of main inputs needed:
 
@@ -130,7 +129,6 @@ If *use_edge_weight_values_for_degrees_bool is False*, we will use a threshold t
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards degree | 0.5 |
-
 
 If *use_edge_weight_values_for_degrees_bool is True*, we can use edge weights $w$ directly, $\sqrt{w}$, or $w^{2}$ for the degree:
 
