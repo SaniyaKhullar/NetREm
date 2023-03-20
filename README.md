@@ -37,6 +37,8 @@ Please note that our package, GRegulNet, is run by the following function **gene
 ## Usage
 
 geneRegulatNet(<br>
+                X_train, <br>
+                y_train, <br>
                 edge_list,<br> 
                 beta_network_val, <br>
                 cv_for_alpha_lasso = False,<br> 
