@@ -130,11 +130,12 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
+| $X_{train}$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+| $y_{train}$ | Input numpy array list with 1 value for each sample.| 
 | edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
 | beta_network_val: $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | 
 | cv_for_alpha_lasso | * False (default): user specifies value of $\alpha_{lasso}$ <br> * True: GRegulNet performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso needed if cv_for_alpha_lasso_model_bool = False: $\alpha_{lasso} \geq 0$. |
- 
 
 
 <!-- | Parameter | Definition | More information |
@@ -216,7 +217,7 @@ gregulnet_demo = geneRegulatNet(edge_list = edge_list,
 <!-- ![png](README_python_files/README_python_12_1.png) -->
 ![png](output_12_1.png)
 
-Here, we generate 100 samples (rows) of random $X$ and $y$ data to train our GRegulNet object. Further, we want the Pearson correlations ($r$) of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. Each column of our $X$ corresponds to a predictor. The dimensions of $X$ are therefore 100 rows by 5 columns. More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*. 
+We generate 100 random samples (rows) of $X$ and $y$ data where the Pearson correlations ($r$) of each predictor with the $y$ variable are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. The dimensions of $X$ are therefore 100 rows by 5 columns (predictors). More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*. 
 
 ```python
 demo_dict = {"num_samples_M": 100,
@@ -230,7 +231,7 @@ X_train = dummy_data.X_train
 y_train = dummy_data.y_train
 ```
 
-Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using the $X_{train}$ and $y_{train}$ data sets (70 samples).
+Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using $X_{train}$ and $y_{train}$ data (70 samples).
 
 
 ```python
