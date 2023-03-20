@@ -186,7 +186,7 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | intercept  | If *fit_y_intercept = True*, returns the fitted y-intercept | 
 | all_parameters_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
 | parameters_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
-| X_tilda_train | Transformed $X_{train}$ input matrix to $\tilde{X_train}$ | 
+| X_tilda_train | Transformed $X_{train}$ input matrix to $\tilde{X}_{train}$ | 
 | y_tilda_train | Transformed $y_{train}$ input matrix to $\tilde{y}_{train}$| 
 | predY_tilda_train | Predicted $\tilde{y}_{train}$ values based on fitted model | 
 | mse_train | Mean Square Error (MSE): predY_tilda_train versus  $\tilde{y_train}$ | 
