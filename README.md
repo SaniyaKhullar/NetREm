@@ -148,7 +148,7 @@ If *use_edge_weight_values_for_degrees_bool is True*, we can use edge weights $w
 
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
-| use_network  | If False, we will run a standard Lasso regression model on the original $X$ and $y$ data (baseline). | True |
+| use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | True |
 | fit_y_intercept_bool  | Should a y-intercept be fitted for the final model by GRegulNet | False |
 
 
