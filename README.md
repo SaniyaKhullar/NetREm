@@ -194,32 +194,11 @@ Please note these parameters that can be adjusted as needed for user needs and s
 
 ## Demo (Toy Example) of GRegulNet:
 
-Suppose we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 5 Transcription Factors (TFs): [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$]. Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network. 
-<!-- There is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. The remaining relationships among the other TFs is assumed to be the default (edge weight of 0.1). -->
+Suppose we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 5 Transcription Factors (TFs): [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of each predictor with the $y$ variable are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. The dimensions of $X$ are therefore 100 rows by 5 columns (predictors). More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*. 
 
 ```python
 from gregulnetClasses import * # to load our package, GRegulNet
-edge_list = [[1, 2, 0.9], [4, 5, 0.75], [1, 3], [1, 4], [1, 5], 
-              [2, 3], [2, 4], [2, 5], [3, 4], [3, 5]]
-beta_network_val = 10
-# by default, cv_for_alpha_lasso_model_bool is False, so alpha_lasso_val will be specified.
-alpha_lasso_val = 0.01
 
-# Building the network regularized regression model. 
-gregulnet_demo = geneRegulatNet(edge_list = edge_list, 
-                                beta_network_val = beta_network_val,
-                                alpha_lasso_val = alpha_lasso_val)
-```
-    :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
-    :) We also add 0.001 as a pseudocount to our degree value for each node.
-    
-  
-<!-- ![png](README_python_files/README_python_12_1.png) -->
-![png](output_12_1.png)
-
-We generate 100 random samples (rows) of $X$ and $y$ data where the Pearson correlations ($r$) of each predictor with the $y$ variable are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. The dimensions of $X$ are therefore 100 rows by 5 columns (predictors). More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*. 
-
-```python
 demo_dict = {"num_samples_M": 100,
             "corrVals": [0.9, 0.5, 0.1, -0.2, -0.8],
             # partition data with 70% training, 30% testing:
@@ -227,21 +206,44 @@ demo_dict = {"num_samples_M": 100,
 
 dummy_data = DemoDataBuilderXandY(**demo_dict)
 
-X_train = dummy_data.X_train
+# 70 samples for training data (used to train and fit GRegulNet model)
+X_train = dummy_data.X_train 
 y_train = dummy_data.y_train
+
+# 30 samples for testing data
+y_test = dummy_data.y_test 
+X_test = dummy_data.X_test
 ```
 
-Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using $X_{train}$ and $y_{train}$ data (70 samples).
-
+Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network. 
+<!-- There is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. The remaining relationships among the other TFs is assumed to be the default (edge weight of 0.1). -->
 
 ```python
-gregulnet_demo.fit(X_train, y_train)
+edge_list = [[1, 2, 0.9], [4, 5, 0.75], [1, 3], [1, 4], [1, 5], 
+              [2, 3], [2, 4], [2, 5], [3, 4], [3, 5]]
+beta_network_val = 10
+# by default, cv_for_alpha_lasso_model_bool is False, so alpha_lasso_val will be specified.
+alpha_lasso_val = 0.01
+
+# Building the network regularized regression model. 
+gregulnet_demo = geneRegulatNet(X = X_train,
+                                y = y_train,
+                                edge_list = edge_list, 
+                                beta_network_val = beta_network_val,
+                                alpha_lasso_val = alpha_lasso_val)
 ```
+  prior graph network used
+  :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
+  :) We also add 0.001 as a pseudocount to our degree value for each node.
+  network used
+  Training GRegulNet :)
+    
+  
+<!-- ![png](README_python_files/README_python_12_1.png) -->
+![png](output_12_1.png)
 
-    network used
-    Training GRegulNet :)
-    <gregulnetClasses.GRegulNet at 0x215f0fa2200>
 
+<!-- Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using $X_{train}$ and $y_{train}$ data (70 samples). -->
 
 To view and extract the predicted model coefficients for the predictors: 
 
@@ -249,14 +251,12 @@ To view and extract the predicted model coefficients for the predictors:
 gregulnet_demo.coef
 ```
 
-
     array([ 0.23655573,  0.11430656,  0.00148755, -0.03512912, -0.16009479])
 
 
 ```python
 gregulnet_demo.model_coefficients_df
 ```
-
 
 <div>
 <table border="1" class="dataframe">
@@ -291,9 +291,6 @@ We can test the performance of our data on testing data (30 samples), to underst
 
 
 ```python
-y_test = dummy_data.y_test 
-X_test = dummy_data.X_test
-
 mse_test = gregulnet_demo.predict(X_test, y_test)
 print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
 ```

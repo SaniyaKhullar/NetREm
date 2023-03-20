@@ -734,10 +734,11 @@ class GRegulNet:
         self.fit_y_intercept = False
         self.max_lasso_iterations = 10000
         self.__dict__.update(kwargs)
+        required_keys = ["X_train", "y_train"]
         if self.use_network:
-            required_keys = ["network", "beta_network"] #"same_train_and_test_data_bool"]
+            required_keys += ["network", "beta_network"] #"same_train_and_test_data_bool"]
         else: # baseline situation :)
-             required_keys = []
+             required_keys += []
         if self.use_cross_validation_for_model_bool == False: # we then need to provide our own alpha lasso values
             #required_keys = ["alpha_lasso", "same_train_and_test_data_bool"]
             self.optimal_alpha = "User-specified optimal alpha lasso: " + str(self.alpha_lasso)
@@ -764,6 +765,7 @@ class GRegulNet:
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met
+        self.fit()
         
         
     def retrieve_tf_names_list_ml_model(self):
@@ -780,12 +782,12 @@ class GRegulNet:
             tf_names_list.append(term)
         return tf_names_list
            
-    def fit(self, X, y): # fits a model Function used for model training 
-        self.M = y.shape[0]
-        self.X_train = X
+    def fit(self): # fits a model Function used for model training 
+        self.M = self.y_train.shape[0]
+        #self.X_train = X
         self.N = self.X_train.shape[1]
         self.tf_names_list = self.retrieve_tf_names_list_ml_model()
-        self.y_train = y
+        #self.y_train = y
         if self.use_network:
             print("network used")
             self.B_train = self.compute_B_matrix("train")
@@ -1038,7 +1040,7 @@ class baselineModel:
         self.fit_y_intercept = False
         self.max_lasso_iterations = 10000
         self.__dict__.update(kwargs)
-        required_keys = []
+        required_keys = ["X_train", "y_train"]
         if self.use_cross_validation_for_model_bool == False: # we then need to provide our own alpha lasso values
             #required_keys = ["alpha_lasso", "same_train_and_test_data_bool"]
             self.optimal_alpha = "User-specified optimal alpha lasso: " + str(self.alpha_lasso)
@@ -1058,6 +1060,7 @@ class baselineModel:
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met
+        self.fit()
         
         
     def retrieve_tf_names_list_ml_model(self):
@@ -1068,12 +1071,12 @@ class baselineModel:
             tf_names_list.append(term)
         return tf_names_list
            
-    def fit(self, X, y): # fits a model Function used for model training 
-        self.M = y.shape[0]
-        self.X_train = X
+    def fit(self): # fits a model Function used for model training 
+        self.M = self.y_train.shape[0]
+        #self.X_train = X
         self.N = self.X_train.shape[1]
         self.tf_names_list = self.retrieve_tf_names_list_ml_model()
-        self.y_train = y
+        #self.y_train = y
         print("baseline used")
         self.X_training_to_use, self.y_training_to_use = self.X_train, self.y_train
         self.data_used = "X_train, y_train"
@@ -1224,7 +1227,7 @@ class baselineModel:
         
         return full_lists
 
-def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso = False, alpha_lasso_val = 0.1, 
+def geneRegulatNet(X, y, edge_list, beta_network_val, cv_for_alpha_lasso = False, alpha_lasso_val = 0.1, 
                    edge_values_for_degree = False,
                   consider_self_loops = False, pseudocount_for_degree = 1e-3, 
                   default_edge_weight = 0.1, square_root_weights_for_degree = False, 
@@ -1246,7 +1249,9 @@ def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso = False, alph
     if use_network:
         print("prior graph network used")
         netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix.
-        greg_dict = {"alpha_lasso": alpha_lasso_val,
+        greg_dict = {"X_train": X, 
+                     "y_train": y,
+                     "alpha_lasso": alpha_lasso_val,
                     "beta_network":beta_network_val,
                     "network": netty,
                     "use_cross_validation_for_model_bool": cv_for_alpha_lasso,
@@ -1261,7 +1266,9 @@ def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso = False, alph
     else:
         print("baseline model (no prior network)")
         #baselineModel
-        baseline_dict = {"alpha_lasso": alpha_lasso_val,
+        baseline_dict = {"X_train": X, 
+                        "y_train": y,
+                         "alpha_lasso": alpha_lasso_val,
                     "use_cross_validation_for_model_bool": cv_for_alpha_lasso,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
