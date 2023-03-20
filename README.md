@@ -170,10 +170,7 @@ Please note these parameters that can be adjusted as needed for user needs and s
 
 ### Output: ###
 
-* A Fitted Estimator from the GRegulNet class with several attributes available. 
-
-We can fit our GRegulNet estimator on $X$ and $y$ training data and retrieve coefficients for the GRegulNet network-regularized linear model. Then, we can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE). 
-
+* An GRegulNet network-regularized linear model object from the GRegulNet class. We can fit our GRegulNet estimator object on $X$ and $y$ training data and retrieve coefficients. Then, we can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE). 
 
 ## Demo (Toy Example) of GRegulNet:
 
@@ -311,9 +308,6 @@ gregulnet_cv_demo.model_coefficients_df
     Testing GRegulnet :)
     Please note that the testing Mean Square Error (MSE) for GRegulNet-CV model is 0.020310913421979375
     
-
-
-
 
 <div>
 <table border="1" class="dataframe">
