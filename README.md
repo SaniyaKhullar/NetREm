@@ -231,11 +231,11 @@ gregulnet_demo = geneRegulatNet(X = X_train,
                                 beta_network_val = beta_network_val,
                                 alpha_lasso_val = alpha_lasso_val)
 ```
-  prior graph network used
+  <!-- prior graph network used
   :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
   :) We also add 0.001 as a pseudocount to our degree value for each node.
   network used
-  Training GRegulNet :)
+  Training GRegulNet :) -->
     
   
 <!-- ![png](README_python_files/README_python_12_1.png) -->
