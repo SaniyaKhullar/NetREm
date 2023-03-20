@@ -134,9 +134,9 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | consider_self_loops  | True: Add 1 to each degree (for self-loops)| default: False|
 | pseudocount_for_diagonal_matrix  | Pseudocount to add for each degree (node). | default: 0.001 |
 | use_edge_weight_values_for_degrees_bool  | True: edge weights used for node degree; False: threshold used | default: False|
-| threshold_for_degree  | Use a threshold to assign degrees for nodes: Edges with weight > threshold_for_degree are counted as 1 towards degree | *use_edge_weight_values_for_degrees_bool is False* |
-| square_root_weights_for_degree_sum_bool  | Sum $\sqrt{w}$ for a given node degree | *use_edge_weight_values_for_degrees_bool is True* |
-| squaring_weights_for_degree_sum_bool  | Sum $w^{2}$ for a given node degree | *use_edge_weight_values_for_degrees_bool is True* |
+| threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards node degree | if *use_edge_weight_values_for_degrees_bool is False* |
+| square_root_weights_for_degree_sum_bool  | Sum $\sqrt{w}$ for a given node degree | if *use_edge_weight_values_for_degrees_bool is True* |
+| squaring_weights_for_degree_sum_bool  | Sum $w^{2}$ for a given node degree | if *use_edge_weight_values_for_degrees_bool is True* |
 
 * Parameters for the network-based regularized model:
 
