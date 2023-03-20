@@ -705,7 +705,7 @@ baseline_demo.model_coefficients_df
       <td>0.256041</td>
       <td>0.036381</td>
       <td>0.076338</td>
-      <td>-0</td>
+      <td>0</td>
       <td>-0.208916</td>
     </tr>
   </tbody>
