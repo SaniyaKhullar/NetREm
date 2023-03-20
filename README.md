@@ -135,13 +135,13 @@ Please note these parameters that can be adjusted as needed for user needs and s
 
 If *use_edge_weight_values_for_degrees_bool is False*, we will use a threshold to assign degrees for nodes:
 
-<!-- | Parameter | Definition | Default | -->
+| Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards degree | 0.5 |
 
 If *use_edge_weight_values_for_degrees_bool is True*, we can use edge weights $w$ directly, $\sqrt{w}$, or $w^{2}$ for the degree:
 
-<!-- | Parameter | Definition | Default | -->
+| Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | square_root_weights_for_degree_sum_bool  | Sum square root of edge weights $\sqrt{w}$ for degree for a given node | False |
 | squaring_weights_for_degree_sum_bool  | Sum squared edge weights $w^{2}$ for degree for a given node | False |
@@ -156,14 +156,14 @@ If *use_edge_weight_values_for_degrees_bool is True*, we can use edge weights $w
 
 if *cv_for_alpha_lasso_model_bool is False* (the default):
 
-<!-- | Parameter | Definition | Default | -->
+| Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model | 10000 |
 
 
 If *cv_for_alpha_lasso_model_bool is True*:
 
-<!-- | Parameter | Definition | Default | -->
+| Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model | 5 |
 
