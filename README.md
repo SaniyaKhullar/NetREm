@@ -179,7 +179,7 @@ Please note these parameters that can be adjusted as needed for user needs and s
 
 ### Output Values: ###
 
-* An GRegulNet network-regularized linear model object from the GRegulNet class. We can fit our GRegulNet estimator object on $X$ and $y$ training data and retrieve coefficients. Then, we can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE). 
+* A fitted GRegulNet network-regularized linear model object from the GRegulNet class. We can retrieve our model coefficients. We can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE) by calling the predict($X_{test}$, $y_{test}$) function. 
 
 | Output | Definition | 
 | --------- | ---------- | 
@@ -193,6 +193,7 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | y_tilda_train | Transformed $y_{train}$ input matrix to $\tilde{y}_{train}$| 
 | predY_tilda_train | Predicted $\tilde{y}_{train}$ values based on fitted model | 
 | mse_train | Mean Square Error (MSE): predY_tilda_train versus  $\tilde{y_train}$ | 
+
 
 ## Demo (Toy Example) of GRegulNet:
 
