@@ -33,7 +33,7 @@ Please ensure you have cloned or downloaded our GRegulNet Github code and packag
 
 In short, we need to import the following Python packages needed to run our code: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda prompt.
 
-## Functions in the GRegulNet pipeline
+## GRegulNet pipeline function: geneRegulatNet
 
 Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python.
 
