@@ -47,7 +47,7 @@ geneRegulatNet(<br>
                 consider_self_loops = False, <br>
                 pseudocount_for_degree = 1e-3, <br>
                 default_edge_weight = 0.1, <br>
-                square_root_weights_for_degree = False, <br> squaring_weights_for_degree = False,<br> 
+                square_root_w_for_degree = False, <br> squaring_w_for_degree = False,<br> 
                 threshold_for_degree = 0.5, <br>
                 num_cv_folds = 5, <br>
                 model_type = "Lasso", <br>
@@ -156,10 +156,10 @@ $$ -->
 | default_edge_weight  | Weight assigned to any edge with missing weight | 
 | consider_self_loops  | True: Add 1 to each degree (for self-loops)| 
 | pseudocount_for_degree  | Pseudocount to add for each degree (node). 
-| edge_values_for_degree  | True: edge weights used for node degree; False: threshold used | default: False|
-| threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards node degree (if *edge_values_for_degree is False*) |
-| square_root_weights_for_degree  | Sum $\sqrt{w}$ for a given node degree (if *edge_values_for_degree is True*) |
-| squaring_weights_for_degree  | Sum $w^{2}$ for a given node degree (if *edge_values_for_degree is True*) |
+| edge_values_for_degree  | True: edge weights $w$ used for node degree; False: threshold used | default: False|
+| threshold_for_degree  | Edges with weight $w$ > threshold_for_degree are counted as 1 towards node degree (if *edge_values_for_degree is False*) |
+| square_root_w_for_degree  | Sum $\sqrt{w}$ for a given node degree (if *edge_values_for_degree is True*) |
+| squaring_w_for_degree  | Sum $w^{2}$ for a given node degree (if *edge_values_for_degree is True*) |
 
 * Parameters for the network-based regularized model:
 

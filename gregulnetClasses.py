@@ -1230,8 +1230,8 @@ class baselineModel:
 def geneRegulatNet(X, y, edge_list, beta_network_val, cv_for_alpha_lasso = False, alpha_lasso_val = 0.1, 
                    edge_values_for_degree = False,
                   consider_self_loops = False, pseudocount_for_degree = 1e-3, 
-                  default_edge_weight = 0.1, square_root_weights_for_degree = False, 
-                  squaring_weights_for_degree = False, threshold_for_degree = 0.5,
+                  default_edge_weight = 0.1, square_root_w_for_degree = False, 
+                  squaring_w_for_degree = False, threshold_for_degree = 0.5,
                  num_cv_folds = 5, 
                 model_type = "Lasso", use_network = True, fit_y_intercept = False,
                    max_lasso_iterations = 10000):
@@ -1241,8 +1241,8 @@ def geneRegulatNet(X, y, edge_list, beta_network_val, cv_for_alpha_lasso = False
                        "consider_self_loops":consider_self_loops,
                        "pseudocount_for_degree":pseudocount_for_degree,
                         "default_edge_weight": default_edge_weight,
-                        "square_root_weights_for_degree":square_root_weights_for_degree, 
-                        "squaring_weights_for_degree": squaring_weights_for_degree, 
+                        "square_root_weights_for_degree":square_root_w_for_degree, 
+                        "squaring_weights_for_degree": squaring_w_for_degree, 
                         "threshold_for_degree": threshold_for_degree}
     
            ####################
