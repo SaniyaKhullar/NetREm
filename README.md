@@ -34,12 +34,12 @@ In short, we need to import the following Python packages to run our code: *matp
 
 Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python. We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso_model_bool = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso_model_bool = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
 
-**geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val = 0.1, 
+*geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val = 0.1, 
                    use_edge_weight_values_for_degrees_bool = False, consider_self_loops = False, 
                    pseudocount_for_diagonal_matrix = 1e-3, default_edge_weight = 0.1, 
                    square_root_weights_for_degree_sum_bool = False, squaring_weights_for_degree_sum_bool = False,
                     threshold_for_degree = 0.5, num_cv_folds = 5, model_type = "Lasso", 
-                    use_network = True, fit_y_intercept_bool = False, max_lasso_iterations = 10000)**
+                    use_network = True, fit_y_intercept_bool = False, max_lasso_iterations = 10000)*
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
@@ -133,10 +133,10 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | default_edge_weight  | Weight assigned to any edge with missing weight | default: 0.1 |
 | consider_self_loops  | True: Add 1 to each degree (for self-loops)| default: False|
 | pseudocount_for_diagonal_matrix  | Pseudocount to add for each degree (node). | default: 0.001 |
-| use_edge_weight_values_for_degrees_bool  | True: edge weights used for node degree; False: threshold used | default: False|
+| use_edge_weight_values_for_degree  | True: edge weights used for node degree; False: threshold used | default: False|
 | threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards node degree | if *use_edge_weight_values_for_degrees_bool is False* |
-| square_root_weights_for_degree_sum_bool  | Sum $\sqrt{w}$ for a given node degree | if *use_edge_weight_values_for_degrees_bool is True* |
-| squaring_weights_for_degree_sum_bool  | Sum $w^{2}$ for a given node degree | if *use_edge_weight_values_for_degrees_bool is True* |
+| square_root_weights_for_degree  | Sum $\sqrt{w}$ for a given node degree | if *use_edge_weight_values_for_degrees_bool is True* |
+| squaring_weights_for_degree  | Sum $w^{2}$ for a given node degree | if *use_edge_weight_values_for_degrees_bool is True* |
 
 * Parameters for the network-based regularized model:
 
