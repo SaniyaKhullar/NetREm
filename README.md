@@ -28,7 +28,7 @@ The analysis is based on Python 3.10.6. Please note that larger prior graph netw
 ## Software Requirements
 
 Please ensure you have cloned or downloaded our GRegulNet Github code and package. Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
-In short, we need to import the following Python packages to run our code: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt.
+In short, we our code uses the following Python packages: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt.
 
 ## Description of GRegulNet pipeline function: geneRegulatNet
 
@@ -163,9 +163,9 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | Parameter | Definition | 
 | --------- | ---------- | 
 | use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | 
-| fit_y_intercept_bool  | Should a y-intercept be fitted for the final model by GRegulNet | 
+| fit_y_intercept_bool  | Should a y-intercept be fitted for the final GRegulNet model  | 
 | max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha_lasso_model_bool is False*) |
-| num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model (if *cv_for_alpha_lasso is True*) |
+| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha_lasso is True*) |
 
 
 ### Output: ###
@@ -186,8 +186,9 @@ beta_network_val = 10
 alpha_lasso_val = 0.01
 
 # Building the network regularized regression model. 
-gregulnet_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = beta_network_val,
-                          alpha_lasso_val = alpha_lasso_val)
+gregulnet_demo = geneRegulatNet(edge_list = edge_list, 
+                                beta_network_val = beta_network_val,
+                                alpha_lasso_val = alpha_lasso_val)
 ```
     :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
     :) We also add 0.001 as a pseudocount to our degree value for each node.
@@ -196,12 +197,13 @@ gregulnet_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = beta_n
 <!-- ![png](README_python_files/README_python_12_1.png) -->
 ![png](output_12_1.png)
 
-Here, we use the *DemoDataBuilderXandY* class to generate 100 samples of random $X$ and $y$ data to train our GRegulNet object. Further, we want the Pearson correlations ($r$) of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. Since *same_train_test_data* is False, we partition the data with 70% for training and 30% for testing. More details about this class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*.
+Here, we generate 100 samples of random $X$ and $y$ data to train our GRegulNet object. Further, we want the Pearson correlations ($r$) of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*.
 
 ```python
 demo_dict = {"num_samples_M": 100,
             "corrVals": [0.9, 0.5, 0.1, -0.2, -0.8],
-            "same_train_test_data": False}
+            # partition data with 70% training, 30% testing:
+            "same_train_test_data": False} 
 
 dummy_data = DemoDataBuilderXandY(**demo_dict)
 
@@ -209,8 +211,7 @@ X_train = dummy_data.X_train
 y_train = dummy_data.y_train
 ```
 
-
-Here, $gregulnet_{demo}$, is an object of the *GRegulNet* class. We fit a model using the $X_{train}$ and $y_{train}$ data sets.
+Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using the $X_{train}$ and $y_{train}$ data sets (70 samples).
 
 
 ```python
@@ -266,7 +267,7 @@ gregulnet_demo.model_coefficients_df
 
 
 
-We can test the performance of our data on testing data, to understand better the generalizability of our GRegulNet model on new, unseen, data. 
+We can test the performance of our data on testing data (30 samples), to understand better the generalizability of our GRegulNet model on new, unseen, data. 
 
 
 ```python
