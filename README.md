@@ -662,11 +662,8 @@ gregulnet_cv_demo.model_coefficients_df
 </table>
 </div>
 
-
-
-
     
-![png](output_27_2.png)
+<!-- ![png](output_27_2.png) -->
     
 
 #### Baseline Model using Cross validation for Alpha Lasso 
