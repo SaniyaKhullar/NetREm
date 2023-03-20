@@ -689,7 +689,32 @@ baseline_demo.model_coefficients_df
     Cross-Validation optimal alpha lasso: 0.022006210642838385
     Please note that the testing Mean Square Error (MSE) for the baseline model is 0.1630541856987722
     
-
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>y_intercept</th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>None</td>
+      <td>0.256041</td>
+      <td>0.036381</td>
+      <td>0.076338</td>
+      <td>-0</td>
+      <td>-0.208916</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 ## References
 
