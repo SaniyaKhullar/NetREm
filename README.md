@@ -37,7 +37,7 @@ Please note that our package, GRegulNet, is run by the following function **gene
 geneRegulatNet(
                 edge_list, 
                 beta_network_val, 
-                cv_for_alpha_lasso_bool = False, 
+                cv_for_alpha_lasso = False, 
                 alpha_lasso_val = 0.1, 
                 edge_values_for_degree = False, 
                 consider_self_loops = False, 
@@ -116,7 +116,7 @@ $$ -->
 
 <!-- * *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used.  -->
 
-### Main Inputs:
+### Main Inputs (Arguments):
 
 <!-- | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
@@ -130,7 +130,7 @@ $$ -->
 | --------- | ---------- | 
 | edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
 | beta_network_val: $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | 
-| cv_for_alpha_lasso_bool  | * False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
+| cv_for_alpha_lasso | * False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso needed if cv_for_alpha_lasso_model_bool = False: $\alpha_{lasso} \geq 0$. |
  
 
@@ -148,24 +148,24 @@ Please note these parameters that can be adjusted as needed for user needs and s
 
 * Parameters for the graph prior network:
 
-| Parameter | Definition | More information |
-| --------- | ---------- | ---------- |
-| default_edge_weight  | Weight assigned to any edge with missing weight | default: 0.1 |
-| consider_self_loops  | True: Add 1 to each degree (for self-loops)| default: False|
-| pseudocount_for_degree  | Pseudocount to add for each degree (node). | default: 0.001 |
+| Parameter | Definition | 
+| --------- | ---------- | 
+| default_edge_weight  | Weight assigned to any edge with missing weight | 
+| consider_self_loops  | True: Add 1 to each degree (for self-loops)| 
+| pseudocount_for_degree  | Pseudocount to add for each degree (node). 
 | edge_values_for_degree  | True: edge weights used for node degree; False: threshold used | default: False|
-| threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards node degree | if *edge_values_for_degree is False* |
-| square_root_weights_for_degree  | Sum $\sqrt{w}$ for a given node degree | if *edge_values_for_degree is True* |
-| squaring_weights_for_degree  | Sum $w^{2}$ for a given node degree | if *edge_values_for_degree is True* |
+| threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards node degree (if *edge_values_for_degree is False*) |
+| square_root_weights_for_degree  | Sum $\sqrt{w}$ for a given node degree (if *edge_values_for_degree is True*) |
+| squaring_weights_for_degree  | Sum $w^{2}$ for a given node degree (if *edge_values_for_degree is True*) |
 
 * Parameters for the network-based regularized model:
 
-| Parameter | Definition | More information |
-| --------- | ---------- | ---------- |
-| use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | default: True |
-| fit_y_intercept_bool  | Should a y-intercept be fitted for the final model by GRegulNet | default: False |
-| max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model | if *cv_for_alpha_lasso_model_bool is False* |
-| num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model | if *cv_for_alpha_lasso_model_bool is True* |
+| Parameter | Definition | 
+| --------- | ---------- | 
+| use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | 
+| fit_y_intercept_bool  | Should a y-intercept be fitted for the final model by GRegulNet | 
+| max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha_lasso_model_bool is False*) |
+| num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model (if *cv_for_alpha_lasso is True*) |
 
 
 ### Output: ###
@@ -199,12 +199,12 @@ gregulnet_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = beta_n
 <!-- ![png](README_python_files/README_python_12_1.png) -->
 ![png](output_12_1.png)
 
-Here, we use the *DemoDataBuilderXandY* class to generate 100 samples of random $X$ and $y$ data to train our GRegulNet object. Further, we want the Pearson correlations ($r$) of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. Since *same_train_and_test_data_bool* is False, we partition the data with 70% for training and 30% for testing. More details about this class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*.
+Here, we use the *DemoDataBuilderXandY* class to generate 100 samples of random $X$ and $y$ data to train our GRegulNet object. Further, we want the Pearson correlations ($r$) of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. Since *same_train_test_data* is False, we partition the data with 70% for training and 30% for testing. More details about this class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*.
 
 ```python
 demo_dict = {"num_samples_M": 100,
             "corrVals": [0.9, 0.5, 0.1, -0.2, -0.8],
-            "same_train_and_test_data_bool": False}
+            "same_train_test_data": False}
 
 dummy_data = DemoDataBuilderXandY(**demo_dict)
 

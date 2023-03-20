@@ -96,7 +96,8 @@ class DemoDataBuilderXandY:
     
     def __init__(self, **kwargs):
         # define default values for constants
-        self.same_train_and_test_data_bool = False
+        self.same_train_test_data = False
+        self.same_train_and_test_data_bool = self.same_train_test_data
         self.test_data_percent = 30
         self._mu = 0
         self._sd = 1
@@ -106,6 +107,7 @@ class DemoDataBuilderXandY:
         self.orthogonal_X_bool = False
         self.ortho_scalar = 10
         self.view_input_correlations_plot = False
+        # reading in user inputs
         self.__dict__.update(kwargs)
         # check that all required keys are present:
         required_keys = ["corrVals", "num_samples_M"]
@@ -116,6 +118,7 @@ class DemoDataBuilderXandY:
         self.N = self.get_N()
         self.y = self.generate_Y()
         self.X = self.generate_X()
+        self.same_train_and_test_data_bool = self.same_train_test_data
         if self.same_train_and_test_data_bool:
             self.testing_size = 1
         else:
@@ -182,28 +185,6 @@ class DemoDataBuilderXandY:
         # Check if the product is equal to the identity matrix
         return np.allclose(matrix_matrix_T, np.eye(matrix.shape[0]))
 
-
-    # X matrix of data (since this is a demo)
-#     def generate_X(self):
-#         # y, corrVals, randSeed, numIterations=10):
-#         """Original code and the only function that is from Saniya.
-#         TODO: improve with vectorization later, currently bad for large X"""
-#         import numpy as np
-#         np.random.seed(self._randSeed)
-#         y = self.y
-#         n = len(y)
-#         numTFs = self.N # len(corrVals)
-#         numIterations = self._num_iters_for_generating_X
-#         correlations = self.corrVals
-#         corrVals = [correlations[0]] + correlations
-#         e = np.random.normal(0, 1, (n, numTFs + 1))
-#         X = np.copy(e)
-#         X[:, 0] = y * np.sqrt(1.0 - corrVals[0]**2) / np.sqrt(1.0 - np.corrcoef(y, X[:,0])[0,1]**2)
-#         for j in range(numIterations):
-#             for i in range(1, numTFs + 1):
-#                 corr = np.corrcoef(y, X[:, i])[0, 1]
-#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
-#         return X[:, 1:]
 
     def generate_X(self):
         """Generates a design matrix X with the given correlations.
@@ -1280,14 +1261,10 @@ def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = 
     else:
         print("baseline model (no prior network)")
         #baselineModel
-        #baseliney = baselineModel(**prior_graph_dict) # uses the network to get features like the A matrix.
         baseline_dict = {"alpha_lasso": alpha_lasso_val,
-                    #"beta_network":beta_network_val,
-                    #"network": netty,
                     "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
-                     #"use_network":use_network,
                      "fit_y_intercept_bool":fit_y_intercept_bool, 
                      "max_lasso_iterations":max_lasso_iterations
                     }
