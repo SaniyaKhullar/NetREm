@@ -116,11 +116,11 @@ $$ -->
 | Parameter | Definition | More information |
 | --------- | ---------- | ---------- |
 | edge_list       | A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. | We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and other directions are assumed automatically). The default edge weight is utilized for any edge with a missing respective edge weight. |
-| $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | value needed, which scales strength of network penalization |
+| $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | Value needed, which scales the strength of network penalization |
 | cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? | Default boolean value: False. <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  |
-| $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
+| $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
  
-### Default parameters ###
+### Default Parameters: ###
 
 Please note these parameters that can be adjusted as needed for user needs and specifications. 
 
@@ -168,7 +168,7 @@ If *cv_for_alpha_lasso_model_bool is True*:
 | num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model | 5 |
 
 
-### Output ###
+### Output: ###
 
 * A Fitted Estimator from the GRegulNet class with several attributes available. 
 
