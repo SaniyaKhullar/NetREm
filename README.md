@@ -463,7 +463,7 @@ gregulnet_demo.model_coefficients_df
 
 
 
-We can test the performance of our data on new, unseen data, to understand better the generalizability of our GRegulNet model on new data. 
+We can test the performance of our data on testing data, to understand better the generalizability of our GRegulNet model on new, unseen, data. 
 
 
 ```python
