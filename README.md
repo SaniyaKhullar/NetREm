@@ -415,7 +415,6 @@ gregulnet_demo.fit(X_train, y_train)
 
     network used
     Training GRegulNet :)
-
     <gregulnetClasses.GRegulNet at 0x215f0fa2200>
 
 
