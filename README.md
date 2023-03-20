@@ -219,7 +219,7 @@ print(y_train_df.head())
 # we can view the X_train data as a neat dataframe:
 X_train_df = pd.DataFrame(X_train, columns = gregulnet_demo.tf_names_list)
 print(f"\nTraining X (predictors) data: {X_train_df.shape[0]} rows for {X_train_df.shape[1]} predictors. The first 10 rows:")
-X_train_df.head(10)
+X_train_df.head(3)
 ```
 
     :) Please note that since we hold out 30.0% of our 100 samples for testing, we have:
@@ -241,7 +241,7 @@ X_train_df.head(10)
     3  0.783163
     4  1.295948
     
-    Training X (predictors) data: 70 rows for 5 predictors. The first 10 rows:
+    Training X (predictors) data: 70 rows for 5 predictors. The first 3 rows:
     
 
     
@@ -285,7 +285,7 @@ X_train_df.head(10)
       <td>0.389102</td>
       <td>2.369909</td>
     </tr>
-    <tr>
+    <!-- <tr>
       <th>3</th>
       <td>1.418952</td>
       <td>-0.594274</td>
@@ -340,7 +340,7 @@ X_train_df.head(10)
       <td>0.373323</td>
       <td>-1.683666</td>
       <td>-1.021895</td>
-    </tr>
+    </tr> -->
   </tbody>
 </table>
 </div>
@@ -478,7 +478,7 @@ print(y_test_df.head())
 # we can view the X_test data as a neat dataframe:
 X_test_df = pd.DataFrame(X_test, columns = gregulnet_demo.tf_names_list)
 print(f"\nTesting X (predictors) data: {X_test_df.shape[0]} rows for {X_test_df.shape[1]} predictors. The first 10 rows:")
-X_test_df.head(10)
+X_test_df.head(3)
 ```
 
     Testing y (response) data: 30 rows. The first 5 rows:
@@ -489,7 +489,7 @@ X_test_df.head(10)
     3  0.287809
     4  0.444063
     
-    Testing X (predictors) data: 30 rows for 5 predictors. The first 10 rows:
+    Testing X (predictors) data: 30 rows for 5 predictors. The first 3 rows:
     
 
 
@@ -532,7 +532,7 @@ X_test_df.head(10)
       <td>-0.999568</td>
       <td>2.240629</td>
     </tr>
-    <tr>
+    <!-- <tr>
       <th>3</th>
       <td>-0.804365</td>
       <td>-0.698938</td>
@@ -587,7 +587,7 @@ X_test_df.head(10)
       <td>-0.109297</td>
       <td>-0.035722</td>
       <td>0.045178</td>
-    </tr>
+    </tr> -->
   </tbody>
 </table>
 </div>
