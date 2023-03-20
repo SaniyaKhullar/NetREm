@@ -37,7 +37,7 @@ In short, we need to import the following Python packages needed to run our code
 
 Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python.
 
-The function, **geneRegulatNet**, inputs the edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso_model_bool = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso_model_bool = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
+The function, **geneRegulatNet**, inputs the edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso_model_bool = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso_model_bool = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$.  Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. The basic version of **geneRegulatNet** requires that the user is aware of at least the following 4 parameters, which we list and explain in the *Main Inputs* section. That is, *geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool, alpha_lasso_val)*.
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
@@ -46,9 +46,7 @@ The function, **geneRegulatNet**, inputs the edge list of the prior graph networ
 <!-- Ultimately, this function uses a prior network edge list and $\beta_{network}$ to build an estimator object from the class GRegulNet. This estimator can then take in input $X$ and $y$ data:  transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Overall, the trained model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable.  -->
 
 
-**geneRegulatNet**:
 
-The basic version of geneRegulatNet requires that the user is aware of at least the following 4 parameters, which we list and explain in the *Main Input* section. That is, *geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool, alpha_lasso_val)*. At minimum, the user needs to specify just 3 parameters. 
 
 <!-- $$
 \begin{cases}
@@ -105,7 +103,7 @@ $$ -->
 
 <!-- * *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used.  -->
 
-### Main inputs:
+### Main Inputs:
 
 <!-- | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
