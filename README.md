@@ -143,8 +143,8 @@ If *use_edge_weight_values_for_degrees_bool is True*, we can use edge weights $w
 
 | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
-| square_root_weights_for_degree_sum_bool  | Sum square root of edge weights $\sqrt{w}$ for degree for a given node | False |
-| squaring_weights_for_degree_sum_bool  | Sum squared edge weights $w^{2}$ for degree for a given node | False |
+| square_root_weights_for_degree_sum_bool  | Sum square root of weights $\sqrt{w}$ for degree for a given node | False |
+| squaring_weights_for_degree_sum_bool  | Sum squared weights $w^{2}$ for degree for a given node | False |
 
 * Parameters for the network-based regularized model:
 
