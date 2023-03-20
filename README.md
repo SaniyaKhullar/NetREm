@@ -686,13 +686,13 @@ baseline_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = None,
 baseline_demo.fit(X_train, y_train)
 print(baseline_demo.optimal_alpha)
 baseline_mse_test = baseline_demo.predict(X_test, y_test)
-print(f"Please note that the testing Mean Square Error (MSE) is {baseline_mse_test}")
+print(f"Please note that the testing Mean Square Error (MSE) for the baseline model is {baseline_mse_test}")
 baseline_demo.model_coefficients_df
 ```
 
     baseline model (no prior network)
     Cross-Validation optimal alpha lasso: 0.022006210642838385
-    Please note that the testing Mean Square Error (MSE) is 0.1630541856987722
+    Please note that the testing Mean Square Error (MSE) for the baseline model is 0.1630541856987722
     
 
 
