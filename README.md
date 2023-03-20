@@ -604,6 +604,103 @@ print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
     Please note that the testing Mean Square Error (MSE) is 0.020152051044508176
     
 
+### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
+
+```python
+# geneRegulatNet where alpha_lasso is determined by cross-validation on training data: :)
+gregulnet_cv_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = 10,
+                              alpha_lasso_val = alpha_lasso_val, 
+                              cv_for_alpha_lasso_model_bool = True)
+gregulnet_cv_demo.fit(X_train, y_train)
+print(gregulnet_cv_demo.optimal_alpha)
+gregulnet_cv_mse_test = gregulnet_cv_demo.predict(X_test, y_test)
+print(f"Please note that the testing Mean Square Error (MSE) for GRegulNet-CV model is {gregulnet_cv_mse_test}")
+gregulnet_cv_demo.model_coefficients_df
+```
+
+    prior graph network used
+    :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
+    :) We also add 0.001 as a pseudocount to our degree value for each node.
+    
+    network used
+    Training GRegulNet :)
+    Cross-Validation optimal alpha lasso: 0.0041235620913686235
+    Testing GRegulnet :)
+    Please note that the testing Mean Square Error (MSE) for GRegulNet-CV model is 0.020310913421979375
+    
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>y_intercept</th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>None</td>
+      <td>0.236283</td>
+      <td>0.116051</td>
+      <td>0.001487</td>
+      <td>-0.037593</td>
+      <td>-0.161468</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+    
+![png](output_27_2.png)
+    
+
+
+
+```python
+
+```
+
+
+```python
+# baseline lasso model (no prior network). Optimal alpha_lasso determined by cross-validation
+# on the training data: :)
+baseline_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = None,
+                              alpha_lasso_val = alpha_lasso_val, 
+                              cv_for_alpha_lasso_model_bool = True,
+                              use_network = False)
+
+```
+
+    baseline model (no prior network)
+    
+
+
+```python
+baseline_demo.fit(X_train, y_train)
+print(baseline_demo.optimal_alpha)
+baseline_mse_test = baseline_demo.predict(X_test, y_test)
+print(f"Please note that the testing Mean Square Error (MSE) is {baseline_mse_test}")
+baseline_demo.model_coefficients_df
+```
+
+    baseline used
+    Cross-Validation optimal alpha lasso: 0.022006210642838385
+    Please note that the testing Mean Square Error (MSE) is 0.1630541856987722
+    
+
+
 ## References
 
 [1]: Caiyan Li, Hongzhe Li, Network-constrained regularization and variable selection for analysis of genomic data, Bioinformatics, Volume 24, Issue 9, May 2008, Pages 1175–1182, https://doi.org/10.1093/bioinformatics/btn081

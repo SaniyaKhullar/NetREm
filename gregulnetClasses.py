@@ -759,32 +759,51 @@ class GRegulNet:
              required_keys = []
         if self.use_cross_validation_for_model_bool == False: # we then need to provide our own alpha lasso values
             #required_keys = ["alpha_lasso", "same_train_and_test_data_bool"]
+            self.optimal_alpha = "User-specified optimal alpha lasso: " + str(self.alpha_lasso)
             required_keys += ["alpha_lasso"]
             if self.alpha_lasso == 0:
                 self.model_type = "Linear"
+            
         else: 
             self.model_type = "LassoCV"
         # check that all required keys are present:
         missing_keys = [key for key in required_keys if key not in self.__dict__]
         if missing_keys:
             raise ValueError(f":( Please note ye are missing information for these keys: {missing_keys}")
-        prior_network = self.network
-        self.prior_network = prior_network
-        self.A = prior_network.A
-        self.network_params = prior_network.param_lists
+        if self.use_network:
+            prior_network = self.network
+            self.prior_network = prior_network
+            self.A = prior_network.A
+            self.network_params = prior_network.param_lists
+            self.tf_names_list = prior_network.tf_names_list
         self.all_parameters_list = self.full_lists_gregulnet()
-        self.tf_names_list = prior_network.tf_names_list
+
         import pandas as pd
         self.parameters_df = pd.DataFrame(self.all_parameters_list, 
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met
         
+        
+    def retrieve_tf_names_list_ml_model(self):
+        import pandas as pd
+#         edges_df = pd.DataFrame(self.edge_list)
+#         all_nodes = list(set(list(edges_df[0]) + list(edges_df[1])))
+#         all_nodes.sort()
+#         min_edge = min(all_nodes)
+        #max_edge = max(all_nodes)
+        #N = len(all_nodes)
+        tf_names_list = []
+        for i in range(0, self.N):
+            term = "TF" + str(i + 1)
+            tf_names_list.append(term)
+        return tf_names_list
            
     def fit(self, X, y): # fits a model Function used for model training 
         self.M = y.shape[0]
         self.X_train = X
         self.N = self.X_train.shape[1]
+        self.tf_names_list = self.retrieve_tf_names_list_ml_model()
         self.y_train = y
         if self.use_network:
             print("network used")
@@ -800,6 +819,8 @@ class GRegulNet:
         
         self.regr = self.return_fit_ml_model(self.X_training_to_use, self.y_training_to_use)
         ml_model = self.regr
+        if self.use_cross_validation_for_model_bool:
+            self.optimal_alpha = "Cross-Validation optimal alpha lasso: " + str(ml_model.alpha_)
         coef = ml_model.coef_
         coef[coef == -0.0] = 0
         self.coef = coef # Get the coefficients
@@ -910,7 +931,7 @@ class GRegulNet:
         # model_type can be baseline or network
         from sklearn.linear_model import LassoCV
         #model_name = "LassoCV"
-        print(model_name)
+        #print(model_name)
         regr = LassoCV(cv = self.num_cv_folds, random_state = 0, fit_intercept = self.fit_y_intercept_bool)
         regr.fit(X, y)
         return regr            
@@ -951,8 +972,12 @@ class GRegulNet:
         # network arguments used:
         # argument, description, our value
         term_to_add_last = "GRegulNet"
-        current_network_lists = self.network_params
-        full_lists = current_network_lists
+        if self.use_network:
+            current_network_lists = self.network_params
+            full_lists = current_network_lists
+        else:
+            full_lists = ["baseline", "no network", "original Lasso problem", "original", term_to_add_last]
+            current_network_lists = full_lists
         row1 = ["model_type", "set of options", 
                 "which model type should be used for geneRegulatNet",
                 self.model_type, term_to_add_last]   
@@ -1008,6 +1033,252 @@ class GRegulNet:
 
     
     
+# def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val = 0.1, 
+#                    use_edge_weight_values_for_degrees_bool = False,
+#                   consider_self_loops = False, pseudocount_for_diagonal_matrix = 1e-3, 
+#                   default_edge_weight = 0.1, square_root_weights_for_degree_sum_bool = False, 
+#                   squaring_weights_for_degree_sum_bool = False, threshold_for_degree = 0.5,
+#                  num_cv_folds = 5, 
+#                 model_type = "Lasso", use_network = True, fit_y_intercept_bool = False,
+#                    max_lasso_iterations = 10000):
+    
+#     prior_graph_dict = {"edge_list": edge_list,
+#                        "use_edge_weight_values_for_degrees_bool": use_edge_weight_values_for_degrees_bool,
+#                        "consider_self_loops":consider_self_loops,
+#                        "pseudocount_for_diagonal_matrix":pseudocount_for_diagonal_matrix,
+#                         "default_edge_weight": default_edge_weight,
+#                         "square_root_weights_for_degree_sum_bool":square_root_weights_for_degree_sum_bool, 
+#                         "squaring_weights_for_degree_sum_bool": squaring_weights_for_degree_sum_bool, 
+#                         "threshold_for_degree": threshold_for_degree}
+    
+#            ####################
+
+#     netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix.
+#     greg_dict = {"alpha_lasso": alpha_lasso_val,
+#                 "beta_network":beta_network_val,
+#                 "network": netty,
+#                 "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
+#                  "num_cv_folds":num_cv_folds, 
+#                  "model_type":model_type, 
+#                  "use_network":use_network,
+#                  "fit_y_intercept_bool":fit_y_intercept_bool, 
+#                  "max_lasso_iterations":max_lasso_iterations
+#                 }
+#     greggy = GRegulNet(**greg_dict)
+#     return greggy
+
+
+# https://www.geeksforgeeks.org/implementation-of-elastic-net-regression-from-scratch/
+class baselineModel:
+    """ :) Please note that this class focuses on building a baseline model
+    from gene expression data for Transcription Factors (TFs) and gene expression data 
+    for the target gene (TG) :) """
+    
+    _parameter_constraints = {
+        "alpha_lasso": (0, None),
+        "num_cv_folds": (0, None),
+        "fit_y_intercept_bool": [False, True],
+        "same_train_and_test_data_bool": [False, True],
+        "use_cross_validation_for_model_bool": [False, True],
+        "max_lasso_iterations": (1, None),
+        "model_type": ["Lasso", "LassoCV", "Linear"]#,
+        #"network":(PriorGraphNetwork(), None)
+    }
+    
+    def __init__(self,  **kwargs):# beta_network, alpha_lasso, X_train, y_train, X_test, y_test):
+        self.same_train_and_test_data_bool = False # different or same training and testing data?
+        self.use_cross_validation_for_model_bool = False
+        self.num_cv_folds = 5 # for cross validation models
+        self.model_type = "Lasso"
+        self.fit_y_intercept_bool = False
+        self.max_lasso_iterations = 10000
+        self.__dict__.update(kwargs)
+        required_keys = []
+        if self.use_cross_validation_for_model_bool == False: # we then need to provide our own alpha lasso values
+            #required_keys = ["alpha_lasso", "same_train_and_test_data_bool"]
+            self.optimal_alpha = "User-specified optimal alpha lasso: " + str(self.alpha_lasso)
+            required_keys += ["alpha_lasso"]
+            if self.alpha_lasso == 0:
+                self.model_type = "Linear"
+        else: 
+            self.model_type = "LassoCV"
+        # check that all required keys are present:
+        missing_keys = [key for key in required_keys if key not in self.__dict__]
+        if missing_keys:
+            raise ValueError(f":( Please note ye are missing information for these keys: {missing_keys}")
+        self.all_parameters_list = self.full_lists_baseline()
+
+        import pandas as pd
+        self.parameters_df = pd.DataFrame(self.all_parameters_list, 
+                                          columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
+
+        self._apply_parameter_constraints() # ensuring that the parameter constraints are met
+        
+        
+    def retrieve_tf_names_list_ml_model(self):
+        import pandas as pd
+        tf_names_list = []
+        for i in range(0, self.N):
+            term = "TF" + str(i + 1)
+            tf_names_list.append(term)
+        return tf_names_list
+           
+    def fit(self, X, y): # fits a model Function used for model training 
+        self.M = y.shape[0]
+        self.X_train = X
+        self.N = self.X_train.shape[1]
+        self.tf_names_list = self.retrieve_tf_names_list_ml_model()
+        self.y_train = y
+        print("baseline used")
+        self.X_training_to_use, self.y_training_to_use = self.X_train, self.y_train
+        self.data_used = "X_train, y_train"
+        
+        self.regr = self.return_fit_ml_model(self.X_training_to_use, self.y_training_to_use)
+        ml_model = self.regr
+        coef = ml_model.coef_
+        if self.use_cross_validation_for_model_bool:
+            self.optimal_alpha = "Cross-Validation optimal alpha lasso: " + str(ml_model.alpha_)
+
+        coef[coef == -0.0] = 0
+        self.coef = coef # Get the coefficients
+        if self.fit_y_intercept_bool:
+            self.intercept = ml_model.intercept_
+        self.predY_train = ml_model.predict(self.X_training_to_use) # training data   
+        self.mse_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_train) # Calculate MSE
+        
+        import pandas as pd
+        
+        #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
+        if self.fit_y_intercept_bool:
+            coeff_terms = [self.intercept] + list(self.coef)
+            index_names = ["y_intercept"] + self.tf_names_list
+            self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
+        else:
+            coeff_terms = ["None"] + list(self.coef)
+            index_names = ["y_intercept"] + self.tf_names_list
+            self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
+#             self.coefficients_df["y_intercept"] = self.intercept
+        return self
+    
+    # # https://www.geeksforgeeks.org/implementation-of-elastic-net-regression-from-scratch/
+    def _apply_parameter_constraints(self):
+        constraints = {**GRegulNet._parameter_constraints}
+        for key, value in self.__dict__.items():
+            if key in constraints:
+                if isinstance(constraints[key], tuple):
+                    if isinstance(constraints[key][0], type) and not isinstance(value, constraints[key][0]):
+                        setattr(self, key, constraints[key][0])
+                    elif constraints[key][1] is not None and isinstance(constraints[key][1], type) and not isinstance(value, constraints[key][1]):
+                        setattr(self, key, constraints[key][1])
+                elif value not in constraints[key]:
+                    setattr(self, key, constraints[key][0])
+        return self
+    
+     # Function for model training
+    # getter method
+    
+     # getter method
+    def get_alpha_lasso(self):
+        return self.alpha_lasso       
+        
+    def return_Linear_ML_model(self, X, y):
+        # model_type can be baseline or network
+        from sklearn.linear_model import LinearRegression
+        model_name = "Linear"
+        #print(model_name)
+        regr = LinearRegression(fit_intercept = self.fit_y_intercept_bool)
+        regr.fit(X, y)
+        return regr    
+        
+    def return_Lasso_ML_model(self, X, y):
+        # model_type can be baseline or network
+        from sklearn.linear_model import Lasso
+        model_name = "Lasso"
+        #print(model_name)
+        regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.fit_y_intercept_bool,
+                    max_iter = self.max_lasso_iterations)
+        regr.fit(X, y)
+        return regr
+
+    def return_LassoCV_ML_model(self, X, y):
+        # model_type can be baseline or network
+        from sklearn.linear_model import LassoCV
+        #model_name = "LassoCV"
+        #print(model_name)
+        regr = LassoCV(cv = self.num_cv_folds, random_state = 0, fit_intercept = self.fit_y_intercept_bool)
+        regr.fit(X, y)
+        #self.optimal_alpha = "Cross-Validation: " + str(regr.alpha_)
+        return regr            
+
+    def return_fit_ml_model(self, X, y):
+        if self.model_type == "Linear":
+            model_to_return = self.return_Linear_ML_model(X, y)
+        elif self.model_type == "Lasso":
+            model_to_return = self.return_Lasso_ML_model(X, y)
+        elif self.model_type == "LassoCV":
+            model_to_return = self.return_LassoCV_ML_model(X, y)
+        return model_to_return
+
+    def calculate_mean_square_error(self, actual_values, predicted_values):
+        # Please note that this function by Saniya calculates the Mean Square Error (MSE)
+        import numpy as np
+        difference = (actual_values - predicted_values)
+        squared_diff = difference ** 2 # square of the difference
+        mean_squared_diff = np.mean(squared_diff)
+        return mean_squared_diff
+    
+    def predict(self, X_test, y_test):
+        import pandas as pd
+        import numpy as np
+        self.X_test = X_test
+        self.y_test = y_test
+        ml_model = self.regr
+        X_testing_to_use, y_testing_to_use = X_test, y_test
+        predY_test = ml_model.predict(X_testing_to_use) # training data   
+        mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
+        return mse_test
+    
+    
+    def full_lists_baseline(self):
+        # network arguments used:
+        # argument, description, our value
+        term_to_add_last = "baselineModel"
+        full_lists = [["baseline", "no network", "original Lasso problem", "original", term_to_add_last]]
+        current_network_lists = full_lists
+        row1 = ["model_type", "set of options", 
+                "which model type should be used for geneRegulatNet",
+                self.model_type, term_to_add_last]   
+        full_lists.append(row1)
+        
+        if self.model_type == "Lasso":
+            row1 = ["max_lasso_iterations", ">= 1", 
+                "the maximum # of iterations for Lasso",
+                self.model_type, term_to_add_last]   
+            full_lists.append(row1)
+        
+        row1 = ["use_cross_validation_for_model_bool", "boolean", 
+                "should we use cross validation for training the model",
+                self.use_cross_validation_for_model_bool, term_to_add_last]   
+        full_lists.append(row1)
+        if self.use_cross_validation_for_model_bool == False:
+            if self.alpha_lasso == 0:
+                row1 = ["alpha_lasso", "0", "linear problem since alpha = 0", self.alpha_lasso, term_to_add_last]
+            else:
+                row1 = ["alpha_lasso", ">= 0", "value for alpha for the lasso problem", self.alpha_lasso, term_to_add_last]
+            full_lists.append(row1)
+        else:
+            row1 = ["num_cv_folds", ">= 0", "the # of cross-validation folds to use", self.num_cv_folds, term_to_add_last]
+            full_lists.append(row1)
+        
+        row1 = ["use_network", "boolean", "baseline since no network regularization is done", False, term_to_add_last]
+        full_lists.append(row1)   
+            
+        row1 = ["fit_y_intercept_bool", "boolean", "fit a y-intercept for our regression problem", 
+                self.fit_y_intercept_bool, term_to_add_last]
+        full_lists.append(row1)   
+        
+        return full_lists
+
 def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val = 0.1, 
                    use_edge_weight_values_for_degrees_bool = False,
                   consider_self_loops = False, pseudocount_for_diagonal_matrix = 1e-3, 
@@ -1027,20 +1298,39 @@ def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = 
                         "threshold_for_degree": threshold_for_degree}
     
            ####################
+    if use_network:
+        print("prior graph network used")
+        netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix.
+        greg_dict = {"alpha_lasso": alpha_lasso_val,
+                    "beta_network":beta_network_val,
+                    "network": netty,
+                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
+                     "num_cv_folds":num_cv_folds, 
+                     "model_type":model_type, 
+                     "use_network":use_network,
+                     "fit_y_intercept_bool":fit_y_intercept_bool, 
+                     "max_lasso_iterations":max_lasso_iterations
+                    }
+        greggy = GRegulNet(**greg_dict)
+        return greggy
+    else:
+        print("baseline model (no prior network)")
+        #baselineModel
+        #baseliney = baselineModel(**prior_graph_dict) # uses the network to get features like the A matrix.
+        baseline_dict = {"alpha_lasso": alpha_lasso_val,
+                    #"beta_network":beta_network_val,
+                    #"network": netty,
+                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
+                     "num_cv_folds":num_cv_folds, 
+                     "model_type":model_type, 
+                     #"use_network":use_network,
+                     "fit_y_intercept_bool":fit_y_intercept_bool, 
+                     "max_lasso_iterations":max_lasso_iterations
+                    }
+        baseliney = baselineModel(**baseline_dict)
+        return baseliney
 
-    netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix.
-    greg_dict = {"alpha_lasso": alpha_lasso_val,
-                "beta_network":beta_network_val,
-                "network": netty,
-                "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
-                 "num_cv_folds":num_cv_folds, 
-                 "model_type":model_type, 
-                 "use_network":use_network,
-                 "fit_y_intercept_bool":fit_y_intercept_bool, 
-                 "max_lasso_iterations":max_lasso_iterations
-                }
-    greggy = GRegulNet(**greg_dict)
-    return greggy
+
 
 
     
