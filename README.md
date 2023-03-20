@@ -37,8 +37,8 @@ Please note that our package, GRegulNet, is run by the following function **gene
 ## Usage
 
 geneRegulatNet(<br>
-                X_train, <br>
-                y_train, <br>
+                $X$, <br>
+                $y$, <br>
                 edge_list,<br> 
                 beta_network_val, <br>
                 cv_for_alpha_lasso = False,<br> 
@@ -132,8 +132,8 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| $X_{train}$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
-| $y_{train}$ | Input numpy array list with 1 value for each sample.| 
+| $X$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+| $y$ | Input numpy array list with 1 value for each sample.| 
 | edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
 | beta_network_val: $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | 
 | cv_for_alpha_lasso | * False (default): user specifies value of $\alpha_{lasso}$ <br> * True: GRegulNet performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
