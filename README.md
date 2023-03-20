@@ -128,22 +128,22 @@ Please note these parameters that can be adjusted as needed for user needs and s
 
 * Parameters for the graph prior network:
 
-| Parameter | Definition | Default |
+| Parameter | Definition | More information |
 | --------- | ---------- | ---------- |
-| default_edge_weight  | Weight assigned to any edge with missing weight | 0.1 |
-| consider_self_loops  | True: Add 1 to each degree (for self-loops)| False|
-| pseudocount_for_diagonal_matrix  | Pseudocount to add for each degree (node). | 0.001 |
-| use_edge_weight_values_for_degrees_bool  | True: edge weights used for node degree; False: threshold used | False|
+| default_edge_weight  | Weight assigned to any edge with missing weight | default: 0.1 |
+| consider_self_loops  | True: Add 1 to each degree (for self-loops)| default: False|
+| pseudocount_for_diagonal_matrix  | Pseudocount to add for each degree (node). | default: 0.001 |
+| use_edge_weight_values_for_degrees_bool  | True: edge weights used for node degree; False: threshold used | default: False|
 | threshold_for_degree  | Use a threshold to assign degrees for nodes: Edges with weight > threshold_for_degree are counted as 1 towards degree | *use_edge_weight_values_for_degrees_bool is False* |
 | square_root_weights_for_degree_sum_bool  | Sum $\sqrt{w}$ for a given node degree | *use_edge_weight_values_for_degrees_bool is True* |
 | squaring_weights_for_degree_sum_bool  | Sum $w^{2}$ for a given node degree | *use_edge_weight_values_for_degrees_bool is True* |
 
 * Parameters for the network-based regularized model:
 
-| Parameter | Definition | Default |
+| Parameter | Definition | More information |
 | --------- | ---------- | ---------- |
-| use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | True |
-| fit_y_intercept_bool  | Should a y-intercept be fitted for the final model by GRegulNet | False |
+| use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | default: True |
+| fit_y_intercept_bool  | Should a y-intercept be fitted for the final model by GRegulNet | default: False |
 | max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model | if *cv_for_alpha_lasso_model_bool is False* |
 | num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model | if *cv_for_alpha_lasso_model_bool is True* |
 
@@ -579,7 +579,7 @@ print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
     Please note that the testing Mean Square Error (MSE) is 0.020152051044508176
     
 
-### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
+<!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
 We will use the same $X_{train}$, $y_{train}$, $X_{test}$, and $y_{test}$ data and same prior network here to compare illustrate the effectiveness of GRegulNet in terms of a lower testing MSE (relative to a baseline model that incorporates no prior network). For ease of comparison, we will select the optimal alpha_lasso for each model using cross validation (CV) on the training data (that is, *cv_for_alpha_lasso_model_bool* = True). This example also shows how to run **geneRegulatNet** when alpha_lasso is determined by CV. 
 
@@ -640,7 +640,7 @@ gregulnet_cv_demo.model_coefficients_df
     
 <!-- ![png](output_27_2.png) -->
     
-
+<!-- 
 #### Baseline Model using Cross validation for Alpha Lasso 
 ```python
 # baseline lasso model (no prior network). Optimal alpha_lasso determined by cross-validation
@@ -686,7 +686,7 @@ baseline_demo.model_coefficients_df
     </tr>
   </tbody>
 </table>
-</div>
+</div> --> 
 
 ## References
 
