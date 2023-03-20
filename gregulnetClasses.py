@@ -1032,41 +1032,6 @@ class GRegulNet:
         return full_lists
 
     
-    
-# def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val = 0.1, 
-#                    use_edge_weight_values_for_degrees_bool = False,
-#                   consider_self_loops = False, pseudocount_for_diagonal_matrix = 1e-3, 
-#                   default_edge_weight = 0.1, square_root_weights_for_degree_sum_bool = False, 
-#                   squaring_weights_for_degree_sum_bool = False, threshold_for_degree = 0.5,
-#                  num_cv_folds = 5, 
-#                 model_type = "Lasso", use_network = True, fit_y_intercept_bool = False,
-#                    max_lasso_iterations = 10000):
-    
-#     prior_graph_dict = {"edge_list": edge_list,
-#                        "use_edge_weight_values_for_degrees_bool": use_edge_weight_values_for_degrees_bool,
-#                        "consider_self_loops":consider_self_loops,
-#                        "pseudocount_for_diagonal_matrix":pseudocount_for_diagonal_matrix,
-#                         "default_edge_weight": default_edge_weight,
-#                         "square_root_weights_for_degree_sum_bool":square_root_weights_for_degree_sum_bool, 
-#                         "squaring_weights_for_degree_sum_bool": squaring_weights_for_degree_sum_bool, 
-#                         "threshold_for_degree": threshold_for_degree}
-    
-#            ####################
-
-#     netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix.
-#     greg_dict = {"alpha_lasso": alpha_lasso_val,
-#                 "beta_network":beta_network_val,
-#                 "network": netty,
-#                 "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
-#                  "num_cv_folds":num_cv_folds, 
-#                  "model_type":model_type, 
-#                  "use_network":use_network,
-#                  "fit_y_intercept_bool":fit_y_intercept_bool, 
-#                  "max_lasso_iterations":max_lasso_iterations
-#                 }
-#     greggy = GRegulNet(**greg_dict)
-#     return greggy
-
 
 # https://www.geeksforgeeks.org/implementation-of-elastic-net-regression-from-scratch/
 class baselineModel:
@@ -1082,7 +1047,6 @@ class baselineModel:
         "use_cross_validation_for_model_bool": [False, True],
         "max_lasso_iterations": (1, None),
         "model_type": ["Lasso", "LassoCV", "Linear"]#,
-        #"network":(PriorGraphNetwork(), None)
     }
     
     def __init__(self,  **kwargs):# beta_network, alpha_lasso, X_train, y_train, X_test, y_test):

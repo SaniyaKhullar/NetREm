@@ -13,13 +13,15 @@ layout: default
 
 ## Summary
 
-GRegulNet is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes in gene regulatory networks (GRNs). GRegulNet incorporates information from prior biological networks to improve predictions and identify complex and non-linear relationships between predictors. This approach can highlight important nodes and edges in the network, provide insight into underlying biological processes, and improve model accuracy and biological/clinical significance. GRegulNet can incorporate multiple types of network data, including PPI networks, GRNs, gene co-expression networks, and metabolic networks.
+Regression techniques often face the challenge of dealing with correlated predictors, which can lead to unreliable model estimates. In biology, the variables are usually highly interconnected, and the relationships between them are complex and non-linear, making it difficult to obtain accurate regression models without incorporating prior knowledge. Traditional regression methods may not consider the potential impact of correlated predictors, including those representing Transcription Factors (TFs) that regulate target genes in gene regulatory networks (GRNs), for instance. Biological prior networks can serve as a useful supplement and important feature selection tool when training machine learning models, as predictors often act in concert to regulate various observed biological processes. = In response to these issues, we have developed this software package, GRegulNet, to implement network-constrained regularization for biological applications and beyond and for various types of network-based learning tasks where predictors are correlated or interconnected. Tools and methods like ours incorporate information from a prior network to improve predictions and thereby enable the identification of complex and non-linear relationships between variables, which traditional regression methods may miss. By leveraging a known prior underlying network structure linking predictors to each other (to impose constraints on the regression coefficients), network-constrained regularization methods can help identify meaningful relationships, highlight important nodes and edges in the network, provide insight into the underlying biological processes, and improve accuracy (and reduce risk of overfitting due to noise) and biological/clinical significance of the models (developing models consistent with underlying biology). GRegulNet allows for the incorporation of multiple types of network data, including protein-protein interaction (PPI) networks, GRNs, gene co-expression networks, and metabolic networks, leading to better understanding of complex biological systems. Overall, incorporating network-constrained regularization using tools such as GRegulNet is a critical step towards improving the accuracy and interpretability of regression models in biological and other applications.
 
 <!-- In summary, network-constrained regularization may bolster the construction of more accurate and interpretable models that incorporate prior knowledge of the network structure among predictors. -->
 
 ## Pipeline
 
 *Pipeline image of Gregulnet*
+
+Alternate names: LassoRegNet or LassoNet
 
 ## Hardware Requirements
 
@@ -28,18 +30,12 @@ The analysis is based on Python 3.10.6. Please note that larger prior graph netw
 ## Software Requirements
 
 Please ensure you have cloned or downloaded our GRegulNet Github code and package. Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
-In short, we need to import the following Python packages to run our code: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda prompt.
+
+In short, we need to import the following Python packages needed to run our code: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda prompt.
 
 ## GRegulNet pipeline function: geneRegulatNet
 
-Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python. We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso_model_bool = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso_model_bool = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
-
-**geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val = 0.1, 
-                   use_edge_weight_values_for_degrees_bool = False, consider_self_loops = False, 
-                   pseudocount_for_diagonal_matrix = 1e-3, default_edge_weight = 0.1, 
-                   square_root_weights_for_degree_sum_bool = False, squaring_weights_for_degree_sum_bool = False,
-                    threshold_for_degree = 0.5, num_cv_folds = 5, model_type = "Lasso", 
-                    use_network = True, fit_y_intercept_bool = False, max_lasso_iterations = 10000)**
+Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python. We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso_model_bool = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso_model_bool = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. The basic version of **geneRegulatNet** requires that the user is aware of at least the following 4 parameters, which we list and explain in the *Main Inputs* section. That is, *geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool, alpha_lasso_val)*.
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
@@ -117,7 +113,7 @@ $$ -->
 
 | Parameter | Definition | More information |
 | --------- | ---------- | ---------- |
-| edge_list       | A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. | This prior network constrains our model. For instance, this could be a PPI network of interactions among the predictors. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and other directions are assumed automatically). The default edge weight is utilized for any edge with a missing respective edge weight. |
+| edge_list       | A list of lists corresponding to a prior network involving the predictors (as nodes) and relationships among them as edges: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], [source<sub>2</sub>, target<sub>2</sub>, weight<sub>2</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, weight<sub>2</sub>, ..., weight<sub>Z</sub> are optional. | We will utilize this prior network to constrain our machine learning model. For instance, this could be a Protein-Protein Interaction (PPI) network of interactions among the predictors. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and other directions are assumed automatically). The default edge weight is utilized for any edge with a missing respective edge weight. |
 | $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | Value needed, which scales the strength of network penalization |
 | cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? | Default boolean value: False. <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  |
 | $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
@@ -134,9 +130,19 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | consider_self_loops  | True: Add 1 to each degree (for self-loops)| False|
 | pseudocount_for_diagonal_matrix  | Pseudocount to add for each degree (node). | 0.001 |
 | use_edge_weight_values_for_degrees_bool  | True: edge weights used for node degree; False: threshold used | False|
-| threshold_for_degree  | Use a threshold to assign degrees for nodes: Edges with weight > threshold_for_degree are counted as 1 towards degree | *use_edge_weight_values_for_degrees_bool is False* |
-| square_root_weights_for_degree_sum_bool  | Sum $\sqrt{w}$ for a given node degree | *use_edge_weight_values_for_degrees_bool is True* |
-| squaring_weights_for_degree_sum_bool  | Sum $w^{2}$ for a given node degree | *use_edge_weight_values_for_degrees_bool is True* |
+
+If *use_edge_weight_values_for_degrees_bool is False*, we will use a threshold to assign degrees for nodes:
+
+| Parameter | Definition | Default |
+| --------- | ---------- | ---------- |
+| threshold_for_degree  | Edges with weight > threshold_for_degree are counted as 1 towards degree | 0.5 |
+
+If *use_edge_weight_values_for_degrees_bool is True*, we can use edge weights $w$ directly, $\sqrt{w}$, or $w^{2}$ for the degree for a node:
+
+| Parameter | Definition | Default |
+| --------- | ---------- | ---------- |
+| square_root_weights_for_degree_sum_bool  | Sum $\sqrt{w}$ for a given node degree | False |
+| squaring_weights_for_degree_sum_bool  | Sum $w^{2}$ for a given node degree | False |
 
 * Parameters for the network-based regularized model:
 
@@ -144,8 +150,20 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | --------- | ---------- | ---------- |
 | use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | True |
 | fit_y_intercept_bool  | Should a y-intercept be fitted for the final model by GRegulNet | False |
-| max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model | if *cv_for_alpha_lasso_model_bool is False* |
-| num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model | if *cv_for_alpha_lasso_model_bool is True* |
+
+
+If *cv_for_alpha_lasso_model_bool is False* (the default):
+
+| Parameter | Definition | Default |
+| --------- | ---------- | ---------- |
+| max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model | 10000 |
+
+
+If *cv_for_alpha_lasso_model_bool is True*:
+
+| Parameter | Definition | Default |
+| --------- | ---------- | ---------- |
+| num_cv_folds  | the # of cross-validation (cv) folds we fit on training data when building model | 5 |
 
 
 ### Output: ###
