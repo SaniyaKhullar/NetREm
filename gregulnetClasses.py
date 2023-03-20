@@ -348,17 +348,17 @@ class PriorGraphNetwork:
     import networkx as nx
     from typing import List, Tuple
     def __init__(self, **kwargs): # define default values for constants
-        self.use_edge_weight_values_for_degrees_bool = False # we instead consider a threshold by default (for counting edges into our degrees)
+        self.edge_values_for_degree = False # we instead consider a threshold by default (for counting edges into our degrees)
         self.consider_self_loops = False # no self loops considered
         
-        self.pseudocount_for_diagonal_matrix = 1e-3 # to ensure that we do not have any 0 degrees for any node in our matrix.
+        self.pseudocount_for_degree = 1e-3 # to ensure that we do not have any 0 degrees for any node in our matrix.
         self.undirected_graph_bool = True # by default we assume the input network is undirected and symmetric :)
         self.default_edge_weight = 0.1 # if an edge is missing weight information   
         
         # default if we use edge weights for degree:
-        # if use_edge_weight_values_for_degrees_bool is True: we can use the edge weight values to get the degrees. 
-        self.square_root_weights_for_degree_sum_bool = False # take the square root of the edge weights for the degree calculations
-        self.squaring_weights_for_degree_sum_bool = False # square the edge weights for the degree calculations
+        # if edge_values_for_degree is True: we can use the edge weight values to get the degrees. 
+        self.square_root_weights_for_degree = False # take the square root of the edge weights for the degree calculations
+        self.squaring_weights_for_degree = False # square the edge weights for the degree calculations
         # default if we use a threshold for the degree:
         self.threshold_for_degree = 0.5
         
@@ -381,7 +381,7 @@ class PriorGraphNetwork:
         required_keys = ["edge_list"]  
         # if consider_self_loops is true, we add 1 to degree value for each node, 
         # so each node has some degree and connection with itself. 
-#         if self.use_edge_weight_values_for_degrees_bool: # instead, we can use the edge weight values to get the degrees. 
+#         if self.edge_values_for_degree: # instead, we can use the edge weight values to get the degrees. 
 #             # check that all required keys are present:
 #             required_keys = required_keys + ["square_root_weights_bool"]
 #         else: # we are using a threshold:
@@ -391,7 +391,7 @@ class PriorGraphNetwork:
         # check that all required keys are present:
         missing_keys = [key for key in required_keys if key not in self.__dict__]
         if missing_keys:
-            raise ValueError(f":( Please note since use_edge_weight_values_for_degrees_bool = {self.use_edge_weight_values_for_degrees_bool} ye are missing information for these keys: {missing_keys}")
+            raise ValueError(f":( Please note since edge_values_for_degree = {self.edge_values_for_degree} ye are missing information for these keys: {missing_keys}")
         # other defined results:
         
         self.V = self.create_V_matrix()
@@ -599,28 +599,28 @@ class PriorGraphNetwork:
     def generate_degree_vector_from_weight_matrix(self) -> np.ndarray:
         """generate d degree vector.  2023.02.14_Xiang TODO: add parameter descriptions
         """
-        if self.use_edge_weight_values_for_degrees_bool == False:
+        if self.edge_values_for_degree == False:
             W_bool = (self.W > self.threshold_for_degree)
             d = np.float64(W_bool.sum(axis=0) - W_bool.diagonal())
         else: 
-            if self.square_root_weights_for_degree_sum_bool: # taking the square root of the weights for the edges
+            if self.square_root_weights_for_degree: # taking the square root of the weights for the edges
                 W_to_use = np.sqrt(self.W)
-            elif self.squaring_weights_for_degree_sum_bool:
+            elif self.squaring_weights_for_degree:
                 W_to_use = self.W ** 2
             else:
                 W_to_use = self.W
             d = W_to_use.diagonal() * (self.N - 1) # summing the edge weights
-        d += self.pseudocount_for_diagonal_matrix
+        d += self.pseudocount_for_degree
         if self.consider_self_loops:
             d += 1 # we also add in a self-loop :)    
         # otherwise, we can just use this threshold for the degree
-        if self.use_edge_weight_values_for_degrees_bool:
+        if self.edge_values_for_degree:
             print(":) Please note that we use the sum of the edge weight values to get the degree for a given node.")
         else:
             print(f":) Please note that we count the number of edges with weight > {self.threshold_for_degree} to get the degree for a given node.")
         if self.consider_self_loops:
             print(f":) Please note that since consider_self_loops = {self.consider_self_loops} we also add 1 to the degree for each node (as a self-loop).")
-        print(f":) We also add {self.pseudocount_for_diagonal_matrix} as a pseudocount to our degree value for each node.")
+        print(f":) We also add {self.pseudocount_for_degree} as a pseudocount to our degree value for each node.")
         print() #
         return d
 
@@ -674,27 +674,27 @@ class PriorGraphNetwork:
 
         full_lists.append(row1)
         full_lists.append(row2)
-        if self.pseudocount_for_diagonal_matrix != 0:
-            #self.pseudocount_for_diagonal_matrix # to ensure that we do not have any 0 degrees for any node in our matrix.
-            row3 = ["pseudocount_for_diagonal_matrix", ">= 0",
+        if self.pseudocount_for_degree != 0:
+            #self.pseudocount_for_degree # to ensure that we do not have any 0 degrees for any node in our matrix.
+            row3 = ["pseudocount_for_degree", ">= 0",
                     "to ensure that no nodes have 0 degree value in D matrix", 
-                    self.pseudocount_for_diagonal_matrix, term_to_add_last]
+                    self.pseudocount_for_degree, term_to_add_last]
             full_lists.append(row3)
-        if self.use_edge_weight_values_for_degrees_bool:
-            row_to_add = ["use_edge_weight_values_for_degrees_bool", "boolean",
+        if self.edge_values_for_degree:
+            row_to_add = ["edge_values_for_degree", "boolean",
                           "if True, we use the edge weight values to derive our degrees for matrix D", True, term_to_add_last]
             full_lists.append(row_to_add)
             # arguments to add in:
-            if self.square_root_weights_for_degree_sum_bool: # take the square root of the edge weights for the degree calculations
-                row_to_add = ["square_root_weights_for_degree_sum_bool", "boolean",
+            if self.square_root_weights_for_degree: # take the square root of the edge weights for the degree calculations
+                row_to_add = ["square_root_weights_for_degree", "boolean",
                               "for each edge, we use the square root of the edge weight values to derive our degrees for matrix D", True, term_to_add_last]
                 full_lists.append(row_to_add)        
-            if self.squaring_weights_for_degree_sum_bool:  # square the edge weights for the degree calculations
-                row_to_add = ["squaring_weights_for_degree_sum_bool", "boolean",
+            if self.squaring_weights_for_degree:  # square the edge weights for the degree calculations
+                row_to_add = ["squaring_weights_for_degree", "boolean",
                               "for each edge, we square the edge weight values to derive our degrees for matrix D", True, term_to_add_last]
                 full_lists.append(row_to_add)    
         else: # default if we use a threshold for the degree:
-            row_to_add = ["use_edge_weight_values_for_degrees_bool", "boolean",
+            row_to_add = ["edge_values_for_degree", "boolean",
                           "if False, we use a threshold instead to derive our degrees for matrix D", False, term_to_add_last]
             full_lists.append(row_to_add)
             self.threshold_for_degree = 0.5 # edge weights > this threshold are counted as 1 for the degree
@@ -716,7 +716,7 @@ class GRegulNet:
         "alpha_lasso": (0, None),
         "beta_network": (0, None),
         "num_cv_folds": (0, None),
-        "fit_y_intercept_bool": [False, True],
+        "fit_y_intercept": [False, True],
         "same_train_and_test_data_bool": [False, True],
         "use_network": [True, False],
         "use_cross_validation_for_model_bool": [False, True],
@@ -731,7 +731,7 @@ class GRegulNet:
         self.num_cv_folds = 5 # for cross validation models
         self.model_type = "Lasso"
         self.use_network = True
-        self.fit_y_intercept_bool = False
+        self.fit_y_intercept = False
         self.max_lasso_iterations = 10000
         self.__dict__.update(kwargs)
         if self.use_network:
@@ -805,15 +805,15 @@ class GRegulNet:
         coef = ml_model.coef_
         coef[coef == -0.0] = 0
         self.coef = coef # Get the coefficients
-        if self.fit_y_intercept_bool:
+        if self.fit_y_intercept:
             self.intercept = ml_model.intercept_
-        self.predY_train = ml_model.predict(self.X_training_to_use) # training data   
-        self.mse_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_train) # Calculate MSE
+        self.predY_tilda_train = ml_model.predict(self.X_training_to_use) # training data   
+        self.mse_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_tilda_train) # Calculate MSE
         
         import pandas as pd
         
         #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
-        if self.fit_y_intercept_bool:
+        if self.fit_y_intercept:
             coeff_terms = [self.intercept] + list(self.coef)
             index_names = ["y_intercept"] + self.tf_names_list
             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
@@ -894,7 +894,7 @@ class GRegulNet:
         from sklearn.linear_model import LinearRegression
         model_name = "Linear"
         #print(model_name)
-        regr = LinearRegression(fit_intercept = self.fit_y_intercept_bool)
+        regr = LinearRegression(fit_intercept = self.fit_y_intercept)
         regr.fit(X, y)
         return regr    
         
@@ -903,7 +903,7 @@ class GRegulNet:
         from sklearn.linear_model import Lasso
         model_name = "Lasso"
         #print(model_name)
-        regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.fit_y_intercept_bool,
+        regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.fit_y_intercept,
                     max_iter = self.max_lasso_iterations)
         regr.fit(X, y)
         return regr
@@ -913,7 +913,7 @@ class GRegulNet:
         from sklearn.linear_model import LassoCV
         #model_name = "LassoCV"
         #print(model_name)
-        regr = LassoCV(cv = self.num_cv_folds, random_state = 0, fit_intercept = self.fit_y_intercept_bool)
+        regr = LassoCV(cv = self.num_cv_folds, random_state = 0, fit_intercept = self.fit_y_intercept)
         regr.fit(X, y)
         return regr            
 
@@ -1006,8 +1006,8 @@ class GRegulNet:
             full_lists.append(row1)           
 
             
-        row1 = ["fit_y_intercept_bool", "boolean", "fit a y-intercept for our regression problem", 
-                self.fit_y_intercept_bool, term_to_add_last]
+        row1 = ["fit_y_intercept", "boolean", "fit a y-intercept for our regression problem", 
+                self.fit_y_intercept, term_to_add_last]
         full_lists.append(row1)   
         
         return full_lists
@@ -1023,7 +1023,7 @@ class baselineModel:
     _parameter_constraints = {
         "alpha_lasso": (0, None),
         "num_cv_folds": (0, None),
-        "fit_y_intercept_bool": [False, True],
+        "fit_y_intercept": [False, True],
         "same_train_and_test_data_bool": [False, True],
         "use_cross_validation_for_model_bool": [False, True],
         "max_lasso_iterations": (1, None),
@@ -1035,7 +1035,7 @@ class baselineModel:
         self.use_cross_validation_for_model_bool = False
         self.num_cv_folds = 5 # for cross validation models
         self.model_type = "Lasso"
-        self.fit_y_intercept_bool = False
+        self.fit_y_intercept = False
         self.max_lasso_iterations = 10000
         self.__dict__.update(kwargs)
         required_keys = []
@@ -1086,7 +1086,7 @@ class baselineModel:
 
         coef[coef == -0.0] = 0
         self.coef = coef # Get the coefficients
-        if self.fit_y_intercept_bool:
+        if self.fit_y_intercept:
             self.intercept = ml_model.intercept_
         self.predY_train = ml_model.predict(self.X_training_to_use) # training data   
         self.mse_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_train) # Calculate MSE
@@ -1094,7 +1094,7 @@ class baselineModel:
         import pandas as pd
         
         #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
-        if self.fit_y_intercept_bool:
+        if self.fit_y_intercept:
             coeff_terms = [self.intercept] + list(self.coef)
             index_names = ["y_intercept"] + self.tf_names_list
             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
@@ -1131,7 +1131,7 @@ class baselineModel:
         from sklearn.linear_model import LinearRegression
         model_name = "Linear"
         #print(model_name)
-        regr = LinearRegression(fit_intercept = self.fit_y_intercept_bool)
+        regr = LinearRegression(fit_intercept = self.fit_y_intercept)
         regr.fit(X, y)
         return regr    
         
@@ -1140,7 +1140,7 @@ class baselineModel:
         from sklearn.linear_model import Lasso
         model_name = "Lasso"
         #print(model_name)
-        regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.fit_y_intercept_bool,
+        regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.fit_y_intercept,
                     max_iter = self.max_lasso_iterations)
         regr.fit(X, y)
         return regr
@@ -1150,7 +1150,7 @@ class baselineModel:
         from sklearn.linear_model import LassoCV
         #model_name = "LassoCV"
         #print(model_name)
-        regr = LassoCV(cv = self.num_cv_folds, random_state = 0, fit_intercept = self.fit_y_intercept_bool)
+        regr = LassoCV(cv = self.num_cv_folds, random_state = 0, fit_intercept = self.fit_y_intercept)
         regr.fit(X, y)
         #self.optimal_alpha = "Cross-Validation: " + str(regr.alpha_)
         return regr            
@@ -1218,28 +1218,28 @@ class baselineModel:
         row1 = ["use_network", "boolean", "baseline since no network regularization is done", False, term_to_add_last]
         full_lists.append(row1)   
             
-        row1 = ["fit_y_intercept_bool", "boolean", "fit a y-intercept for our regression problem", 
-                self.fit_y_intercept_bool, term_to_add_last]
+        row1 = ["fit_y_intercept", "boolean", "fit a y-intercept for our regression problem", 
+                self.fit_y_intercept, term_to_add_last]
         full_lists.append(row1)   
         
         return full_lists
 
-def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = False, alpha_lasso_val = 0.1, 
-                   use_edge_weight_values_for_degrees_bool = False,
-                  consider_self_loops = False, pseudocount_for_diagonal_matrix = 1e-3, 
-                  default_edge_weight = 0.1, square_root_weights_for_degree_sum_bool = False, 
-                  squaring_weights_for_degree_sum_bool = False, threshold_for_degree = 0.5,
+def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso = False, alpha_lasso_val = 0.1, 
+                   edge_values_for_degree = False,
+                  consider_self_loops = False, pseudocount_for_degree = 1e-3, 
+                  default_edge_weight = 0.1, square_root_weights_for_degree = False, 
+                  squaring_weights_for_degree = False, threshold_for_degree = 0.5,
                  num_cv_folds = 5, 
-                model_type = "Lasso", use_network = True, fit_y_intercept_bool = False,
+                model_type = "Lasso", use_network = True, fit_y_intercept = False,
                    max_lasso_iterations = 10000):
     
     prior_graph_dict = {"edge_list": edge_list,
-                       "use_edge_weight_values_for_degrees_bool": use_edge_weight_values_for_degrees_bool,
+                       "edge_values_for_degree": edge_values_for_degree,
                        "consider_self_loops":consider_self_loops,
-                       "pseudocount_for_diagonal_matrix":pseudocount_for_diagonal_matrix,
+                       "pseudocount_for_degree":pseudocount_for_degree,
                         "default_edge_weight": default_edge_weight,
-                        "square_root_weights_for_degree_sum_bool":square_root_weights_for_degree_sum_bool, 
-                        "squaring_weights_for_degree_sum_bool": squaring_weights_for_degree_sum_bool, 
+                        "square_root_weights_for_degree":square_root_weights_for_degree, 
+                        "squaring_weights_for_degree": squaring_weights_for_degree, 
                         "threshold_for_degree": threshold_for_degree}
     
            ####################
@@ -1249,11 +1249,11 @@ def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = 
         greg_dict = {"alpha_lasso": alpha_lasso_val,
                     "beta_network":beta_network_val,
                     "network": netty,
-                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
+                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
                      "use_network":use_network,
-                     "fit_y_intercept_bool":fit_y_intercept_bool, 
+                     "fit_y_intercept":fit_y_intercept, 
                      "max_lasso_iterations":max_lasso_iterations
                     }
         greggy = GRegulNet(**greg_dict)
@@ -1262,10 +1262,10 @@ def geneRegulatNet(edge_list, beta_network_val, cv_for_alpha_lasso_model_bool = 
         print("baseline model (no prior network)")
         #baselineModel
         baseline_dict = {"alpha_lasso": alpha_lasso_val,
-                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso_model_bool,
+                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
-                     "fit_y_intercept_bool":fit_y_intercept_bool, 
+                     "fit_y_intercept":fit_y_intercept, 
                      "max_lasso_iterations":max_lasso_iterations
                     }
         baseliney = baselineModel(**baseline_dict)

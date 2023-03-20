@@ -23,7 +23,7 @@ GRegulNet is a software package that utilizes network-constrained regularization
 
 ## Hardware Requirements
 
-The analysis is based on Python 3.10.6. Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer with enough RAM to support the operations. A Linux system with 32 GB RAM and 32GB storage would be enough to support GRegulNet. 
+The analysis is based on Python version 3.10.6. Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer (e.g. 32 GB RAM and 32 GB storage) with enough RAM to support the operations.
 
 ## Software Requirements
 
@@ -32,7 +32,9 @@ In short, we our code uses the following Python packages: *matplotlib.pyplot, ne
 
 ## Description of GRegulNet pipeline function: geneRegulatNet
 
-Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python. We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
+Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python. Fits a Network-constrained Lasso regression machine learning model given an undirected prior network and regularization parameters. 
+
+## Usage
 
 geneRegulatNet(<br>
                 edge_list,<br> 
@@ -48,7 +50,7 @@ geneRegulatNet(<br>
                 num_cv_folds = 5, <br>
                 model_type = "Lasso", <br>
                 use_network = True,<br>
-                fit_y_intercept_bool = False, <br>
+                fit_y_intercept = False, <br>
                 max_lasso_iterations = 10000<br>
                 )<br>
 
@@ -130,7 +132,7 @@ $$ -->
 | --------- | ---------- | 
 | edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
 | beta_network_val: $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | 
-| cv_for_alpha_lasso | * False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
+| cv_for_alpha_lasso | * False (default): user specifies value of $\alpha_{lasso}$ <br> * True: GRegulNet performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso needed if cv_for_alpha_lasso_model_bool = False: $\alpha_{lasso} \geq 0$. |
  
 
@@ -163,14 +165,31 @@ Please note these parameters that can be adjusted as needed for user needs and s
 | Parameter | Definition | 
 | --------- | ---------- | 
 | use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | 
-| fit_y_intercept_bool  | Should a y-intercept be fitted for the final GRegulNet model  | 
-| max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha_lasso_model_bool is False*) |
+| fit_y_intercept | Should a y-intercept be fitted for the final GRegulNet model  | 
+| max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha_lasso is False*) |
 | num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha_lasso is True*) |
 
 
-### Output: ###
+### Details:
+
+ We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
+
+### Output Values: ###
 
 * An GRegulNet network-regularized linear model object from the GRegulNet class. We can fit our GRegulNet estimator object on $X$ and $y$ training data and retrieve coefficients. Then, we can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE). 
+
+| Output | Definition | 
+| --------- | ---------- | 
+| coef  | Numpy array of the Lasso model coefficients for the predictors. | 
+| model_coefficients_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if *fit_y_intercept = True*) | 
+| optimal_alpha  | If *cv_for_alpha_lasso = True*, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
+| intercept  | If *fit_y_intercept = True*, returns the fitted y-intercept | 
+| all_parameters_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
+| parameters_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
+| X_tilda_train | Transformed $X_{train}$ input matrix to $\tilde{X_train}$ | 
+| y_tilda_train | Transformed $y_{train}$ input matrix to $\tilde{y_train}$| 
+| predY_tilda_train | Predicted $\tilde{y_train}$ values based on fitted model | 
+| mse_train | Mean Square Error (MSE): predY_tilda_train versus  $\tilde{y_train}$ | 
 
 ## Demo (Toy Example) of GRegulNet:
 
@@ -197,7 +216,7 @@ gregulnet_demo = geneRegulatNet(edge_list = edge_list,
 <!-- ![png](README_python_files/README_python_12_1.png) -->
 ![png](output_12_1.png)
 
-Here, we generate 100 samples of random $X$ and $y$ data to train our GRegulNet object. Further, we want the Pearson correlations ($r$) of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*.
+Here, we generate 100 samples (rows) of random $X$ and $y$ data to train our GRegulNet object. Further, we want the Pearson correlations ($r$) of each predictor with the $y$ variable as provided by *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. Each column of our $X$ corresponds to a predictor. The dimensions of $X$ are therefore 100 rows by 5 columns. More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*. 
 
 ```python
 demo_dict = {"num_samples_M": 100,
