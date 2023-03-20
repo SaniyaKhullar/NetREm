@@ -120,7 +120,7 @@ $$ -->
 
 <!-- * *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used.  -->
 
-### Main Inputs (Arguments):
+### Main Inputs:
 
 <!-- | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
@@ -148,8 +148,6 @@ $$ -->
 | alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
   -->
 ### Default Parameters: ###
-
-Please note these parameters that can be adjusted as needed for user needs and specifications. 
 
 * Parameters for the graph prior network:
 
