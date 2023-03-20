@@ -467,7 +467,7 @@ X_test = dummy_data.X_test
 
 # we can view the y_train data as a neat dataframe:
 y_test_df = pd.DataFrame(y_test, columns = ["y"])
-print(f"Testing y (response) data: {y_test_df.shape[0]} rows. The first 5 rows:")
+print(f"Testing y (response) data: {y_test_df.shape[0]} rows. The first 3 rows:")
 print(y_test_df.head(3))
 
 # we can view the X_test data as a neat dataframe:
