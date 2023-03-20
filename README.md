@@ -34,23 +34,23 @@ In short, we need to import the following Python packages to run our code: *matp
 
 Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python. We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{network} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *cv_for_alpha_lasso_model_bool = False*) or GRegulNet may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *cv_for_alpha_lasso_model_bool = True*). Then, **geneRegulatNet** builds an estimator object from the class GRegulNet that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained GRegulNet model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
 
-geneRegulatNet(
-                edge_list, 
-                beta_network_val, 
-                cv_for_alpha_lasso = False, 
-                alpha_lasso_val = 0.1, 
-                edge_values_for_degree = False, 
-                consider_self_loops = False, 
-                pseudocount_for_degree = 1e-3, 
-                default_edge_weight = 0.1, 
-                square_root_weights_for_degree = False, squaring_weights_for_degree = False,
-                threshold_for_degree = 0.5, 
-                num_cv_folds = 5, 
-                model_type = "Lasso", 
-                use_network = True,
-                fit_y_intercept_bool = False, 
-                max_lasso_iterations = 10000
-                )
+geneRegulatNet(<br>
+                edge_list,<br> 
+                beta_network_val, <br>
+                cv_for_alpha_lasso = False,<br> 
+                alpha_lasso_val = 0.1, <br>
+                edge_values_for_degree = False, <br>
+                consider_self_loops = False, <br>
+                pseudocount_for_degree = 1e-3, <br>
+                default_edge_weight = 0.1, <br>
+                square_root_weights_for_degree = False, <br> squaring_weights_for_degree = False,<br> 
+                threshold_for_degree = 0.5, <br>
+                num_cv_folds = 5, <br>
+                model_type = "Lasso", <br>
+                use_network = True,<br>
+                fit_y_intercept_bool = False, <br>
+                max_lasso_iterations = 10000<br>
+                )<br>
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
