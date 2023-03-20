@@ -152,7 +152,7 @@ Please note these parameters that can be adjusted as needed for user needs and s
 
 * A Fitted Estimator from the GRegulNet class with several attributes available. 
 
-We can fit our GRegulNet estimator on $X$ and $y$ training data and retrieve coefficients for the GRegulNet network-regularized linear model. Then, we can evaluate our model performance capabilities on testing data.  We evaluate our model predictive performance using the Mean Squared Error (MSE). 
+We can fit our GRegulNet estimator on $X$ and $y$ training data and retrieve coefficients for the GRegulNet network-regularized linear model. Then, we can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE). 
 
 
 ## Demo (Toy Example) of GRegulNet:
