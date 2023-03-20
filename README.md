@@ -606,6 +606,8 @@ print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
 
 ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
+We will use the same $X_{train}$, $y_{train}$, $X_{test}$, and $y_{test}$ data and same prior network here to compare illustrate the effectiveness of GRegulNet in terms of a lower testing MSE (relative to a baseline model that incorporates no prior network). For ease of comparison, we will select the optimal alpha_lasso for each model using cross validation (CV) on the training data (that is, *cv_for_alpha_lasso_model_bool* = True).
+
 ```python
 # geneRegulatNet where alpha_lasso is determined by cross-validation on training data: :)
 gregulnet_cv_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = 10,
