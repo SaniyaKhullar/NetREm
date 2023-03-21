@@ -53,7 +53,7 @@ geneRegulatNet(<br>
                 thresh_for_d = 0.5, <br>
                 num_cv_folds = 5, <br>
                 model_type = "Lasso", <br>
-                use_network = True,<br>
+                use_net = True,<br>
                 y_intercept = False, <br>
                 maxit = 10000<br>
                 )<br>
@@ -171,7 +171,7 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| use_network  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
+| use_net  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
 | y_intercept | Should a y-intercept be fitted for the final GRegulNet model  | 
 | maxit  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha is False*) |
 | num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha is True*) |

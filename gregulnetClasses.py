@@ -1254,7 +1254,7 @@ def geneRegulatNet(X, y, edge_list, beta_net, cv_for_alpha = False, alpha_lasso 
                   #square_w_for_d = False, 
                   thresh_for_d = 0.5,
                  num_cv_folds = 5, 
-                model_type = "Lasso", use_network = True, y_intercept = False,
+                model_type = "Lasso", use_net = True, y_intercept = False,
                    maxit = 10000):
     
     prior_graph_dict = {"edge_list": edge_list,
@@ -1279,7 +1279,7 @@ def geneRegulatNet(X, y, edge_list, beta_net, cv_for_alpha = False, alpha_lasso 
                     "use_cross_validation_for_model_bool": cv_for_alpha,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
-                     "use_network":use_network,
+                     "use_network":use_net,
                      "fit_y_intercept":y_intercept, 
                      "max_lasso_iterations":max_lasso_iters
                     }
