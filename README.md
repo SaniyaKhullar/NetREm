@@ -187,10 +187,10 @@ $$ -->
 
 | Output | Definition | 
 | --------- | ---------- | 
-| coef  | Numpy array of the Lasso model coefficients for the predictors. | 
+<!-- | coef  | Numpy array of the Lasso model coefficients for the predictors. |  -->
 | model_coefficients_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if *y_intercept = True*) | 
 | optimal_alpha  | If *cv_for_alpha = True*, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
-| intercept  | If *y_intercept = True*, returns the fitted y-intercept | 
+<!-- | intercept  | If *y_intercept = True*, returns the fitted y-intercept |  -->
 | all_parameters_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
 | parameters_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
 | X_tilda_train | Transformed $X$ input matrix to $\tilde{X}_{train}$ | 
@@ -252,11 +252,11 @@ gregulnet_demo = geneRegulatNet(X = X_train,
 
 To view and extract the predicted model coefficients for the predictors: 
 
-```python
+<!-- ```python
 gregulnet_demo.coef
 ```
 
-    array([ 0.23655573,  0.11430656,  0.00148755, -0.03512912, -0.16009479])
+    array([ 0.23655573,  0.11430656,  0.00148755, -0.03512912, -0.16009479]) -->
 
 
 ```python
