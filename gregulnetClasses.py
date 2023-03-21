@@ -341,6 +341,9 @@ class PriorGraphNetwork:
     
     Ultimately, this class builds the W matrix (for the prior network weights to be used for our network 
     regularization penalty), the D matrix (of degrees), and the V matrix (custom for our approach). """  
+    _parameter_constraints = {
+        "w_transform_for_d": ["none", "sqrt", "square"]#,
+    }
     
     import numpy as np
     from sklearn.metrics.pairwise import cosine_similarity
@@ -357,8 +360,9 @@ class PriorGraphNetwork:
         
         # default if we use edge weights for degree:
         # if edge_values_for_degree is True: we can use the edge weight values to get the degrees. 
-        self.square_root_weights_for_degree = False # take the square root of the edge weights for the degree calculations
-        self.squaring_weights_for_degree = False # square the edge weights for the degree calculations
+        self.w_transform_for_d = "none"
+        #self.square_root_weights_for_degree = False # take the square root of the edge weights for the degree calculations
+        #self.squaring_weights_for_degree = False # square the edge weights for the degree calculations
         # default if we use a threshold for the degree:
         self.threshold_for_degree = 0.5
         
@@ -418,7 +422,20 @@ class PriorGraphNetwork:
         self.param_lists = self.full_lists()
         import pandas as pd
         self.param_df = pd.DataFrame(self.full_lists(), columns = ["parameter", "data type", "description", "value", "class"])
+        self._apply_parameter_constraints()
         
+    def _apply_parameter_constraints(self):
+        constraints = {**PriorGraphNetwork._parameter_constraints}
+        for key, value in self.__dict__.items():
+            if key in constraints:
+                if isinstance(constraints[key], tuple):
+                    if isinstance(constraints[key][0], type) and not isinstance(value, constraints[key][0]):
+                        setattr(self, key, constraints[key][0])
+                    elif constraints[key][1] is not None and isinstance(constraints[key][1], type) and not isinstance(value, constraints[key][1]):
+                        setattr(self, key, constraints[key][1])
+                elif value not in constraints[key]:
+                    setattr(self, key, constraints[key][0])
+        return self
         
     def retrieve_tf_names_list(self):
         import pandas as pd
@@ -594,18 +611,19 @@ class PriorGraphNetwork:
         nx.draw(G, pos, node_color = self.node_color_name, edge_color = self.edge_color_name, with_labels = True, width = weights_list) #weights)#w_edgeList['weight'])
         labels = {e: G.edges[e]['weight'] for e in G.edges}
         nx.draw_networkx_edge_labels(G, pos, edge_labels = labels)
-        
+    
     
     def generate_degree_vector_from_weight_matrix(self) -> np.ndarray:
         """generate d degree vector.  2023.02.14_Xiang TODO: add parameter descriptions
         """
+        
         if self.edge_values_for_degree == False:
             W_bool = (self.W > self.threshold_for_degree)
             d = np.float64(W_bool.sum(axis=0) - W_bool.diagonal())
         else: 
-            if self.square_root_weights_for_degree: # taking the square root of the weights for the edges
+            if self.w_transform_for_d == "sqrt": #self.square_root_weights_for_degree: # taking the square root of the weights for the edges
                 W_to_use = np.sqrt(self.W)
-            elif self.squaring_weights_for_degree:
+            elif self.w_transform_for_d == "square": # self.squaring_weights_for_degree:
                 W_to_use = self.W ** 2
             else:
                 W_to_use = self.W
@@ -669,37 +687,37 @@ class PriorGraphNetwork:
             # argument, description, our value
         full_lists = []
         term_to_add_last = "PriorGraphNetwork"
-        row1 = ["default_edge_weight", ">= 0", "edge weight for any edge with missing weight info", self.default_edge_weight, term_to_add_last]
-        row2 = ["consider_self_loops", "boolean", "add 1 to the degree for each node (based on self-loops)?", self.consider_self_loops, term_to_add_last]
+        row1 = ["default_edge_w", ">= 0", "edge weight for any edge with missing weight info", self.default_edge_weight, term_to_add_last]
+        row2 = ["self_loops", "boolean", "add 1 to the degree for each node (based on self-loops)?", self.consider_self_loops, term_to_add_last]
 
         full_lists.append(row1)
         full_lists.append(row2)
         if self.pseudocount_for_degree != 0:
             #self.pseudocount_for_degree # to ensure that we do not have any 0 degrees for any node in our matrix.
-            row3 = ["pseudocount_for_degree", ">= 0",
+            row3 = ["d_pseudocount", ">= 0",
                     "to ensure that no nodes have 0 degree value in D matrix", 
                     self.pseudocount_for_degree, term_to_add_last]
             full_lists.append(row3)
         if self.edge_values_for_degree:
-            row_to_add = ["edge_values_for_degree", "boolean",
+            row_to_add = ["edge_vals_for_d", "boolean",
                           "if True, we use the edge weight values to derive our degrees for matrix D", True, term_to_add_last]
             full_lists.append(row_to_add)
             # arguments to add in:
-            if self.square_root_weights_for_degree: # take the square root of the edge weights for the degree calculations
-                row_to_add = ["square_root_weights_for_degree", "boolean",
-                              "for each edge, we use the square root of the edge weight values to derive our degrees for matrix D", True, term_to_add_last]
+            if self.w_transform_for_d == "sqrt": # take the square root of the edge weights for the degree calculations
+                row_to_add = ["w_transform_for_d: sqrt", "boolean",
+                              "for each edge, we use the square root of the edge weight values to derive our degrees for matrix D", self.w_transform_for_d, term_to_add_last]
                 full_lists.append(row_to_add)        
-            if self.squaring_weights_for_degree:  # square the edge weights for the degree calculations
-                row_to_add = ["squaring_weights_for_degree", "boolean",
-                              "for each edge, we square the edge weight values to derive our degrees for matrix D", True, term_to_add_last]
+            if self.w_transform_for_d == "square":  # square the edge weights for the degree calculations
+                row_to_add = ["w_transform_for_d: square", "boolean",
+                              "for each edge, we square the edge weight values to derive our degrees for matrix D", self.w_transform_for_d, term_to_add_last]
                 full_lists.append(row_to_add)    
         else: # default if we use a threshold for the degree:
-            row_to_add = ["edge_values_for_degree", "boolean",
+            row_to_add = ["edge_vals_for_d", "boolean",
                           "if False, we use a threshold instead to derive our degrees for matrix D", False, term_to_add_last]
             full_lists.append(row_to_add)
             self.threshold_for_degree = 0.5 # edge weights > this threshold are counted as 1 for the degree
             to_add_text = "edge weights > " + str(self.threshold_for_degree) + " are counted as 1 for the degree"
-            row_to_add = ["threshold_for_degree", ">= 0",
+            row_to_add = ["thresh_for_d", ">= 0",
                           to_add_text, self.threshold_for_degree, term_to_add_last]
             full_lists.append(row_to_add)
         return full_lists
@@ -967,12 +985,12 @@ class GRegulNet:
         full_lists.append(row1)
         
         if self.model_type == "Lasso":
-            row1 = ["max_lasso_iterations", ">= 1", 
+            row1 = ["max_lasso_iters", ">= 1", 
                 "the maximum # of iterations for Lasso",
                 self.model_type, term_to_add_last]   
             full_lists.append(row1)
         
-        row1 = ["use_cross_validation_for_model_bool", "boolean", 
+        row1 = ["cv_for_alpha", "boolean", 
                 "should we use cross validation for training the model",
                 self.use_cross_validation_for_model_bool, term_to_add_last]   
         full_lists.append(row1)
@@ -990,25 +1008,25 @@ class GRegulNet:
             row1 = ["use_network", "boolean", "baseline since no network regularization is done", self.use_network, term_to_add_last]
             full_lists.append(row1)
             
-            row1 = ["beta_network", ">= 0", "baseline since no network regularization is done", self.beta_network, term_to_add_last]
+            row1 = ["beta_net", ">= 0", "baseline since no network regularization is done", self.beta_network, term_to_add_last]
             full_lists.append(row1)
             
         elif self.beta_network == 0:
             row1 = ["use_network", "boolean", "perform network regularization using a network prior", self.use_network, term_to_add_last]
             full_lists.append(row1)
             
-            row1 = ["beta_network", ">= 0", "baseline since no network regularization is done", self.beta_network, term_to_add_last]
+            row1 = ["beta_net", ">= 0", "baseline since no network regularization is done", self.beta_network, term_to_add_last]
             full_lists.append(row1)
         else:
             
             row1 = ["use_network", "boolean", "perform network regularization using a network prior", self.use_network, term_to_add_last]
             full_lists.append(row1)
             
-            row1 = ["beta_network", ">= 0", "value of beta for the network regularization problem", self.beta_network, term_to_add_last]
+            row1 = ["beta_net", ">= 0", "value of beta for the network regularization problem", self.beta_network, term_to_add_last]
             full_lists.append(row1)           
 
             
-        row1 = ["fit_y_intercept", "boolean", "fit a y-intercept for our regression problem", 
+        row1 = ["y_intercept", "boolean", "fit a y-intercept for our regression problem", 
                 self.fit_y_intercept, term_to_add_last]
         full_lists.append(row1)   
         
@@ -1199,12 +1217,12 @@ class baselineModel:
         full_lists.append(row1)
         
         if self.model_type == "Lasso":
-            row1 = ["max_lasso_iterations", ">= 1", 
+            row1 = ["max_lasso_iters", ">= 1", 
                 "the maximum # of iterations for Lasso",
                 self.model_type, term_to_add_last]   
             full_lists.append(row1)
         
-        row1 = ["use_cross_validation_for_model_bool", "boolean", 
+        row1 = ["cv_for_alpha", "boolean", 
                 "should we use cross validation for training the model",
                 self.use_cross_validation_for_model_bool, term_to_add_last]   
         full_lists.append(row1)
@@ -1221,7 +1239,7 @@ class baselineModel:
         row1 = ["use_network", "boolean", "baseline since no network regularization is done", False, term_to_add_last]
         full_lists.append(row1)   
             
-        row1 = ["fit_y_intercept", "boolean", "fit a y-intercept for our regression problem", 
+        row1 = ["y_intercept", "boolean", "fit a y-intercept for our regression problem", 
                 self.fit_y_intercept, term_to_add_last]
         full_lists.append(row1)   
         
@@ -1230,8 +1248,11 @@ class baselineModel:
 def geneRegulatNet(X, y, edge_list, beta_net, cv_for_alpha = False, alpha_lasso = 0.1, 
                    edge_vals_for_d = False,
                   self_loops = False, d_pseudocount = 1e-3, 
-                  default_edge_w = 0.1, sqrt_w_for_d = False, 
-                  square_w_for_d = False, thresh_for_d = 0.5,
+                  default_edge_w = 0.1,
+                  w_transform_for_d = "none",
+                  # sqrt_w_for_d = False, 
+                  #square_w_for_d = False, 
+                  thresh_for_d = 0.5,
                  num_cv_folds = 5, 
                 model_type = "Lasso", use_network = True, y_intercept = False,
                    max_lasso_iters = 10000):
@@ -1241,8 +1262,9 @@ def geneRegulatNet(X, y, edge_list, beta_net, cv_for_alpha = False, alpha_lasso 
                        "consider_self_loops":self_loops,
                        "pseudocount_for_degree":d_pseudocount,
                         "default_edge_weight": default_edge_w,
-                        "square_root_weights_for_degree":sqrt_w_for_d, 
-                        "squaring_weights_for_degree": square_w_for_d, 
+                        "w_transform_for_d":w_transform_for_d,
+                        #"square_root_weights_for_degree":sqrt_w_for_d, 
+                        #"squaring_weights_for_degree": square_w_for_d, 
                         "threshold_for_degree": thresh_for_d}
                         
            ####################

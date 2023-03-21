@@ -47,8 +47,9 @@ geneRegulatNet(<br>
                 self_loops = False, <br>
                 d_pseudocount = 1e-3, <br>
                 default_edge_w = 0.1, <br>
-                sqrt_w_for_d = False, <br> 
-                square_w_for_d = False,<br> 
+                w_transform_for_d = "none", <br>
+                <!-- sqrt_w_for_d = False, <br> 
+                square_w_for_d = False,<br>  -->
                 thresh_for_d = 0.5, <br>
                 num_cv_folds = 5, <br>
                 model_type = "Lasso", <br>
@@ -162,8 +163,10 @@ $$ -->
 | d_pseudocount  | Pseudocount to add for the degree of each node in the network. |
 | edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False|
 | thresh_for_d  | Edges with weight $w$ > thresh_for_d are counted as 1 towards node degree (if *edge_vals_for_d is False*) |
-| sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
-| square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) |
+| w_transform_for_d | For a given node degree, can choose from 1 of 3 options (if *edge_vals_for_d is True*): * "none" (sum original $w$) <br> 
+* "sqrt": sum $\sqrt{w}$ <br> * "square": Sum $w^{2}$ | 
+<!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
+| square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) | -->
 
 * Parameters for the network-based regularized model:
 
