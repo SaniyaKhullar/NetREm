@@ -223,7 +223,7 @@ X_test = dummy_data.X_test
 edge_list = [[1, 2, 0.9], [4, 5, 0.75], [1, 3], [1, 4], [1, 5], 
               [2, 3], [2, 4], [2, 5], [3, 4], [3, 5]]
 beta_network_val = 10 
-# by default, cv_for_alpha_lasso_model_bool is False, so alpha_lasso_val will be specified.
+# by default, cv_for_alpha is False, so alpha_lasso_val will be specified for the alpha_lasso parameter.
 alpha_lasso_val = 0.01
 
 # Building the network regularized regression model. 
