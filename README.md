@@ -163,8 +163,7 @@ $$ -->
 | d_pseudocount  | Pseudocount to add for the degree of each node in the network. |
 | edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False|
 | thresh_for_d  | Edges with weight $w$ > thresh_for_d are counted as 1 towards node degree (if *edge_vals_for_d is False*) |
-| w_transform_for_d | For a given node degree, can choose from 1 of 3 options (if *edge_vals_for_d is True*): * "none" (sum original $w$) <br> 
-* "sqrt": sum $\sqrt{w}$ <br> * "square": Sum $w^{2}$ | 
+| w_transform_for_d | For a given node degree, can choose from 1 of 3 options (if *edge_vals_for_d is True*): <br> * "none" (sum original $w$) <br> * "sqrt": sum $\sqrt{w}$ <br> * "square": Sum $w^{2}$ | 
 <!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
 | square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) | -->
 
