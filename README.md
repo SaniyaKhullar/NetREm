@@ -191,13 +191,13 @@ $$ -->
 | optimal_alpha  | If *cv_for_alpha = True*, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
 | all_parameters_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
 | parameters_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
-| X_tilda_train | Transformed $X$ input matrix to $\tilde{X}_{train}$ | 
-| y_tilda_train | Transformed $y$ input matrix to $\tilde{y}_{train}$| 
-| predY_tilda_train | Predicted $\tilde{y}_{train}$ values based on fitted model | 
-| mse_train | Mean Square Error (MSE): predY_tilda_train versus $\tilde{y}_{train}$| 
-
+| mse_train | Mean Square Error (MSE): predicted versus actual values | 
+<!-- $\tilde{y}_{train}$|  -->
 <!-- | coef  | Numpy array of the Lasso model coefficients for the predictors. |  -->
 <!-- | intercept  | If *y_intercept = True*, returns the fitted y-intercept |  -->
+<!-- | X_tilda_train | Transformed $X$ input matrix to $\tilde{X}_{train}$ | 
+| y_tilda_train | Transformed $y$ input matrix to $\tilde{y}_{train}$| 
+| predY_tilda_train | Predicted $\tilde{y}_{train}$ values based on fitted model |  -->
 
 ## Demo (Toy Example) of GRegulNet:
 
