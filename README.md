@@ -171,7 +171,7 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | 
+| use_network  | True: use a prior graph network for regularization. False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
 | y_intercept | Should a y-intercept be fitted for the final GRegulNet model  | 
 | max_lasso_iters  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha is False*) |
 | num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha is True*) |
