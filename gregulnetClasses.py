@@ -704,11 +704,11 @@ class PriorGraphNetwork:
             full_lists.append(row_to_add)
             # arguments to add in:
             if self.w_transform_for_d == "sqrt": # take the square root of the edge weights for the degree calculations
-                row_to_add = ["w_transform_for_d: sqrt", "boolean",
+                row_to_add = ["w_transform_for_d: sqrt", "string",
                               "for each edge, we use the square root of the edge weight values to derive our degrees for matrix D", self.w_transform_for_d, term_to_add_last]
                 full_lists.append(row_to_add)        
             if self.w_transform_for_d == "square":  # square the edge weights for the degree calculations
-                row_to_add = ["w_transform_for_d: square", "boolean",
+                row_to_add = ["w_transform_for_d: square", "string",
                               "for each edge, we square the edge weight values to derive our degrees for matrix D", self.w_transform_for_d, term_to_add_last]
                 full_lists.append(row_to_add)    
         else: # default if we use a threshold for the degree:
@@ -985,7 +985,7 @@ class GRegulNet:
         full_lists.append(row1)
         
         if self.model_type == "Lasso":
-            row1 = ["max_lasso_iters", ">= 1", 
+            row1 = ["maxit", ">= 1", 
                 "the maximum # of iterations for Lasso",
                 self.model_type, term_to_add_last]   
             full_lists.append(row1)
@@ -1255,7 +1255,7 @@ def geneRegulatNet(X, y, edge_list, beta_net, cv_for_alpha = False, alpha_lasso 
                   thresh_for_d = 0.5,
                  num_cv_folds = 5, 
                 model_type = "Lasso", use_network = True, y_intercept = False,
-                   max_lasso_iters = 10000):
+                   maxit = 10000):
     
     prior_graph_dict = {"edge_list": edge_list,
                        "edge_values_for_degree": edge_vals_for_d,
