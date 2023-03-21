@@ -40,21 +40,24 @@ geneRegulatNet(<br>
                 $X$, <br>
                 $y$, <br>
                 edge_list,<br> 
-                beta_network_val, <br>
-                cv_for_alpha_lasso = False,<br> 
-                alpha_lasso_val = 0.1, <br>
-                edge_values_for_degree = False, <br>
-                consider_self_loops = False, <br>
-                pseudocount_for_degree = 1e-3, <br>
-                default_edge_weight = 0.1, <br>
-                square_root_w_for_degree = False, <br> squaring_w_for_degree = False,<br> 
-                threshold_for_degree = 0.5, <br>
+                beta_net, <br>
+                cv_for_alpha = False,<br> 
+                alpha_lasso = 0.1, <br>
+                edge_vals_for_d = False, <br>
+                self_loops = False, <br>
+                d_pseudocount = 1e-3, <br>
+                default_edge_w = 0.1, <br>
+                sqrt_w_for_d = False, <br> 
+                square_w_for_d = False,<br> 
+                thresh_for_d = 0.5, <br>
                 num_cv_folds = 5, <br>
                 model_type = "Lasso", <br>
                 use_network = True,<br>
-                fit_y_intercept = False, <br>
-                max_lasso_iterations = 10000<br>
+                y_intercept = False, <br>
+                max_lasso_iters = 10000<br>
                 )<br>
+
+            
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
@@ -135,9 +138,9 @@ $$ -->
 | $X$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
 | $y$ | Input numpy array list with 1 value for each sample.| 
 | edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
-| beta_network_val: $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | 
-| cv_for_alpha_lasso | * False (default): user specifies value of $\alpha_{lasso}$ <br> * True: GRegulNet performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
-| alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso needed if cv_for_alpha_lasso_model_bool = False: $\alpha_{lasso} \geq 0$. |
+| beta_net: $\beta_{net}$  | Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
+| cv_for_alpha | * False (default): user specifies value of $\alpha_{lasso}$ <br> * True: GRegulNet performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
+| alpha_lasso: $\alpha_{lasso}$  | A numerical regularization parameter for lasso needed if cv_for_alpha = False: $\alpha_{lasso} \geq 0$. |
 
 
 <!-- | Parameter | Definition | More information |
@@ -147,28 +150,29 @@ $$ -->
 | cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? | Default boolean value: False. <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  |
 | alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
   -->
+
 ### Default Parameters: ###
 
 * Parameters for the graph prior network:
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| default_edge_weight  | Weight assigned to any edge with missing weight | 
-| consider_self_loops  | True: Add 1 to each degree (for self-loops)| 
-| pseudocount_for_degree  | Pseudocount to add for each degree (node). 
-| edge_values_for_degree  | True: edge weights $w$ used for node degree; False: threshold used | default: False|
-| threshold_for_degree  | Edges with weight $w$ > threshold_for_degree are counted as 1 towards node degree (if *edge_values_for_degree is False*) |
-| square_root_w_for_degree  | Sum $\sqrt{w}$ for a given node degree (if *edge_values_for_degree is True*) |
-| squaring_w_for_degree  | Sum $w^{2}$ for a given node degree (if *edge_values_for_degree is True*) |
+| default_edge_w  | Default edge weight ($w$) assigned to any edge with missing weight | 
+| self_loops  | True: Add 1 to each degree ($d$) for each node in the network (for self-loops)| 
+| d_pseudocount  | Pseudocount to add for the degree of each node in the network. |
+| edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False|
+| thresh_for_d  | Edges with weight $w$ > thresh_for_d are counted as 1 towards node degree (if *edge_vals_for_d is False*) |
+| sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
+| square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) |
 
 * Parameters for the network-based regularized model:
 
 | Parameter | Definition | 
 | --------- | ---------- | 
 | use_network  | If False, we fit a Lasso model on original $X$ and $y$ data (baseline). | 
-| fit_y_intercept | Should a y-intercept be fitted for the final GRegulNet model  | 
-| max_lasso_iterations  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha_lasso is False*) |
-| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha_lasso is True*) |
+| y_intercept | Should a y-intercept be fitted for the final GRegulNet model  | 
+| max_lasso_iters  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha is False*) |
+| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha is True*) |
 
 
 ### Details:

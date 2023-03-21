@@ -1227,39 +1227,39 @@ class baselineModel:
         
         return full_lists
 
-def geneRegulatNet(X, y, edge_list, beta_network_val, cv_for_alpha_lasso = False, alpha_lasso_val = 0.1, 
-                   edge_values_for_degree = False,
-                  consider_self_loops = False, pseudocount_for_degree = 1e-3, 
-                  default_edge_weight = 0.1, square_root_w_for_degree = False, 
-                  squaring_w_for_degree = False, threshold_for_degree = 0.5,
+def geneRegulatNet(X, y, edge_list, beta_net, cv_for_alpha = False, alpha_lasso = 0.1, 
+                   edge_vals_for_d = False,
+                  self_loops = False, d_pseudocount = 1e-3, 
+                  default_edge_w = 0.1, sqrt_w_for_d = False, 
+                  square_w_for_d = False, thresh_for_d = 0.5,
                  num_cv_folds = 5, 
-                model_type = "Lasso", use_network = True, fit_y_intercept = False,
-                   max_lasso_iterations = 10000):
+                model_type = "Lasso", use_network = True, y_intercept = False,
+                   max_lasso_iters = 10000):
     
     prior_graph_dict = {"edge_list": edge_list,
-                       "edge_values_for_degree": edge_values_for_degree,
-                       "consider_self_loops":consider_self_loops,
-                       "pseudocount_for_degree":pseudocount_for_degree,
-                        "default_edge_weight": default_edge_weight,
-                        "square_root_weights_for_degree":square_root_w_for_degree, 
-                        "squaring_weights_for_degree": squaring_w_for_degree, 
-                        "threshold_for_degree": threshold_for_degree}
-    
+                       "edge_values_for_degree": edge_vals_for_d,
+                       "consider_self_loops":self_loops,
+                       "pseudocount_for_degree":d_pseudocount,
+                        "default_edge_weight": default_edge_w,
+                        "square_root_weights_for_degree":sqrt_w_for_d, 
+                        "squaring_weights_for_degree": square_w_for_d, 
+                        "threshold_for_degree": thresh_for_d}
+                        
            ####################
     if use_network:
         print("prior graph network used")
         netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix.
         greg_dict = {"X_train": X, 
                      "y_train": y,
-                     "alpha_lasso": alpha_lasso_val,
-                    "beta_network":beta_network_val,
+                     "alpha_lasso": alpha_lasso,
+                    "beta_network":beta_net,
                     "network": netty,
-                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso,
+                    "use_cross_validation_for_model_bool": cv_for_alpha,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
                      "use_network":use_network,
-                     "fit_y_intercept":fit_y_intercept, 
-                     "max_lasso_iterations":max_lasso_iterations
+                     "fit_y_intercept":y_intercept, 
+                     "max_lasso_iterations":max_lasso_iters
                     }
         greggy = GRegulNet(**greg_dict)
         return greggy
@@ -1268,12 +1268,12 @@ def geneRegulatNet(X, y, edge_list, beta_network_val, cv_for_alpha_lasso = False
         #baselineModel
         baseline_dict = {"X_train": X, 
                         "y_train": y,
-                         "alpha_lasso": alpha_lasso_val,
-                    "use_cross_validation_for_model_bool": cv_for_alpha_lasso,
+                         "alpha_lasso": alpha_lasso,
+                    "use_cross_validation_for_model_bool": cv_for_alpha,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
-                     "fit_y_intercept":fit_y_intercept, 
-                     "max_lasso_iterations":max_lasso_iterations
+                     "fit_y_intercept":y_intercept, 
+                     "max_lasso_iterations":max_lasso_iters
                     }
         baseliney = baselineModel(**baseline_dict)
         return baseliney
