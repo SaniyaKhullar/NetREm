@@ -186,9 +186,9 @@ $$ -->
 | Output | Definition | 
 | --------- | ---------- | 
 | coef  | Numpy array of the Lasso model coefficients for the predictors. | 
-| model_coefficients_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if *fit_y_intercept = True*) | 
-| optimal_alpha  | If *cv_for_alpha_lasso = True*, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
-| intercept  | If *fit_y_intercept = True*, returns the fitted y-intercept | 
+| model_coefficients_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if *y_intercept = True*) | 
+| optimal_alpha  | If *cv_for_alpha = True*, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
+| intercept  | If *y_intercept = True*, returns the fitted y-intercept | 
 | all_parameters_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
 | parameters_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
 | X_tilda_train | Transformed $X$ input matrix to $\tilde{X}_{train}$ | 
