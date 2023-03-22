@@ -941,7 +941,7 @@ class GRegulNet:
         self.all_params_list = self.full_lists_gregulnet()
 
         import pandas as pd
-        self.parameters_df = pd.DataFrame(self.all_params_list, 
+        self.params_df = pd.DataFrame(self.all_params_list, 
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met        
@@ -1184,14 +1184,12 @@ class GRegulNet:
 #         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
 #         return mse_test
 
-    def predict_y(self, X_test, y_test):
+    def predict_y(self, X_test):
         import pandas as pd
         import numpy as np
-        self.X_test = X_test
-        self.y_test = y_test
         ml_model = self.regr
-        X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = ml_model.predict(X_testing_to_use) # training data   
+        #X_testing_to_use, y_testing_to_use = X_test, y_test
+        predY_test = ml_model.predict(X_test) # training data   
         #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
         return predY_test #mse_test
     
@@ -1232,12 +1230,12 @@ class GRegulNet:
     def test_mse(self, X_test, y_test):
         import pandas as pd
         import numpy as np
-        self.X_test = X_test
-        self.y_test = y_test
+        X_test = X_test
+        y_test = y_test
         ml_model = self.regr
-        X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = ml_model.predict(X_testing_to_use) # training data   
-        mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
+        #X_testing_to_use, y_testing_to_use = X_test, y_test
+        predY_test = ml_model.predict(X_test) # training data   
+        mse_test = self.calculate_mean_square_error(y_test, predY_test) # Calculate MSE
         return mse_test #mse_test
     
 #         def test_mse(self, X_test, y_test):
@@ -1376,7 +1374,7 @@ class baselineModel:
         self.all_params_list = self.full_lists_baseline()
 
         import pandas as pd
-        self.parameters_df = pd.DataFrame(self.all_params_list, 
+        self.params_df = pd.DataFrame(self.all_params_list, 
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met
@@ -1498,14 +1496,13 @@ class baselineModel:
         mean_squared_diff = np.mean(squared_diff)
         return mean_squared_diff
     
-    def predict_y(self, X_test, y_test):
+    def predict_y(self, X_test):
         import pandas as pd
         import numpy as np
-        self.X_test = X_test
-        self.y_test = y_test
+        X_test = X_test
         ml_model = self.regr
-        X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = ml_model.predict(X_testing_to_use) # training data   
+        #X_testing_to_use, y_testing_to_use = X_test, y_test
+        predY_test = ml_model.predict(X_test) # training data   
         #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
         return predY_test #mse_test
     
@@ -1530,8 +1527,8 @@ class baselineModel:
         self.X_test = X_test
         self.y_test = y_test
         ml_model = self.regr
-        X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = self.predict_y(X_test, y_test) # ml_model.predict(X_testing_to_use) # training data   
+        #X_testing_to_use, y_testing_to_use = X_test, y_test
+        predY_test = self.predict_y(X_test) # ml_model.predict(X_testing_to_use) # training data   
         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
         return mse_test
     

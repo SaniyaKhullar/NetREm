@@ -186,7 +186,7 @@ $$ -->
 
 #### Methods:
 
-* fit($X$, $y$)
+* **fit($X$, $y$)**
 
 Building and training the GRegulNet model with $X$ and $y$ data. 
 
@@ -195,7 +195,8 @@ Building and training the GRegulNet model with $X$ and $y$ data.
 | $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample used for training. Here, rows are samples and columns are predictors. | 
 | $y$ | Input numpy array list for model training with 1 value for each sample.| 
 
-We can retrieve our model coefficients and other outputs by calling these outputs:
+
+We can retrieve our model coefficients and other attributes by calling these outputs:
 
 | Output | Definition | 
 | --------- | ---------- | 
@@ -205,13 +206,30 @@ We can retrieve our model coefficients and other outputs by calling these output
 | params_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
 | mse_train | Mean Square Error (MSE): predicted versus actual values | 
 
-* predict($X$)
+* **predict_y($X$)**
 
-We can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE) by calling the predict($X_{test}$, $y_{test}$) function. 
+We can use our model to predict values for our response variable $y$. 
 
 | Parameter | Definition | 
 | --------- | ---------- | 
 | $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+
+  - Returns:
+  Numpy array of $\hat{y}$ predicted values for $y$.
+
+* **test_mse($X$, $y$)**
+
+We can evaluate our model performance capabilities on data like testing data using the Mean Squared Error (MSE) by calling the predict($X$, $y$) function. 
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | Numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+| $y$ | Numpy array list for response variable with 1 value for each sample.| 
+
+  - Returns:
+  Numeric value corresponding to the Mean Square Error. 
+  
+  MSE = \frac{1}{m} \sum_{i=1}^{m} (y_i - \hat{y_i})^2
 
 ## Demo (Toy Example) of GRegulNet:
 
@@ -308,7 +326,7 @@ We can test the performance of our data on testing data (30 samples), to underst
 
 
 ```python
-pred_y_test = gregulnet_demo.predict_y(X_test, y_test) # predicted values for y_test
+pred_y_test = gregulnet_demo.predict_y(X_test) # predicted values for y_test
 mse_test = gregulnet_demo.test_mse(X_test, y_test)
 
 print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
