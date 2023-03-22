@@ -219,7 +219,7 @@ We can use our model to predict values for our response variable $y$.
 
 * **test_mse($X$, $y$)**
 
-We can evaluate our model performance capabilities on data like testing data using the Mean Squared Error (MSE) by calling the predict($X$, $y$) function. 
+We can evaluate our model performance capabilities on data like testing data using the Mean Squared Error (MSE) as our metric. 
 
 | Parameter | Definition | 
 | --------- | ---------- | 
@@ -227,7 +227,7 @@ We can evaluate our model performance capabilities on data like testing data usi
 | $y$ | Numpy array list for response variable with 1 value for each sample.| 
 
   - Returns:
-  Numeric value corresponding to the Mean Square Error. 
+  Numeric value corresponding to the Mean Square Error (MSE). 
   
 $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 
