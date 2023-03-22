@@ -938,10 +938,10 @@ class GRegulNet:
             self.A = prior_network.A
             self.network_params = prior_network.param_lists
             self.tf_names_list = prior_network.tf_names_list
-        self.all_parameters_list = self.full_lists_gregulnet()
+        self.all_params_list = self.full_lists_gregulnet()
 
         import pandas as pd
-        self.parameters_df = pd.DataFrame(self.all_parameters_list, 
+        self.parameters_df = pd.DataFrame(self.all_params_list, 
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met        
@@ -988,15 +988,15 @@ class GRegulNet:
 
 #         import pandas as pd
         
-#         #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
+#         #self.model_coef_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
 #         if self.fit_y_intercept:
 #             coeff_terms = [self.intercept] + list(self.coef)
 #             index_names = ["y_intercept"] + self.tf_names_list
-#             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
+#             self.model_coef_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
 #         else:
 #             coeff_terms = ["None"] + list(self.coef)
 #             index_names = ["y_intercept"] + self.tf_names_list
-#             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
+#             self.model_coef_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
 # #             self.coefficients_df["y_intercept"] = self.intercept
 #         return self
 
@@ -1036,15 +1036,15 @@ class GRegulNet:
 
         import pandas as pd
         
-        #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
+        #self.model_coef_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
         if self.fit_y_intercept:
             coeff_terms = [self.intercept] + list(self.coef)
             index_names = ["y_intercept"] + self.tf_names_list
-            self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
+            self.model_coef_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
         else:
             coeff_terms = ["None"] + list(self.coef)
             index_names = ["y_intercept"] + self.tf_names_list
-            self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
+            self.model_coef_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
 #             self.coefficients_df["y_intercept"] = self.intercept
         return self
 
@@ -1373,10 +1373,10 @@ class baselineModel:
         missing_keys = [key for key in required_keys if key not in self.__dict__]
         if missing_keys:
             raise ValueError(f":( Please note ye are missing information for these keys: {missing_keys}")
-        self.all_parameters_list = self.full_lists_baseline()
+        self.all_params_list = self.full_lists_baseline()
 
         import pandas as pd
-        self.parameters_df = pd.DataFrame(self.all_parameters_list, 
+        self.parameters_df = pd.DataFrame(self.all_params_list, 
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met
@@ -1416,15 +1416,15 @@ class baselineModel:
         
         import pandas as pd
         
-        #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
+        #self.model_coef_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
         if self.fit_y_intercept:
             coeff_terms = [self.intercept] + list(self.coef)
             index_names = ["y_intercept"] + self.tf_names_list
-            self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
+            self.model_coef_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
         else:
             coeff_terms = ["None"] + list(self.coef)
             index_names = ["y_intercept"] + self.tf_names_list
-            self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
+            self.model_coef_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
 #             self.coefficients_df["y_intercept"] = self.intercept
         return self
     
@@ -1577,26 +1577,27 @@ class baselineModel:
         return full_lists
 
 def geneRegulatNet(edge_list, beta_net, cv_for_alpha = False, alpha_lasso = 0.1, 
-                   edge_vals_for_d = False,
-                  self_loops = False, d_pseudocount = 1e-3, 
-                  default_edge_w = 0.1,
-                  w_transform_for_d = "none",
-                  # sqrt_w_for_d = False, 
-                  #square_w_for_d = False, 
-                  thresh_for_d = 0.5,
+                  default_edge_weight = 0.1,
+                  degree_threshold = 0.5,
+                  degree_pseudocount = 1e-3,
                  num_cv_folds = 5, 
-                model_type = "Lasso", use_net = True, y_intercept = False,
+                 use_net = True,
+                y_intercept = False,
                    maxit = 10000):
+                   
+                   
+    edge_vals_for_d = False
+    self_loops = False
+    w_transform_for_d = "none"
+    model_type = "Lasso"
     
     prior_graph_dict = {"edge_list": edge_list,
                        "edge_values_for_degree": edge_vals_for_d,
                        "consider_self_loops":self_loops,
-                       "pseudocount_for_degree":d_pseudocount,
-                        "default_edge_weight": default_edge_w,
+                       "pseudocount_for_degree":degree_pseudocount,
+                        "default_edge_weight": default_edge_weight,
                         "w_transform_for_d":w_transform_for_d,
-                        #"square_root_weights_for_degree":sqrt_w_for_d, 
-                        #"squaring_weights_for_degree": square_w_for_d, 
-                        "threshold_for_degree": thresh_for_d}
+                        "threshold_for_degree": degree_threshold}
                         
            ####################
     if use_net:

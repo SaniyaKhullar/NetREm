@@ -83,15 +83,6 @@ class DiagonalLinearOperator(LinearOperator):
     __array_priority__ = 1000
 
     
-
-def calculate_mean_square_error(actual_values, predicted_values):
-    # Please note that this function by Saniya calculates the Mean Square Error (MSE)
-    import numpy as np
-    difference = (actual_values - predicted_values)
-    squared_diff = difference ** 2 # square of the difference
-    mean_squared_diff = np.mean(squared_diff)
-    return mean_squared_diff
-    
 # create X and Y matrix
 class DemoDataBuilderXandY: 
     #Build_X_and_Y_demo_data:
@@ -101,42 +92,25 @@ class DemoDataBuilderXandY:
     values. For instance, if N = 5 predictors (the Transcription Factors (TFs)), we have [X1, X2, X3, X4, X5],
     and a respective list of correlation values: [cor(X1, Y), cor(X2, Y), cor(X3, Y), cor(X4, Y), cor(X5, Y)].
     Then, this class will generate X, a matrix of those 5 predictors (based on similar distribution as Y) 
-    with these respective correlations."""   
-    
-    _parameter_constraints = {
-        "test_data_percent": (0, 100),
-        "mu": (0, None),
-        "std_dev": (0, None),
-        "num_iters_to_generate_X": (1, None),
-        "same_train_test_data": [False, True],
-        "rng_seed": (0, None),
-        "randSeed": (0, None),
-        "ortho_scalar": (1, None),
-        "orthogonal_X_bool": [True, False],
-        "view_input_correlations_plot": [False, True],
-        "num_samples_M": (1, None),
-        "corrVals": list
-    }
-    
+    with these respective correlations."""    
     
     def __init__(self, **kwargs):
         # define default values for constants
         self.same_train_test_data = False
         self.test_data_percent = 30
-        self.mu = 0
-        self.std_dev = 1
-        self.num_iters_to_generate_X = 100
-        self.rng_seed = 2023 # for Y
-        self.randSeed = 123 # for X
+        self._mu = 0
+        self._sd = 1
+        self._num_iters_for_generating_X = 100
+        self._rng_seed = 2023 # for Y
+        self._randSeed = 123 # for X
         self.orthogonal_X_bool = False
         self.ortho_scalar = 10
         self.view_input_correlations_plot = False
         # reading in user inputs
         self.__dict__.update(kwargs)
-        ##################### other user parameters being loaded and checked
-        self.same_train_and_test_data_bool = self.same_train_test_data
         # check that all required keys are present:
         required_keys = ["corrVals", "num_samples_M"]
+        self.same_train_and_test_data_bool = self.same_train_test_data
         missing_keys = [key for key in required_keys if key not in self.__dict__]
         if missing_keys:
             raise ValueError(f":( Please note ye are missing information for these keys: {missing_keys}")
@@ -149,46 +123,22 @@ class DemoDataBuilderXandY:
             self.testing_size = 1
         else:
             self.testing_size = (self.test_data_percent/100.0)
-        self.data_sets = self.generate_training_and_testing_data() # [X_train, X_test, y_train, y_test]
-        self.X_train = self.data_sets[0]
-        self.X_test = self.data_sets[1]
-        self.y_train = self.data_sets[2]
-        self.y_test = self.data_sets[3]
+        data_sets = self.generate_training_and_testing_data() # [X_train, X_test, y_train, y_test]
+        self.X_train = data_sets[0]
+        self.X_test = data_sets[1]
+        self.y_train = data_sets[2]
+        self.y_test = data_sets[3]
         
         self.tf_names_list = self.get_tf_names_list()
         self.corr_df = self.return_correlations_dataframe()
         self.combined_correlations_df = self.get_combined_correlations_df()
         if self.view_input_correlations_plot:
             self.view_input_correlations = self.view_input_correlations()
-        self._apply_parameter_constraints()
-        self.X_train_df = self.view_X_train_df()
-        self.y_train_df = self.view_y_train_df()
-        self.X_test_df = self.view_X_test_df()
-        self.y_test_df = self.view_y_test_df()
-        self.X_df = self.view_original_X_df()
-        self.y_df = self.view_original_y_df()
-        self.combined_train_test_x_and_y_df = self.combine_X_and_y_train_and_test_data()
-        
-    def _apply_parameter_constraints(self):
-        constraints = {**DemoDataBuilderXandY._parameter_constraints}
-        for key, value in self.__dict__.items():
-            if key in constraints:
-                if isinstance(constraints[key], tuple):
-                    if isinstance(constraints[key][0], type) and not isinstance(value, constraints[key][0]):
-                        setattr(self, key, constraints[key][0])
-                    elif constraints[key][1] is not None and isinstance(constraints[key][1], type) and not isinstance(value, constraints[key][1]):
-                        setattr(self, key, constraints[key][1])
-                elif key == "corrVals": # special case for corrVals
-                    if not isinstance(value, list):
-                        setattr(self, key, constraints[key])
-                elif value not in constraints[key]:
-                    setattr(self, key, constraints[key][0])
-        return self
         
     def get_tf_names_list(self):
         tf_names_list = []
         for i in range(0, self.N):
-            term = "TF" + str(i+1)
+            term = "TF" + str(i)
             tf_names_list.append(term)
         return tf_names_list
     
@@ -196,70 +146,6 @@ class DemoDataBuilderXandY:
     def get_N(self):
         N = len(self.corrVals)
         return N 
-    
-    def get_X_train(self):
-        return self.data_sets[0] #X_train
-
-    def get_y_train(self):
-        return self.data_sets[2] # y_train
-    
-    def get_X_test(self):
-#         if self.same_train_test_data:
-#             return X_train
-        return self.data_sets[1]
-    
-    def get_y_test(self):
-#         if self.same_train_test_data:
-#             return y_train        
-        return self.data_sets[3]
-
-    def view_original_X_df(self):
-        import pandas as pd
-        X_df = pd.DataFrame(self.X, columns = self.tf_names_list)
-        return X_df
-    
-    def view_original_y_df(self):
-        import pandas as pd
-        y_df = pd.DataFrame(self.y, columns = ["y"])
-        return y_df
-    
-    def view_X_train_df(self):
-        import pandas as pd
-        X_train_df = pd.DataFrame(self.X_train, columns = self.tf_names_list)
-        return X_train_df
-
-    def view_y_train_df(self):
-        import pandas as pd
-        y_train_df = pd.DataFrame(self.y_train, columns = ["y"])
-        return y_train_df
-    
-    def view_X_test_df(self):
-        import pandas as pd
-        X_test_df = pd.DataFrame(self.X_test, columns = self.tf_names_list)
-        return X_test_df
-    
-    def view_y_test_df(self):
-        import pandas as pd
-        y_test_df = pd.DataFrame(self.y_test, columns = ["y"])
-        return y_test_df
-    
-    
-    
-    def combine_X_and_y_train_and_test_data(self):
-        X_p1 = self.X_train_df
-        X_p1["info"] = "training"
-        X_p2 = self.X_test_df
-        X_p2["info"] = "testing"
-        X_combined = pd.concat([X_p1, X_p2]).drop_duplicates()
-        y_p1 = self.y_train_df
-        y_p1["info"] = "training"
-        y_p2 = self.y_test_df
-        y_p2["info"] = "testing"
-        y_combined = pd.concat([y_p1, y_p2]).drop_duplicates()
-        combining_df = X_combined
-        combining_df["y"] = y_combined["y"]
-        return combining_df
-
     
     def return_correlations_dataframe(self):
         #N = len(tf_names_list)
@@ -272,10 +158,10 @@ class DemoDataBuilderXandY:
         return corr_df
     
     def generate_Y(self):
-        seed_val = self.rng_seed
+        seed_val = self._rng_seed
         import numpy as np
         rng = np.random.default_rng(seed=seed_val)
-        y = rng.normal(self.mu, self.std_dev, self.M)
+        y = rng.normal(self._mu, self._sd, self.M)
         return y
     
         # Check if Q is orthogonal using the is_orthogonal function
@@ -311,13 +197,13 @@ class DemoDataBuilderXandY:
         """
         orthogonal = self.orthogonal_X_bool
         scalar = self.ortho_scalar
-        import numpy as np
+       
         
-        np.random.seed(self.randSeed)
+        np.random.seed(self._randSeed)
         y = self.y
         n = len(y)
         numTFs = self.N # len(corrVals)
-        numIterations = self.num_iters_to_generate_X
+        numIterations = self._num_iters_for_generating_X
         correlations = self.corrVals
         corrVals = [correlations[0]] + correlations
         e = np.random.normal(0, 1, (n, numTFs + 1))
@@ -354,7 +240,6 @@ class DemoDataBuilderXandY:
             X_train, X_test, y_train, y_test = X, X, y, y
             y_train = y
             y_test = y_train
-            X_test = X_train
             print(f":) Please note that since we use the same data for training and for testing :) of our {self.M} samples. Thus, we have:")
             print(f":) X_train = X_test = {X_train.shape[0]} rows (samples) and {X_train.shape[1]} columns (N = {self.N} predictors) for training and for testing")
             print(f":) y_train = y_test = {y_train.shape[0]} corresponding rows (samples) for training and for testing.")    
@@ -419,58 +304,9 @@ class DemoDataBuilderXandY:
         corr_val_df.index = self.tf_names_list
         corr_val_df["TF"] = self.tf_names_list
         import plotly.express as px
-        fig = px.bar(corr_val_df, x='TF', y='correlation', title = "Input Correlations for Dummy Example", barmode='group')
+        fig = px.bar(corr_val_df, x='TF', y='correlation',  barmode='group')
         fig.show()
         return fig
-    
-    
-    def view_train_vs_test_data_for_predictor(self, predictor_name):
-        combined_train_test_x_and_y_df = self.combined_train_test_x_and_y_df
-        combined_correlations_df = self.combined_correlations_df
-        print(combined_correlations_df[combined_correlations_df["predictor"] == predictor_name][["predictor", "actual_corr", "X_group", "num_samples"]])
-        title_name = title = "Training Versus Testing Data Points for Predictor: " + predictor_name
-        fig = px.scatter(combined_train_test_x_and_y_df, x=predictor_name, y="y", color = "info",
-                        title = title_name)
-        #fig.show()
-        return fig
-
-def generate_dummy_data(corrVals,
-        num_samples_M = 100,
-        train_data_percent = 70,
-        mu = 0,
-        std_dev = 1,
-        iters_to_generate_X = 100,
-        orthogonal_X = False,
-        ortho_scalar = 10,
-        view_input_corrs_plot = False):
-    
-    # the defaults
-    same_train_test_data = False
-    test_data_percent = 100 - train_data_percent
-    if train_data_percent == 100: # since all of the data is used for training,
-        # then the training and testing data will be the same :)
-        same_train_test_data = True
-        test_data_percent = 100
-    print(f":) same_train_test_data = {same_train_test_data}")
-    demo_dict = {
-        "test_data_percent": 100 - train_data_percent,
-        "mu": mu,
-        "std_dev": std_dev,
-        "num_iters_to_generate_X": iters_to_generate_X,
-        "same_train_test_data": same_train_test_data,
-        "rng_seed": 2023, # for Y
-        "randSeed": 123, # for X
-        "ortho_scalar": ortho_scalar,
-        "orthogonal_X_bool": orthogonal_X,
-        "view_input_correlations_plot": view_input_corrs_plot,
-        "num_samples_M": num_samples_M,
-        "corrVals": corrVals
-    }
-    
-    dummy_data = DemoDataBuilderXandY(**demo_dict) # 
-    
-    return dummy_data
-    
     
     
 def view_matrix_as_dataframe(matrix, column_names_list = [], row_names_list = []):
@@ -914,11 +750,11 @@ class GRegulNet:
         self.fit_y_intercept = False
         self.max_lasso_iterations = 10000
         self.__dict__.update(kwargs)
+        required_keys = ["X_train", "y_train"]
         if self.use_network:
-            required_keys = ["network", "beta_network"] #"same_train_and_test_data_bool"]
+            required_keys += ["network", "beta_network"] #"same_train_and_test_data_bool"]
         else: # baseline situation :)
-             required_keys = []
-        self.optimal_alpha = "Since cv_for_alpha is True, please fit model using X and y data to find optimal_alpha."
+             required_keys += []
         if self.use_cross_validation_for_model_bool == False: # we then need to provide our own alpha lasso values
             #required_keys = ["alpha_lasso", "same_train_and_test_data_bool"]
             self.optimal_alpha = "User-specified optimal alpha lasso: " + str(self.alpha_lasso)
@@ -944,68 +780,30 @@ class GRegulNet:
         self.parameters_df = pd.DataFrame(self.all_parameters_list, 
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
-        self._apply_parameter_constraints() # ensuring that the parameter constraints are met        
+        self._apply_parameter_constraints() # ensuring that the parameter constraints are met
+        self.fit()
+        
         
     def retrieve_tf_names_list_ml_model(self):
         import pandas as pd
+#         edges_df = pd.DataFrame(self.edge_list)
+#         all_nodes = list(set(list(edges_df[0]) + list(edges_df[1])))
+#         all_nodes.sort()
+#         min_edge = min(all_nodes)
+        #max_edge = max(all_nodes)
+        #N = len(all_nodes)
         tf_names_list = []
         for i in range(0, self.N):
             term = "TF" + str(i + 1)
             tf_names_list.append(term)
         return tf_names_list
-
-#     def fit(self, X, y): # fits a model Function used for model training 
-#         self.M = y.shape[0]
-#         self.X_train = X
-#         self.N = self.X_train.shape[1]
-#         self.tf_names_list = self.retrieve_tf_names_list_ml_model()
-#         self.y_train = y
-#         if self.use_network:
-#             print("network used")
-#             self.B_train = self.compute_B_matrix("train")
-#             self.X_tilda_train, self.y_tilda_train = self.compute_X_tilde_y_tilde(self.B_train, self.X_train, 
-#                                                                                   self.y_train)
-#             self.X_training_to_use, self.y_training_to_use = self.X_tilda_train, self.y_tilda_train
-#             self.data_used = "X_tilda_train, y_tilda_train"
-#         else:
-#             print("baseline used")
-#             self.X_training_to_use, self.y_training_to_use = self.X_train, self.y_train
-#             self.data_used = "X_train, y_train"
-        
-#         self.regr = self.return_fit_ml_model(self.X_training_to_use, self.y_training_to_use)
-#         ml_model = self.regr
-#         if self.use_cross_validation_for_model_bool:
-#             self.optimal_alpha = "Cross-Validation optimal alpha lasso: " + str(ml_model.alpha_)
-#         coef = ml_model.coef_
-#         coef[coef == -0.0] = 0
-#         self.coef = coef # Get the coefficients
-#         if self.fit_y_intercept:
-#             self.intercept = ml_model.intercept_
-#         self.predY_tilda_train = ml_model.predict(self.X_training_to_use) # training data   
-#         self.mse_tilda_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_tilda_train) # Calculate MSE
-#         self.predY_train = ml_model.predict(self.X_train) # training data   
-#         self.mse_train = self.calculate_mean_square_error(self.y_train, self.predY_train) # Calculate MSE
-
-#         import pandas as pd
-        
-#         #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
-#         if self.fit_y_intercept:
-#             coeff_terms = [self.intercept] + list(self.coef)
-#             index_names = ["y_intercept"] + self.tf_names_list
-#             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
-#         else:
-#             coeff_terms = ["None"] + list(self.coef)
-#             index_names = ["y_intercept"] + self.tf_names_list
-#             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
-# #             self.coefficients_df["y_intercept"] = self.intercept
-#         return self
-
-    def fit(self, X, y): # fits a model Function used for model training 
-        self.M = y.shape[0]
-        self.X_train = X
+           
+    def fit(self): # fits a model Function used for model training 
+        self.M = self.y_train.shape[0]
+        #self.X_train = X
         self.N = self.X_train.shape[1]
         self.tf_names_list = self.retrieve_tf_names_list_ml_model()
-        self.y_train = y
+        #self.y_train = y
         if self.use_network:
             print("network used")
             self.B_train = self.compute_B_matrix("train")
@@ -1028,12 +826,8 @@ class GRegulNet:
         if self.fit_y_intercept:
             self.intercept = ml_model.intercept_
         self.predY_tilda_train = ml_model.predict(self.X_training_to_use) # training data   
-        self.mse_tilda_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_tilda_train) # Calculate MSE
-        self.predY_train = ml_model.predict(self.X_train) # training data   
-        #self.predY_train = self.predict_y_from_y_tilda(self.X_train, self.X_tilda_train, self.predY_tilda_train)
-        ##ml_model.predict(self.X_train) # training data   
-        self.mse_train = self.calculate_mean_square_error(self.y_train, self.predY_train) # Calculate MSE
-
+        self.mse_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_tilda_train) # Calculate MSE
+        
         import pandas as pd
         
         #self.model_coefficients_df = pd.DataFrame(self.coef, index = self.tf_names_list).transpose()
@@ -1047,19 +841,6 @@ class GRegulNet:
             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
 #             self.coefficients_df["y_intercept"] = self.intercept
         return self
-
-    def predict_y_from_y_tilda(self, X, X_tilda, pred_y_tilda):
-        # calculate transpose of inverse of X
-        X_inv = np.linalg.inv(X)
-        X_inv_transpose = X_inv.T
-
-        # calculate transpose of X_tilda
-        X_tilda_transpose = X_tilda.T
-
-        # calculate matrix multiplication
-        pred_y = X_inv_transpose.dot(X_tilda_transpose).dot(pred_y_tilda)
-        return pred_y
-        
     
     # # https://www.geeksforgeeks.org/implementation-of-elastic-net-regression-from-scratch/
     def _apply_parameter_constraints(self):
@@ -1171,103 +952,20 @@ class GRegulNet:
         mean_squared_diff = np.mean(squared_diff)
         return mean_squared_diff
     
-#     def predict(self, X_test, y_test):
-#         import pandas as pd
-#         import numpy as np
-#         self.X_test = X_test
-#         self.y_test = y_test
-#         ml_model = self.regr
-#         B_test = self.compute_B_matrix("test")
-#         X_tilda_test, y_tilda_test = self.compute_X_tilde_y_tilde(B_test, X_test, y_test)
-#         X_testing_to_use, y_testing_to_use = X_tilda_test, y_tilda_test
-#         predY_test = ml_model.predict(X_testing_to_use) # training data   
-#         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-#         return mse_test
-
-    def predict_y(self, X_test, y_test):
+    def predict(self, X_test, y_test):
         import pandas as pd
         import numpy as np
         self.X_test = X_test
         self.y_test = y_test
         ml_model = self.regr
-        X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = ml_model.predict(X_testing_to_use) # training data   
-        #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-        return predY_test #mse_test
-    
-#     def predict_y(self, X_test, y_test):
-#         import pandas as pd
-#         import numpy as np
-#         self.X_test = X_test
-#         self.y_test = y_test
-#         ml_model = self.regr
-#         B_test = self.compute_B_matrix("test")
-#         X_tilda_test, y_tilda_test = self.compute_X_tilde_y_tilde(B_test, X_test, y_test)
-#         X_testing_to_use, y_testing_to_use = X_tilda_test, y_tilda_test
-        
-#         predY_tilda_test = ml_model.predict(X_testing_to_use) # training data   
-#         mse_tilda_test = self.calculate_mean_square_error(y_testing_to_use, predY_tilda_test) # Calculate MSE
-#         predY_test = predict_y_from_y_tilda(X_test, X_tilda_test, predY_tilda_test)
-        
-#         #predY_test = ml_model.predict(X_testing_to_use) # training data   
-#         #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-#         return predY_test #mse_test
-
-#     def predict_y(self, X_test, y_test):
-#         import pandas as pd
-#         import numpy as np
-#         self.X_test = X_test
-#         self.y_test = y_test
-#         ml_model = self.regr
-#         X_testing_to_use, y_testing_to_use = X_test, y_test
-#         predY_test = self.predict_y(X_test, y_test) # ml_model.predict(X_testing_to_use) # training data   
-#         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-#         dict_to_return = {}
-#         dict_to_return["predictions"] = predY_test
-#         dict_to_return["mse"] = mse_test
-
-#         return dict_to_return       
- 
-    
-    def test_mse(self, X_test, y_test):
-        import pandas as pd
-        import numpy as np
-        self.X_test = X_test
-        self.y_test = y_test
-        ml_model = self.regr
-        X_testing_to_use, y_testing_to_use = X_test, y_test
+        B_test = self.compute_B_matrix("test")
+        X_tilda_test, y_tilda_test = self.compute_X_tilde_y_tilde(B_test, X_test, y_test)
+        X_testing_to_use, y_testing_to_use = X_tilda_test, y_tilda_test
         predY_test = ml_model.predict(X_testing_to_use) # training data   
         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-        return mse_test #mse_test
+        return mse_test
     
-#         def test_mse(self, X_test, y_test):
-#             import pandas as pd
-#             import numpy as np
-#             self.X_test = X_test
-#             self.y_test = y_test
-#             ml_model = self.regr
-#             B_test = self.compute_B_matrix("test")
-#             X_tilda_test, y_tilda_test = self.compute_X_tilde_y_tilde(B_test, X_test, y_test)
-#             X_testing_to_use, y_testing_to_use = X_tilda_test, y_tilda_test
-
-#             predY_tilda_test = ml_model.predict(X_testing_to_use) # training data   
-#             mse_tilda_test = self.calculate_mean_square_error(y_testing_to_use, predY_tilda_test) # Calculate MSE
-#             predY_test = predict_y_from_y_tilda(X_test, X_tilda_test, predY_tilda_test)
-
-#             #predY_test = ml_model.predict(X_testing_to_use) # training data   
-#             mse_test = calculate_mean_square_error(y_test, predY_test) # Calculate MSE
-#             return predY_test #mse_test
     
-#     def test_mse(self, X_test, y_test):
-#         import pandas as pd
-#         import numpy as np
-#         self.X_test = X_test
-#         self.y_test = y_test
-#         ml_model = self.regr
-#         X_testing_to_use, y_testing_to_use = X_test, y_test
-#         predY_test = self.predict_y(X_test, y_test) # ml_model.predict(X_testing_to_use) # training data   
-#         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-#         return mse_test    
     
     def full_lists_gregulnet(self):
         # network arguments used:
@@ -1344,23 +1042,21 @@ class baselineModel:
         "alpha_lasso": (0, None),
         "num_cv_folds": (0, None),
         "fit_y_intercept": [False, True],
-        #"same_train_and_test_data_bool": [False, True],
+        "same_train_and_test_data_bool": [False, True],
         "use_cross_validation_for_model_bool": [False, True],
         "max_lasso_iterations": (1, None),
         "model_type": ["Lasso", "LassoCV", "Linear"]#,
     }
     
     def __init__(self,  **kwargs):# beta_network, alpha_lasso, X_train, y_train, X_test, y_test):
-        #self.same_train_and_test_data_bool = False # different or same training and testing data?
+        self.same_train_and_test_data_bool = False # different or same training and testing data?
         self.use_cross_validation_for_model_bool = False
         self.num_cv_folds = 5 # for cross validation models
         self.model_type = "Lasso"
         self.fit_y_intercept = False
         self.max_lasso_iterations = 10000
         self.__dict__.update(kwargs)
-        required_keys = []#"X_train", "y_train"]
-        self.optimal_alpha = "Since cv_for_alpha is True, please fit model using X and y data to find optimal_alpha."
-
+        required_keys = ["X_train", "y_train"]
         if self.use_cross_validation_for_model_bool == False: # we then need to provide our own alpha lasso values
             #required_keys = ["alpha_lasso", "same_train_and_test_data_bool"]
             self.optimal_alpha = "User-specified optimal alpha lasso: " + str(self.alpha_lasso)
@@ -1380,7 +1076,7 @@ class baselineModel:
                                           columns = ["parameter", "data type", "description", "value", "class"]).drop_duplicates()
 
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met
-        #self.fit()
+        self.fit()
         
         
     def retrieve_tf_names_list_ml_model(self):
@@ -1391,12 +1087,12 @@ class baselineModel:
             tf_names_list.append(term)
         return tf_names_list
            
-    def fit(self, X, y): # fits a model Function used for model training 
-        self.M = y.shape[0]
-        self.X_train = X
+    def fit(self): # fits a model Function used for model training 
+        self.M = self.y_train.shape[0]
+        #self.X_train = X
         self.N = self.X_train.shape[1]
         self.tf_names_list = self.retrieve_tf_names_list_ml_model()
-        self.y_train = y
+        #self.y_train = y
         print("baseline used")
         self.X_training_to_use, self.y_training_to_use = self.X_train, self.y_train
         self.data_used = "X_train, y_train"
@@ -1427,9 +1123,6 @@ class baselineModel:
             self.model_coefficients_df = pd.DataFrame(coeff_terms, index = index_names).transpose()  
 #             self.coefficients_df["y_intercept"] = self.intercept
         return self
-    
-        
-        
     
     # # https://www.geeksforgeeks.org/implementation-of-elastic-net-regression-from-scratch/
     def _apply_parameter_constraints(self):
@@ -1498,7 +1191,7 @@ class baselineModel:
         mean_squared_diff = np.mean(squared_diff)
         return mean_squared_diff
     
-    def predict_y(self, X_test, y_test):
+    def predict(self, X_test, y_test):
         import pandas as pd
         import numpy as np
         self.X_test = X_test
@@ -1506,32 +1199,6 @@ class baselineModel:
         ml_model = self.regr
         X_testing_to_use, y_testing_to_use = X_test, y_test
         predY_test = ml_model.predict(X_testing_to_use) # training data   
-        #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-        return predY_test #mse_test
-    
-#     def predict_y(self, X_test, y_test):
-#         import pandas as pd
-#         import numpy as np
-#         self.X_test = X_test
-#         self.y_test = y_test
-#         ml_model = self.regr
-#         X_testing_to_use, y_testing_to_use = X_test, y_test
-#         predY_test = self.predict_y(X_test, y_test) # ml_model.predict(X_testing_to_use) # training data   
-#         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-#         dict_to_return = {}
-#         dict_to_return["predictions"] = predY_test
-#         dict_to_return["mse"] = mse_test
-
-#         return dict_to_return       
-    
-    def test_mse(self, X_test, y_test):
-        import pandas as pd
-        import numpy as np
-        self.X_test = X_test
-        self.y_test = y_test
-        ml_model = self.regr
-        X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = self.predict_y(X_test, y_test) # ml_model.predict(X_testing_to_use) # training data   
         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
         return mse_test
     
@@ -1576,7 +1243,7 @@ class baselineModel:
         
         return full_lists
 
-def geneRegulatNet(edge_list, beta_net, cv_for_alpha = False, alpha_lasso = 0.1, 
+def geneRegulatNet(X, y, edge_list, beta_net, cv_for_alpha = False, alpha_lasso = 0.1, 
                    edge_vals_for_d = False,
                   self_loops = False, d_pseudocount = 1e-3, 
                   default_edge_w = 0.1,
@@ -1599,10 +1266,12 @@ def geneRegulatNet(edge_list, beta_net, cv_for_alpha = False, alpha_lasso = 0.1,
                         "threshold_for_degree": thresh_for_d}
                         
            ####################
-    if use_net:
+    if use_network:
         print("prior graph network used")
         netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix.
-        greg_dict = {"alpha_lasso": alpha_lasso,
+        greg_dict = {"X_train": X, 
+                     "y_train": y,
+                     "alpha_lasso": alpha_lasso,
                     "beta_network":beta_net,
                     "network": netty,
                     "use_cross_validation_for_model_bool": cv_for_alpha,
@@ -1610,19 +1279,21 @@ def geneRegulatNet(edge_list, beta_net, cv_for_alpha = False, alpha_lasso = 0.1,
                      "model_type":model_type, 
                      "use_network":use_net,
                      "fit_y_intercept":y_intercept, 
-                     "max_lasso_iterations":maxit
+                     "max_lasso_iterations":max_lasso_iters
                     }
         greggy = GRegulNet(**greg_dict)
         return greggy
     else:
         print("baseline model (no prior network)")
         #baselineModel
-        baseline_dict = {"alpha_lasso": alpha_lasso,
+        baseline_dict = {"X_train": X, 
+                        "y_train": y,
+                         "alpha_lasso": alpha_lasso,
                     "use_cross_validation_for_model_bool": cv_for_alpha,
                      "num_cv_folds":num_cv_folds, 
                      "model_type":model_type, 
                      "fit_y_intercept":y_intercept, 
-                     "max_lasso_iterations":maxit
+                     "max_lasso_iterations":max_lasso_iters
                     }
         baseliney = baselineModel(**baseline_dict)
         return baseliney

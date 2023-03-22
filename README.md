@@ -13,7 +13,7 @@ layout: default
 
 ## Summary
 
-GRegulNet is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes in gene regulatory networks (GRNs). GRegulNet incorporates information from prior biological networks to improve predictions and identify complex and non-linear relationships between predictors. This approach can highlight important nodes and edges in the network, provide insight into underlying biological processes, and improve model accuracy and biological/clinical significance. GRegulNet can incorporate multiple types of network data, including PPI networks, GRNs, gene co-expression networks, and metabolic networks.
+GRegulNet is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes in gene regulatory networks (GRNs). GRegulNet incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. GRegulNet can incorporate multiple types of network data, including PPI networks, gene co-expression networks, and metabolic networks.
 
 <!-- In summary, network-constrained regularization may bolster the construction of more accurate and interpretable models that incorporate prior knowledge of the network structure among predictors. -->
 
@@ -23,7 +23,7 @@ GRegulNet is a software package that utilizes network-constrained regularization
 
 ## Hardware Requirements
 
-The analysis is based on Python version 3.10.6. Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer (e.g. 32 GB RAM and 32 GB storage) with enough RAM to support the operations.
+The analysis is based on Python version 3.10. Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer (e.g. 32 GB RAM and 32 GB storage) with enough RAM to support the operations.
 
 ## Software Requirements
 
@@ -37,27 +37,26 @@ Please note that our package, GRegulNet, is run by the following function **gene
 ## Usage
 
 geneRegulatNet(<br>
-                $X$, <br>
-                $y$, <br>
+                <!-- $X$, <br>
+                $y$, <br> -->
                 edge_list,<br> 
                 beta_net, <br>
                 cv_for_alpha = False,<br> 
                 alpha_lasso = 0.1, <br>
-                edge_vals_for_d = False, <br>
-                self_loops = False, <br>
-                d_pseudocount = 1e-3, <br>
-                default_edge_w = 0.1, <br>
-                w_transform_for_d = "none", <br>
+                <!-- edge_vals_for_d = False, <br> -->
+                <!-- self_loops = False, <br> -->
+                <!-- d_pseudocount = 1e-3, <br> -->
+                default_edge_weight = 0.1, <br>
+                <!-- w_transform_for_d = "none", <br> -->
                 <!-- sqrt_w_for_d = False, <br> 
                 square_w_for_d = False,<br>  -->
-                thresh_for_d = 0.5, <br>
+                degree_threshold = 0.5, <br>
                 num_cv_folds = 5, <br>
-                model_type = "Lasso", <br>
+                <!-- model_type = "Lasso", <br> -->
                 use_net = True,<br>
                 y_intercept = False, <br>
-                maxit = 10000<br>
+                max_iters = 10000<br>
                 )<br>
-
             
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
@@ -136,12 +135,17 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| $X$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
-| $y$ | Input numpy array list with 1 value for each sample.| 
 | edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
 | beta_net: $\beta_{net}$  | Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
 | cv_for_alpha | * False (default): user specifies value of $\alpha_{lasso}$ <br> * True: GRegulNet performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | alpha_lasso: $\alpha_{lasso}$  | A numerical regularization parameter for lasso needed if cv_for_alpha = False: $\alpha_{lasso} \geq 0$. |
+
+
+
+<!-- | Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+| $y$ | Input numpy array list with 1 value for each sample.|  -->
 
 
 <!-- | Parameter | Definition | More information |
@@ -158,14 +162,14 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| default_edge_w  | Default edge weight ($w$) assigned to any edge with missing weight | 
-| self_loops  | True: Add 1 to each degree ($d$) for each node in the network (for self-loops)| 
-| d_pseudocount  | Pseudocount to add for the degree of each node in the network. |
-| edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False|
-| thresh_for_d  | Edges with weight $w$ > thresh_for_d are counted as 1 towards node degree (if *edge_vals_for_d is False*) |
-| w_transform_for_d | To calculate degree for a given node, we can choose from 1 of 3 options (if *edge_vals_for_d is True*): <br> * "none": sum original $w$ <br> * "sqrt": sum $\sqrt{w}$ <br> * "square": sum $w^{2}$ | 
+| default_edge_weight  | Default edge weight ($w$) assigned to any edge with missing weight | 
+| degree_pseudocount  | Pseudocount to add for the degree of each node in the network. |
+| degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) |
 <!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
 | square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) | -->
+ <!-- self_loops  | True: Add 1 to each degree ($d$) for each node in the network (for self-loops)| 
+ | edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False| -->
+<!-- | w_transform_for_d | To calculate degree for a given node, we can choose from 1 of 3 options (if *edge_vals_for_d is True*): <br> * "none": sum original $w$ <br> * "sqrt": sum $\sqrt{w}$ <br> * "square": sum $w^{2}$ |  -->
 
 * Parameters for the network-based regularized model:
 
@@ -187,10 +191,10 @@ $$ -->
 
 | Output | Definition | 
 | --------- | ---------- | 
-| model_coefficients_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if *y_intercept = True*) | 
+| model_coef_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if *y_intercept = True*) | 
 | optimal_alpha  | If *cv_for_alpha = True*, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
-| all_parameters_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
-| parameters_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
+| all_params_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
+| params_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
 | mse_train | Mean Square Error (MSE): predicted versus actual values | 
 <!-- $\tilde{y}_{train}$|  -->
 <!-- | coef  | Numpy array of the Lasso model coefficients for the predictors. |  -->
@@ -201,25 +205,22 @@ $$ -->
 
 ## Demo (Toy Example) of GRegulNet:
 
-Suppose we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 5 Transcription Factors (TFs): [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. The dimensions of $X$ are therefore 100 rows by 5 columns (predictors). More details about our DemoDataBuilderXandY class (and additional parameters we can adjust for) are in *Demo_Data_Example.ipynb*. Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network, where higher edge weights $w$ indicate stronger interactions at the protein-level. 
+Suppose we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 5 Transcription Factors (TFs): [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. The dimensions of $X$ are therefore 100 rows by 5 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network, where higher edge weights $w$ indicate stronger interactions at the protein-level. 
 
 ```python
-from gregulnetClasses import * # to load our package, GRegulNet
+from gregulnet_classes import * # to load our package, GRegulNet
 
-demo_dict = {"num_samples_M": 100,
-            "corrVals": [0.9, 0.5, 0.1, -0.2, -0.8],
-            # partition data with 70% training, 30% testing:
-            "same_train_test_data": False} 
-
-dummy_data = DemoDataBuilderXandY(**demo_dict)
+dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8],
+                   num_samples_M = 100,
+                   train_data_percent = 70)
 
 # 70 samples for training data (used to train and fit GRegulNet model)
-X_train = dummy_data.X_train 
-y_train = dummy_data.y_train
+X_train = dummy_data.get_X_train()
+y_train = dummy_data.get_y_train()
 
 # 30 samples for testing data
-y_test = dummy_data.y_test 
-X_test = dummy_data.X_test
+X_test = dummy_data.get_X_test()
+y_test = dummy_data.get_y_test()
 
 # prior network edge_list:
 edge_list = [[1, 2, 0.9], [4, 5, 0.75], [1, 3], [1, 4], [1, 5], 
@@ -229,11 +230,12 @@ beta_network_val = 10
 alpha_lasso_val = 0.01
 
 # Building the network regularized regression model. 
-gregulnet_demo = geneRegulatNet(X = X_train,
-                                y = y_train,
-                                edge_list = edge_list, 
+gregulnet_demo = geneRegulatNet(edge_list = edge_list, 
                                 beta_net = beta_network_val,
                                 alpha_lasso = alpha_lasso_val)
+
+# Fitting the gregulnet model on training data: X_train and y_train:
+gregulnet_demo.fit(X_train, y_train)
 ```
   <!-- prior graph network used
   :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
