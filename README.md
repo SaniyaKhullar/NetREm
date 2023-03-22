@@ -182,7 +182,7 @@ $$ -->
 
 ### Output Values: ###
 
-* A fitted GRegulNet network-regularized linear model estimator object from the GRegulNet class. There are several methods we can call for our GRegulNet estimator object:
+* A GRegulNet network-regularized linear model estimator object from the GRegulNet class. There are several methods we can call for our GRegulNet estimator object:
 
 #### Methods:
 
