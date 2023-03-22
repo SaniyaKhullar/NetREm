@@ -173,9 +173,8 @@ $$ -->
 | --------- | ---------- | 
 | use_net  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
 | y_intercept | * True: y-intercept is fitted for the final GRegulNet model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
-| maxit  | the maximum # of iterations we will run Lasso regression model (if *cv_for_alpha is False*) |
+| maxit  | the maximum # of iterations we will run Lasso regression model for (if *cv_for_alpha is False*) |
 | num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha is True*) |
-
 
 ### Details:
 
@@ -183,7 +182,7 @@ $$ -->
 
 ### Output Values: ###
 
-* A fitted GRegulNet network-regularized linear model estimator object from the GRegulNet class. 
+* A fitted GRegulNet network-regularized linear model estimator object from the GRegulNet class. There are several methods we can call for our GRegulNet estimator object:
 
 #### Methods:
 
