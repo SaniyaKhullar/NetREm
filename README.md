@@ -229,7 +229,7 @@ We can evaluate our model performance capabilities on data like testing data usi
   - Returns:
   Numeric value corresponding to the Mean Square Error. 
   
-  MSE = $\frac{1}{m} \sum_{i=1}^{m} (y_i - \hat{y_i})^2$
+  MSE = $\frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$
 
 ## Demo (Toy Example) of GRegulNet:
 
