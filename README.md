@@ -203,6 +203,18 @@ $$ -->
 | y_tilda_train | Transformed $y$ input matrix to $\tilde{y}_{train}$| 
 | predY_tilda_train | Predicted $\tilde{y}_{train}$ values based on fitted model |  -->
 
+#### Methods:
+
+* fit($X$, $y$)
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample used for training. Here, rows are samples and columns are predictors. | 
+| $y$ | Input numpy array list for model training with 1 value for each sample.| 
+
+* predict($X$)
+
+
 ## Demo (Toy Example) of GRegulNet:
 
 Suppose we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 5 Transcription Factors (TFs): [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. The dimensions of $X$ are therefore 100 rows by 5 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network, where higher edge weights $w$ indicate stronger interactions at the protein-level. 
@@ -262,7 +274,7 @@ gregulnet_demo.coef
 
 
 ```python
-gregulnet_demo.model_coefficients_df
+gregulnet_demo.model_coeffs_df
 ```
 
 <div>
