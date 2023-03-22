@@ -187,7 +187,20 @@ $$ -->
 
 ### Output Values: ###
 
-* A fitted GRegulNet network-regularized linear model object from the GRegulNet class. We can retrieve our model coefficients. We can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE) by calling the predict($X_{test}$, $y_{test}$) function. 
+* A fitted GRegulNet network-regularized linear model estimator object from the GRegulNet class. 
+
+#### Methods:
+
+* fit($X$, $y$)
+
+Building and training the GRegulNet model with $X$ and $y$ data. 
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample used for training. Here, rows are samples and columns are predictors. | 
+| $y$ | Input numpy array list for model training with 1 value for each sample.| 
+
+We can retrieve our model coefficients and other outputs by calling these outputs:
 
 | Output | Definition | 
 | --------- | ---------- | 
@@ -196,24 +209,14 @@ $$ -->
 | all_params_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
 | params_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
 | mse_train | Mean Square Error (MSE): predicted versus actual values | 
-<!-- $\tilde{y}_{train}$|  -->
-<!-- | coef  | Numpy array of the Lasso model coefficients for the predictors. |  -->
-<!-- | intercept  | If *y_intercept = True*, returns the fitted y-intercept |  -->
-<!-- | X_tilda_train | Transformed $X$ input matrix to $\tilde{X}_{train}$ | 
-| y_tilda_train | Transformed $y$ input matrix to $\tilde{y}_{train}$| 
-| predY_tilda_train | Predicted $\tilde{y}_{train}$ values based on fitted model |  -->
-
-#### Methods:
-
-* fit($X$, $y$)
-
-| Parameter | Definition | 
-| --------- | ---------- | 
-| $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample used for training. Here, rows are samples and columns are predictors. | 
-| $y$ | Input numpy array list for model training with 1 value for each sample.| 
 
 * predict($X$)
 
+We can evaluate our model performance capabilities on testing data using the Mean Squared Error (MSE) by calling the predict($X_{test}$, $y_{test}$) function. 
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
 
 ## Demo (Toy Example) of GRegulNet:
 
