@@ -45,19 +45,15 @@ geneRegulatNet(<br>
                 alpha_lasso = 0.1, <br>
                 <!-- edge_vals_for_d = False, <br> -->
                 <!-- self_loops = False, <br> -->
-                <!-- d_pseudocount = 1e-3, <br> -->
                 default_edge_weight = 0.1, <br>
-                <!-- w_transform_for_d = "none", <br> -->
-                <!-- sqrt_w_for_d = False, <br> 
-                square_w_for_d = False,<br>  -->
                 degree_threshold = 0.5, <br>
+                degree_pseudocount = 1e-3, <br> 
                 num_cv_folds = 5, <br>
                 <!-- model_type = "Lasso", <br> -->
                 use_net = True,<br>
                 y_intercept = False, <br>
                 max_iters = 10000<br>
                 )<br>
-            
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
