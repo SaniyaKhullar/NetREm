@@ -273,7 +273,7 @@ gregulnet_demo.coef
 
 
 ```python
-gregulnet_demo.model_coeffs_df
+gregulnet_demo.model_coef_df
 ```
 
 <div>
@@ -309,12 +309,14 @@ We can test the performance of our data on testing data (30 samples), to underst
 
 
 ```python
-mse_test = gregulnet_demo.predict(X_test, y_test)
+pred_y_test = gregulnet_demo.predict_y(X_test, y_test) # predicted values for y_test
+mse_test = gregulnet_demo.test_mse(X_test, y_test)
+
 print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
 ```
 
     Testing GRegulnet :)
-    Please note that the testing Mean Square Error (MSE) is 0.020152051044508176
+    Please note that the testing Mean Square Error (MSE) is 0.17220844811456956
     
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
