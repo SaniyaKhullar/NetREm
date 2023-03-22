@@ -214,7 +214,7 @@ We can use our model to predict values for our response variable $y$.
 | --------- | ---------- | 
 | $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
 
-  - Returns:
+*Returns:*
   Numpy array of $\hat{y}$ predicted values for $y$.
 
 * **test_mse($X$, $y$)**
@@ -226,7 +226,7 @@ We can evaluate our model performance capabilities on data like testing data usi
 | $X$ | Numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
 | $y$ | Numpy array list for response variable with 1 value for each sample.| 
 
-    - Returns:
+*Returns:*
     Numeric value corresponding to the Mean Square Error (MSE). 
   
 $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
