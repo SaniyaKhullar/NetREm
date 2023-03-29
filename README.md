@@ -132,9 +132,9 @@ $$ -->
 | Parameter | Definition | 
 | --------- | ---------- | 
 | edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
-| beta_net: $\beta_{net}$  | Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
+| beta_net | Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
 | cv_for_alpha | * False (default): user specifies value of $\alpha_{lasso}$ <br> * True: GRegulNet performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
-| alpha_lasso: $\alpha_{lasso}$  | A numerical regularization parameter for lasso needed if cv_for_alpha = False: $\alpha_{lasso} \geq 0$. |
+| alpha_lasso  | A numerical regularization parameter for lasso ($\alpha_{lasso} \geq 0$) needed if cv_for_alpha = False. |
 
 
 
