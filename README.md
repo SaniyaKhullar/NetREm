@@ -4,7 +4,7 @@ layout: default
 
 {% include mathjax.html %} -->
 
-# GRegulNet
+# GRegNet
 
 ## Gene Regular(ized/atory) Network
 
@@ -13,7 +13,7 @@ layout: default
 
 ## Summary
 
-GRegulNet is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes in gene regulatory networks (GRNs). GRegulNet incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. GRegulNet can incorporate multiple types of network data, including PPI networks, gene co-expression networks, and metabolic networks.
+GRegNet is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes in gene regulatory networks (GRNs). GRegulNet incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. GRegNet can incorporate multiple types of network data, including PPI networks, gene co-expression networks, and metabolic networks.
 
 <!-- In summary, network-constrained regularization may bolster the construction of more accurate and interpretable models that incorporate prior knowledge of the network structure among predictors. -->
 
@@ -27,12 +27,12 @@ The analysis is based on Python version 3.10. Please note that larger prior grap
 
 ## Software Requirements
 
-Please ensure you have cloned or downloaded our GRegulNet Github code and package. Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
+Please ensure you have cloned or downloaded our GRegNet Github code and package. Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: **pip install -r requirements.txt**
 In short, we our code uses the following Python packages: *matplotlib.pyplot, networkx, numpy, numpy.typing, os, pandas, plotly.express, random, scipy, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt.
 
 ## Description of GRegulNet pipeline function: geneRegulatNet
 
-Please note that our package, GRegulNet, is run by the following function **geneRegulatNet** in Python. Fits a Network-constrained Lasso regression machine learning model given an undirected prior network and regularization parameters. 
+Please note that our package, GRegNet, is run by the following function **geneRegulatNet** in Python. Fits a Network-constrained Lasso regression machine learning model given an undirected prior network and regularization parameters. 
 
 ## Usage
 
@@ -160,7 +160,9 @@ $$ -->
 | --------- | ---------- | 
 | default_edge_weight  | Default edge weight ($w$) assigned to any edge with missing weight | 
 | degree_pseudocount  | Pseudocount to add for the degree of each node in the network. |
-| degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) |
+| degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree |
+
+<!-- | degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) | -->
 <!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
 | square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) | -->
  <!-- self_loops  | True: Add 1 to each degree ($d$) for each node in the network (for self-loops)| 
@@ -188,7 +190,7 @@ $$ -->
 
 * **fit($X$, $y$)**
 
-Building and training the GRegulNet model with $X$ and $y$ data. 
+Building and training the GRegNet model with $X$ and $y$ data. 
 
 | Parameter | Definition | 
 | --------- | ---------- | 
