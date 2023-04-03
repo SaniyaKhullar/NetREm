@@ -19,7 +19,7 @@ GRegNet is a software package that utilizes network-constrained regularization f
 
 ## Pipeline
 
-*Pipeline image of Gregulnet*
+*Pipeline image of GRegNet*
 
 ## Hardware Requirements
 
