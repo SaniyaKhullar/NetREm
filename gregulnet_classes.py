@@ -1184,14 +1184,15 @@ class GRegulNet:
 #         mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
 #         return mse_test
 
-    def predict_y(self, X_test):
-        import pandas as pd
-        import numpy as np
-        ml_model = self.regr
-        #X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = ml_model.predict(X_test) # training data   
-        #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-        return predY_test #mse_test
+#    def predict_y(self, X_test):
+#        import pandas as pd
+#        import numpy as np
+#        ml_model = self.regr
+#        predY_test = ml_model.predict(X_test) # training data   
+#       return predY_test 
+
+    def predict(self, X_test):
+        return self.regr.predict(X_test)
     
 #     def predict_y(self, X_test, y_test):
 #         import pandas as pd
@@ -1495,16 +1496,20 @@ class baselineModel:
         squared_diff = difference ** 2 # square of the difference
         mean_squared_diff = np.mean(squared_diff)
         return mean_squared_diff
-    
-    def predict_y(self, X_test):
-        import pandas as pd
-        import numpy as np
-        X_test = X_test
-        ml_model = self.regr
-        #X_testing_to_use, y_testing_to_use = X_test, y_test
-        predY_test = ml_model.predict(X_test) # training data   
-        #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
-        return predY_test #mse_test
+
+    def predict(self, X_test):
+        return self.regr.predict(X_test)
+
+        
+#    def predict_y(self, X_test):
+#        import pandas as pd
+#        import numpy as np
+#        X_test = X_test
+#        ml_model = self.regr
+#        #X_testing_to_use, y_testing_to_use = X_test, y_test
+#        predY_test = ml_model.predict(X_test) # training data   
+#        #mse_test = self.calculate_mean_square_error(y_testing_to_use, predY_test) # Calculate MSE
+#        return predY_test #mse_test
     
 #     def predict_y(self, X_test, y_test):
 #         import pandas as pd

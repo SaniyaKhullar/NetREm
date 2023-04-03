@@ -208,7 +208,7 @@ We can retrieve our model coefficients and other attributes by calling these out
 | params_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
 | mse_train | Mean Square Error (MSE): predicted versus actual values | 
 
-* **predict_y($X$)**
+* **predict($X$)**
 
 We can use our model to predict values for our response variable $y$. 
 
@@ -328,7 +328,7 @@ We can test the performance of our data on testing data (30 samples), to underst
 
 
 ```python
-pred_y_test = gregulnet_demo.predict_y(X_test) # predicted values for y_test
+pred_y_test = gregulnet_demo.predict(X_test) # predicted values for y_test
 mse_test = gregulnet_demo.test_mse(X_test, y_test)
 
 print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
