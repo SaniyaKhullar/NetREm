@@ -59,7 +59,7 @@ geneRegulatNet(<br>
                   lassocv_eps = 1e-3,<br>
                   lassocv_n_alphas = 100, # default in sklearn  <br>      
                   lassocv_alphas = None, # default in sklearn <br>
-                  verbose = False,
+                  verbose = False,<br>
                   hide_warnings = True <br>
                 )
 
@@ -405,7 +405,7 @@ beta_network_val = 3
 alpha_lasso_val = 0.01
 
 # Building the network regularized regression model: 
-# Please note To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
+# Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
 netrem_demo = nm.geneRegulatNet(edge_list = edge_list, 
                                 beta_net = beta_network_val,
                                 alpha_lasso = alpha_lasso_val,
@@ -511,6 +511,89 @@ netrem_demo.model_coef_df
 </table>
 </div>
 
+To view the cell-type-specific Protein-Protein Interactions (PPIs) that NetREm learned for this target gene $y$, please note that we can view the B_interaction_df. 
+
+```python
+netrem_demo.B_interaction_df
+```
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+      <th>TF6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>TF1</th>
+      <td>4.512391</td>
+      <td>0.856197</td>
+      <td>-0.515540</td>
+      <td>-0.262458</td>
+      <td>-2.315411</td>
+      <td>-1.166994</td>
+    </tr>
+    <tr>
+      <th>TF2</th>
+      <td>0.856197</td>
+      <td>1.644936</td>
+      <td>-0.342697</td>
+      <td>0.169874</td>
+      <td>-0.570895</td>
+      <td>-0.494075</td>
+    </tr>
+    <tr>
+      <th>TF3</th>
+      <td>-0.515540</td>
+      <td>-0.342697</td>
+      <td>84.228863</td>
+      <td>-0.470847</td>
+      <td>-0.618672</td>
+      <td>-16.642297</td>
+    </tr>
+    <tr>
+      <th>TF4</th>
+      <td>-0.262458</td>
+      <td>0.169874</td>
+      <td>-0.470847</td>
+      <td>1.218198</td>
+      <td>0.070268</td>
+      <td>-0.619841</td>
+    </tr>
+    <tr>
+      <th>TF5</th>
+      <td>-2.315411</td>
+      <td>-0.570895</td>
+      <td>-0.618672</td>
+      <td>0.070268</td>
+      <td>2.505441</td>
+      <td>-0.163531</td>
+    </tr>
+    <tr>
+      <th>TF6</th>
+      <td>-1.166994</td>
+      <td>-0.494075</td>
+      <td>-16.642297</td>
+      <td>-0.619841</td>
+      <td>-0.163531</td>
+      <td>84.577403</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+
 
 We can test the performance of our data on testing data (30 samples), to understand better the generalizability of our GRegulNet model on new, unseen, data. 
 
@@ -525,6 +608,7 @@ print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
     :) Please note that the testing Mean Square Error (MSE) is 0.10939471847175668
 
     
+
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
