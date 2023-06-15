@@ -237,47 +237,232 @@ $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 
 ## Demo (Toy Example) of GRegulNet:
 
-Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 5 Transcription Factors (TFs): [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8]. The dimensions of $X$ are therefore 100 rows by 5 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among our 5 TFs based on a Protein-Protein Interaction (PPI) network, where higher edge weights $w$ indicate stronger interactions at the protein-level. 
+Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 6 Transcription Factors (TFs): [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our GRegulNet estimator also incorporates an **undirected prior graph network** of biological relationships among only 5 TFs based on a Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger interactions at the protein-level. 
 
 ```python
-from gregulnet_classes import * # to load our package, GRegulNet
+# Please load our code for NetREm from the code folder
+from packages_needed import *
+import error_metrics as em 
+from packages_needed import *
+import Netrem_model_builder as nm
+import DemoDataBuilderXandY as demo
+import PriorGraphNetwork as graph
+import netrem_evaluation_functions as nm_eval
+import essential_functions as ef
 
-dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8],
+dummy_data = demo.generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
                    num_samples_M = 100,
                    train_data_percent = 70)
 
+X_df = dummy_data.X_df
+X_df.head()
+```
+
+    :) same_train_test_data = False
+    :) Please note that since we hold out 30.0% of our 100 samples for testing, we have:
+    :) X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
+    :) X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
+    :) y_train = 70 corresponding rows (samples) for training.
+    :) y_test = 30 corresponding rows (samples) for testing.
+    
+
+    100%|██████████████████████████████████████████████████████████████████████████████████| 6/6 [00:00<00:00, 3004.16it/s]
+    100%|██████████████████████████████████████████████████████████████████████████████████| 6/6 [00:00<00:00, 3000.93it/s]
+    100%|██████████████████████████████████████████████████████████████████████████████████| 6/6 [00:00<00:00, 2998.79it/s]
+    
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+      <th>TF6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2.020840</td>
+      <td>0.594445</td>
+      <td>-1.443012</td>
+      <td>-0.688777</td>
+      <td>0.900770</td>
+      <td>-2.643671</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3.224776</td>
+      <td>-0.270632</td>
+      <td>-0.557771</td>
+      <td>-0.305574</td>
+      <td>0.054708</td>
+      <td>-1.054197</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-2.746721</td>
+      <td>1.502236</td>
+      <td>2.043813</td>
+      <td>1.252975</td>
+      <td>2.082159</td>
+      <td>1.227615</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-0.558130</td>
+      <td>1.290771</td>
+      <td>-1.230527</td>
+      <td>-0.678410</td>
+      <td>0.630084</td>
+      <td>-1.508758</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-2.181462</td>
+      <td>-0.657229</td>
+      <td>-2.880186</td>
+      <td>-1.629470</td>
+      <td>0.268042</td>
+      <td>1.207254</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+y_df = dummy_data.y_df
+y_df.head()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.601721</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.151619</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-1.359462</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.222055</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.775868</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+```python
 # 70 samples for training data (used to train and fit GRegulNet model)
-X_train = dummy_data.get_X_train()
-y_train = dummy_data.get_y_train()
+X_train = dummy_data.view_X_train_df()
+y_train = dummy_data.view_y_train_df()
 
 # 30 samples for testing data
-X_test = dummy_data.get_X_test()
-y_test = dummy_data.get_y_test()
+X_test = dummy_data.view_X_test_df()
+y_test = dummy_data.view_y_test_df()
 
 # prior network edge_list:
-edge_list = [[1, 2, 0.9], [4, 5, 0.75], [1, 3], [1, 4], [1, 5], 
-              [2, 3], [2, 4], [2, 5], [3, 4], [3, 5]]
-beta_network_val = 10 
+edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
+              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
+
+beta_network_val = 3 
 # by default, cv_for_alpha is False, so alpha_lasso_val will be specified for the alpha_lasso parameter.
 alpha_lasso_val = 0.01
 
 # Building the network regularized regression model. 
-gregulnet_demo = geneRegulatNet(edge_list = edge_list, 
+netrem_demo = nm.geneRegulatNet(edge_list = edge_list, 
                                 beta_net = beta_network_val,
-                                alpha_lasso = alpha_lasso_val)
+                                alpha_lasso = alpha_lasso_val,
+                                view_network = True,
+                                overlapped_nodes_only = False)
 
 # Fitting the gregulnet model on training data: X_train and y_train:
-gregulnet_demo.fit(X_train, y_train)
+netrem_demo.fit(X_train, y_train)
 ```
-  <!-- prior graph network used
-  :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
-  :) We also add 0.001 as a pseudocount to our degree value for each node.
-  network used
-  Training GRegulNet :) -->
+
+    Please note that we need to update the network information
     
-  
-<!-- ![png](README_python_files/README_python_12_1.png) -->
-![png](output_12_1.png)
+
+
+    
+![png](output_3_1.png)
+    
+
+
+
+    
+![png](output_3_2.png)
+    
+
+
+    :) 1 new nodes added to network based on gene expression data ['TF6']
+    
+
+
+
+
+<style>#sk-container-id-11 {color: black;background-color: white;}#sk-container-id-11 pre{padding: 0;}#sk-container-id-11 div.sk-toggleable {background-color: white;}#sk-container-id-11 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-11 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-11 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-11 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-11 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-11 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-11 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-11 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-11 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-11 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-11 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-11 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-11 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-11 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-11 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-11 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-11 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-11 div.sk-item {position: relative;z-index: 1;}#sk-container-id-11 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-11 div.sk-item::before, #sk-container-id-11 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-11 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-11 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-11 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-11 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-11 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-11 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-11 div.sk-label-container {text-align: center;}#sk-container-id-11 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-11 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-11" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>GRegNet(verbose=False, overlapped_nodes_only=False, all_pos_coefs=False, model_type=Lasso, use_network=True, fit_y_intercept=False, max_lasso_iterations=10000, view_network=True, tolerance=0.0001, lasso_selection=cyclic, beta_network=3, network=&lt;PriorGraphNetwork.PriorGraphNetwork object at 0x000002C8CFD2BF70&gt;, alpha_lasso=0.01)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-11" type="checkbox" checked><label for="sk-estimator-id-11" class="sk-toggleable__label sk-toggleable__label-arrow">GRegNet</label><div class="sk-toggleable__content"><pre>GRegNet(verbose=False, overlapped_nodes_only=False, all_pos_coefs=False, model_type=Lasso, use_network=True, fit_y_intercept=False, max_lasso_iterations=10000, view_network=True, tolerance=0.0001, lasso_selection=cyclic, beta_network=3, network=&lt;PriorGraphNetwork.PriorGraphNetwork object at 0x000002C8CFD2BF70&gt;, alpha_lasso=0.01)</pre></div></div></div></div></div>
+
+
+
+
+    
+![png](output_3_5.png)
 
 
 
@@ -294,10 +479,10 @@ gregulnet_demo.coef
 
 
 ```python
-gregulnet_demo.model_coef_df
+netrem_demo.model_coef_df
 ```
 
-<div>
+<!-- <div>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -322,22 +507,63 @@ gregulnet_demo.model_coef_df
     </tr>
   </tbody>
 </table>
-</div>
+</div> -->
 
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>y_intercept</th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+      <th>TF6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>None</td>
+      <td>0.309776</td>
+      <td>0.112297</td>
+      <td>0.001116</td>
+      <td>-0.073603</td>
+      <td>-0.21665</td>
+      <td>0.000375</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 
 We can test the performance of our data on testing data (30 samples), to understand better the generalizability of our GRegulNet model on new, unseen, data. 
 
 
 ```python
-pred_y_test = gregulnet_demo.predict(X_test) # predicted values for y_test
-mse_test = gregulnet_demo.test_mse(X_test, y_test)
+pred_y_test = netrem_demo.predict(X_test) # predicted values for y_test
+mse_test = netrem_demo.test_mse(X_test, y_test)
 
 print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
 ```
 
-    Testing GRegulnet :)
-    Please note that the testing Mean Square Error (MSE) is 0.17220844811456956
+    :) Please note that the testing Mean Square Error (MSE) is 0.10939471847175668
+
     
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
