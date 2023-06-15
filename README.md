@@ -38,27 +38,6 @@ Please note that our package, GRegNet, is run by the following function **geneRe
 
 ## Usage
 
-<!-- geneRegulatNet(<br>
-                <!-- $X$, <br>
-                $y$, <br> -->
-                edge_list,<br> 
-                beta_net, <br>
-                cv_for_alpha = False,<br> 
-                alpha_lasso = 0.1, <br>
-                <!-- edge_vals_for_d = False, <br> -->
-                <!-- self_loops = False, <br> -->
-                default_edge_weight = 0.1, <br>
-                degree_threshold = 0.5, <br>
-                degree_pseudocount = 1e-3, <br> 
-                num_cv_folds = 5, <br>
-                <!-- model_type = "Lasso", <br> -->
-                use_net = True,<br>
-                y_intercept = False, <br>
-                max_iters = 10000<br>
-                )<br> -->
-
-
-
 geneRegulatNet(<br> 
                 edge_list, <br>
                 gene_expression_nodes = [], <br>
