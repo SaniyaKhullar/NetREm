@@ -39,28 +39,28 @@ Please note that our package, GRegNet, is run by the following function **geneRe
 ## Usage
 
 geneRegulatNet(<br> 
-                edge_list, <br>
-                gene_expression_nodes = [], <br>
-                beta_net = "default", <br>
-                alpha_lasso = "default", <br>
-                model_type = "Lasso",<br>
-                default_edge_weight = 0.1,<br>
-                degree_threshold = 0.5,<br>
-                degree_pseudocount = 1e-3,<br>
-                lasso_selection = "cyclic",<br>
-                view_network = False, <br>
-                num_cv_folds = 5, <br>
-                y_intercept = False, <br>
-                all_pos_coefs = False,<br>
-                overlapped_nodes_only = False,<br>
-                tolerance = 1e-4, <br>
-                maxit = 10000,<br>
-                num_jobs = -1,<br>
-                lassocv_eps = 1e-3,<br>
-                lassocv_n_alphas = 100, # default in sklearn  <br>      
-                lassocv_alphas = None, # default in sklearn <br>
-                verbose = False,
-                hide_warnings = True <br>
+                  edge_list, <br>
+                  gene_expression_nodes = [], <br>
+                  beta_net = "default", <br>
+                  alpha_lasso = "default", <br>
+                  model_type = "Lasso",<br>
+                  default_edge_weight = 0.1,<br>
+                  degree_threshold = 0.5,<br>
+                  degree_pseudocount = 1e-3,<br>
+                  lasso_selection = "cyclic",<br>
+                  view_network = False, <br>
+                  num_cv_folds = 5, <br>
+                  y_intercept = False, <br>
+                  all_pos_coefs = False,<br>
+                  overlapped_nodes_only = False,<br>
+                  tolerance = 1e-4, <br>
+                  maxit = 10000,<br>
+                  num_jobs = -1,<br>
+                  lassocv_eps = 1e-3,<br>
+                  lassocv_n_alphas = 100, # default in sklearn  <br>      
+                  lassocv_alphas = None, # default in sklearn <br>
+                  verbose = False,
+                  hide_warnings = True <br>
                 )
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
@@ -404,12 +404,13 @@ beta_network_val = 3
 # by default, cv_for_alpha is False, so alpha_lasso_val will be specified for the alpha_lasso parameter.
 alpha_lasso_val = 0.01
 
-# Building the network regularized regression model. 
+# Building the network regularized regression model: 
+# Please note To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
 netrem_demo = nm.geneRegulatNet(edge_list = edge_list, 
                                 beta_net = beta_network_val,
                                 alpha_lasso = alpha_lasso_val,
-                                view_network = True,
-                                overlapped_nodes_only = False)
+                                overlapped_nodes_only = False, # so we include TF6
+                                view_network = True)
 
 # Fitting the gregulnet model on training data: X_train and y_train:
 netrem_demo.fit(X_train, y_train)
@@ -482,19 +483,6 @@ netrem_demo.model_coef_df
 </div> -->
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
