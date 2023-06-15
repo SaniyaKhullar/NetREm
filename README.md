@@ -590,11 +590,6 @@ netrem_demo.B_interaction_df
 </div>
 
 
-
-
-```python
-
-
 We can test the performance of our data on testing data (30 samples), to understand better the generalizability of our GRegulNet model on new, unseen, data. 
 
 
