@@ -38,7 +38,7 @@ Please note that our package, GRegNet, is run by the following function **geneRe
 
 ## Usage
 
-geneRegulatNet(<br>
+<!-- geneRegulatNet(<br>
                 <!-- $X$, <br>
                 $y$, <br> -->
                 edge_list,<br> 
@@ -55,7 +55,34 @@ geneRegulatNet(<br>
                 use_net = True,<br>
                 y_intercept = False, <br>
                 max_iters = 10000<br>
-                )<br>
+                )<br> -->
+
+
+
+geneRegulatNet(<br> 
+                edge_list, <br>
+                gene_expression_nodes = [], <br>
+                beta_net = "default", <br>
+                alpha_lasso = "default", <br>
+                model_type = "Lasso",<br>
+                default_edge_weight = 0.1,<br>
+                degree_threshold = 0.5,<br>
+                degree_pseudocount = 1e-3,<br>
+                lasso_selection = "cyclic",<br>
+                view_network = False, <br>
+                num_cv_folds = 5, <br>
+                y_intercept = False, <br>
+                all_pos_coefs = False,<br>
+                overlapped_nodes_only = False,<br>
+                tolerance = 1e-4, <br>
+                maxit = 10000,<br>
+                num_jobs = -1,<br>
+                lassocv_eps = 1e-3,<br>
+                lassocv_n_alphas = 100, # default in sklearn  <br>      
+                lassocv_alphas = None, # default in sklearn <br>
+                verbose = False,
+                hide_warnings = True <br>
+                )
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
