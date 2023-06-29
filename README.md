@@ -139,7 +139,7 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
+| edge_list       | *list, default = []* <br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
 | beta_net | Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
 | model_type | * Lasso (default): user specifies value of $\alpha_{lasso}$ <br> * LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | alpha_lasso  | A numerical regularization parameter for lasso ($\alpha_{lasso} \geq 0$) needed if model_type = LassoCV. |
@@ -169,9 +169,7 @@ $$ -->
 
 ## Parameters
 
-## Parameters
-
-| Parameter           | Description                                                                                                                      |
+<!-- | Parameter           | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | **param_grid**      | Dictionary or list of dictionaries with parameters names (string) as keys and lists of parameter settings to try as values.      |
 | **scoring**         | A single string or a callable to evaluate the predictions on the test set. If None, the estimator's default scorer is used.       |
@@ -182,7 +180,7 @@ $$ -->
 | **return_train_score** | If `False`, the `cv_results_` attribute will not include training scores.                                                        |
 | **pre_dispatch**    | Controls the number of jobs that get dispatched during parallel execution.                                                        |
 | **error_score**     | Value to assign to the score if an error occurs in estimator fitting.                                                            |
-                                                         |
+                                                         | -->
 
 
 
@@ -207,6 +205,7 @@ $$ -->
 | y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
 | maxit  | the maximum # of iterations we will run Lasso regression model for (if `model_type = LassoCV`) |
 | num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) |
+| | Number of jobs to run in parallel. None means 1 unless in a joblib.parallel_backend context. -1 means using all of the processors. |
 
 ### Details:
 
