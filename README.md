@@ -31,7 +31,7 @@ Please note that larger prior graph networks may require more memory, space, and
 
 The analysis is based on Python version 3.10. Please ensure you have cloned or downloaded our NetREm Github code and package. 
 
-In Anaconda prompt, you can create a virtual environment to run our code by running:
+In the Anaconda navigator prompt, you can create a virtual environment to run our code by running:
 `conda create -n NetREm python=310`
 
 Then, to activate this environment, please run:
@@ -40,7 +40,8 @@ Then, to activate this environment, please run:
 Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: 
 `pip install -r requirements.txt`
 
-In short, we our code uses the following Python packages: *math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*. To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt.
+In short, we our code uses the following Python packages: *math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*. 
+<!-- To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt. -->
 
 
 
