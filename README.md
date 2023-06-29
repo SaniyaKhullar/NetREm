@@ -169,20 +169,20 @@ $$ -->
 
 ## Parameters
 
-| Parameter      | Description                                                                                                                         |
-|----------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| **param_grid** | Dictionary or list of dictionaries with parameters names (string) as keys and lists of parameter settings to try as values.         |
-| **scoring**    | A single string or a callable to evaluate the predictions on the test set. If None, the estimator's default scorer is used.          |
-| **cv**         | Determines the cross-validation splitting strategy. Possible inputs are:                                                             |
-|                | - None: to use the default 5-fold cross-validation                                                                                    |
-|                | - integer: to specify the number of folds in a `(Stratified)KFold`                                                                     |
-|                | - an object to be used as a cross-validation generator.                                                                              |
-| **verbose**    | Controls the verbosity: the higher, the more messages.                                                                                |
-| **n_jobs**     | Number of jobs to run in parallel.                                                                                                   |
-| **refit**      | If set to True, refit an estimator using the best found parameters on the whole dataset.                                              |
-| **return_train_score** | If `False`, the `cv_results_` attribute will not include training scores.                                                           |
-| **pre_dispatch** | Controls the number of jobs that get dispatched during parallel execution.                                                           |
-| **error_score** | Value to assign to the score if an error occurs in estimator fitting.                                                                 |
+## Parameters
+
+| Parameter           | Description                                                                                                                      |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| **param_grid**      | Dictionary or list of dictionaries with parameters names (string) as keys and lists of parameter settings to try as values.      |
+| **scoring**         | A single string or a callable to evaluate the predictions on the test set. If None, the estimator's default scorer is used.       |
+| **cv**              | Determines the cross-validation splitting strategy. Possible inputs are:<br> - None: to use the default 5-fold cross-validation<br> - integer: to specify the number of folds in a `(Stratified)KFold`<br> - an object to be used as a cross-validation generator. |
+| **verbose**         | Controls the verbosity: the higher, the more messages.                                                                           |
+| **n_jobs**          | Number of jobs to run in parallel.                                                                                              |
+| **refit**           | If set to True, refit an estimator using the best found parameters on the whole dataset.                                         |
+| **return_train_score** | If `False`, the `cv_results_` attribute will not include training scores.                                                        |
+| **pre_dispatch**    | Controls the number of jobs that get dispatched during parallel execution.                                                        |
+| **error_score**     | Value to assign to the score if an error occurs in estimator fitting.                                                            |
+                                                         |
 
 
 
@@ -205,8 +205,8 @@ $$ -->
 | --------- | ---------- | 
 | use_net  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
 | y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
-| maxit  | the maximum # of iterations we will run Lasso regression model for (if *cv_for_alpha is False*) |
-| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *model_type is LassoCV*) |
+| maxit  | the maximum # of iterations we will run Lasso regression model for (if `model_type = LassoCV`) |
+| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) |
 
 ### Details:
 
