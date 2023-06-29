@@ -160,7 +160,7 @@ $$ -->
 | lassocv_n_alphas  | ***int, default = 100*** <br> This corresponds to the `n_alphas` parameter in [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html).  This is the number of alphas along the Lasso regularization path. |
 | lassocv_alphas  |  ***array-like, default = None*** <br>  This corresponds to the `alphas` parameter in [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html). List of alphas where the models to be computed. If `None` then the alphas are set automatically. |
 | num_cv_folds  |  ***float, default = 5*** <br>  By default, sklearn cross-validation is used. This specifies the number of folds for splitting the training data when fitting the NetREm model. |
-
+| num_jobs | ***int, default = -1***  Number of jobs to run in parallel. None means 1 unless in a joblib.parallel_backend context. -1 means using all of the processors. This is similar to the `n_jobs` parameter in sklearn. |
 <!-- | Parameter | Definition | 
 | --------- | ---------- | 
 | $X$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
@@ -219,7 +219,7 @@ $$ -->
 | y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
 | maxit  | the maximum # of iterations we will run Lasso regression model for (if `model_type = LassoCV`) |
 | num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) |
-| | Number of jobs to run in parallel. None means 1 unless in a joblib.parallel_backend context. -1 means using all of the processors. |
+
 
 ### Details:
 
