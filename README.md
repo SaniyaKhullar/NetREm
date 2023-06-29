@@ -139,10 +139,10 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| **edge_list**      | ****list, default = []*** <br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
-| beta_net | Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
-| model_type | * Lasso (default): user specifies value of $\alpha_{lasso}$ <br> * LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
-| alpha_lasso  | A numerical regularization parameter for lasso ($\alpha_{lasso} \geq 0$) needed if `model_type = LassoCV`. |
+| **edge_list**      | ***list, default = []*** <br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
+| **beta_net** | Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
+| **model_type** | ***{'Lasso', 'LassoCV'}, default = 'Lasso'*** <br> *Lasso: user specifies value of $\alpha_{lasso}$ <br> *LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
+| **alpha_lasso**  | A numerical regularization parameter for lasso ($\alpha_{lasso} \geq 0$) needed if `model_type = LassoCV`. |
 
 
 
