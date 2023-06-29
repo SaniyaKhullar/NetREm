@@ -130,7 +130,7 @@ def optimal_netrem_model_via_gridsearchCV_param_tuner(netrem_model, X_train, y_t
     alpha_grid = []
     initial_gregCV = netrem_model
     original_dict = copy.deepcopy(netrem_model.get_params()) 
-    original_model = GRegNet(**netrem_model.get_params())
+    original_model = NetREmModel(**netrem_model.get_params())
     initial_gregCV.model_type = "LassoCV"
     #print(initial_gregCV.get_params())
     for beta in beta_grid:
@@ -160,10 +160,10 @@ def optimal_netrem_model_via_gridsearchCV_param_tuner(netrem_model, X_train, y_t
     if isinstance(optimal_beta, np.ndarray):
         optimal_beta = optimal_beta[0]
     print(f":) GRegNetCV found that the optimal alpha_lasso = {optimal_alpha} and optimal beta_network = {optimal_beta}")
-    update_gregnet = GRegNet(**original_dict)
+    update_gregnet = NetREmModel(**original_dict)
     update_gregnet.beta_network = optimal_beta
     update_gregnet.alpha_lasso = optimal_alpha
-    update_gregnet = GRegNet(**update_gregnet.get_params())
+    update_gregnet = NetREmModel(**update_gregnet.get_params())
     update_gregnet.fit(X_train, y_train)
     return update_gregnet
 
@@ -290,12 +290,12 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
         print("X_train dimensions: ", X_train.shape)
         print("X_test dimensions: ", X_test.shape)
 
-    netrem_no_intercept = geneRegulatNet(edge_list = filtered_ppi_edge_list, 
+    netrem_no_intercept = netrem(edge_list = filtered_ppi_edge_list, 
                                       gene_expression_nodes = key_genes,
                                          verbose = verbose,
                                      view_network = view_network)
 
-    netrem_with_intercept = geneRegulatNet(edge_list = filtered_ppi_edge_list, 
+    netrem_with_intercept = netrem(edge_list = filtered_ppi_edge_list, 
                              y_intercept = True,
                                            verbose = verbose,
                                       gene_expression_nodes = key_genes,

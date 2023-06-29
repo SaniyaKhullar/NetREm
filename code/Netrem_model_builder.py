@@ -48,7 +48,7 @@ where M = n_samples and N is the dimension of c.
 Check compute_X_tilde_y_tilde() to see how we make sure above normalization is applied using Lasso of sklearn
 """
 
-class GRegNet(BaseEstimator, RegressorMixin):
+class NetREmModel(BaseEstimator, RegressorMixin):
     """ :) Please note that this class focuses on building a Gene Regulatory Network (GRN) from gene expression data for Transcription Factors (TFs), gene expression data for the target gene (TG), and a prior biological network (W). This class performs Network-penalized regression :) """
     _parameter_constraints = {
         "alpha_lasso": (0, None),
@@ -355,7 +355,7 @@ class GRegNet(BaseEstimator, RegressorMixin):
         return pred_y
     
     def _apply_parameter_constraints(self):
-        constraints = {**GRegNet._parameter_constraints}
+        constraints = {**NetREmModel._parameter_constraints}
         for key, value in self.__dict__.items():
             if key in constraints:
                 if isinstance(constraints[key], tuple):
@@ -584,7 +584,7 @@ class GRegNet(BaseEstimator, RegressorMixin):
             model_to_return = self.return_LassoCV_ML_model(X, y)
         return model_to_return
         
-def geneRegulatNet(edge_list, gene_expression_nodes = [], beta_net = "default", alpha_lasso = "default", model_type = "Lasso",
+def netrem(edge_list, gene_expression_nodes = [], beta_net = "default", alpha_lasso = "default", model_type = "Lasso",
                   default_edge_weight = 0.1,
                   degree_threshold = 0.5,
                   degree_pseudocount = 1e-3,
@@ -647,5 +647,5 @@ def geneRegulatNet(edge_list, gene_expression_nodes = [], beta_net = "default", 
         greg_dict["lassocv_eps"] = lassocv_eps
         greg_dict["lassocv_n_alphas"] = lassocv_n_alphas
         greg_dict["lassocv_alphas"] = lassocv_alphas
-    greggy = GRegNet(**greg_dict)
+    greggy = NetREmModel(**greg_dict)
     return greggy

@@ -164,6 +164,11 @@ $$ -->
 
 * Parameters for the graph prior network:
 
+| Parameters: |  | 
+| --------- | ---------- |
+
+
+
 | Parameter | Definition | 
 | --------- | ---------- | 
 | default_edge_weight  | Default edge weight ($w$) assigned to any edge with missing weight | 
@@ -182,9 +187,9 @@ $$ -->
 | Parameter | Definition | 
 | --------- | ---------- | 
 | use_net  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
-| y_intercept | * True: y-intercept is fitted for the final GRegNet model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
+| y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
 | maxit  | the maximum # of iterations we will run Lasso regression model for (if *cv_for_alpha is False*) |
-| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *cv_for_alpha is True*) |
+| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if *model_type is LassoCV*) |
 
 ### Details:
 
