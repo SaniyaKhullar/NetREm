@@ -21,7 +21,7 @@ NetREm is a software package that utilizes network-constrained regularization fo
 
 ## Pipeline
 
-*Pipeline image of GRegNet*
+*Pipeline image of NetREm*
 
 ## Hardware Requirements
 
@@ -37,7 +37,9 @@ In the Anaconda navigator prompt, you can create a virtual environment to run ou
 Then, to activate this environment, please run:
 `conda activate NetREm`
 
-Please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: 
+Please change the current directory to the NetREm folder by running `cd NetREm`. 
+
+Then, please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: 
 `pip install -r requirements.txt`
 
 In short, we our code uses the following Python packages: *math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*. 
@@ -52,19 +54,19 @@ Please note that our package, NetRem, is run by the following function **netrem*
 ## Usage
 
 **netrem**(<br> 
-                  &nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
-                  &nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*, <br>
-                  &nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
-                  *beta_net = 1*, <br>
-                  *alpha_lasso = 0.01*, <br>
-                  *model_type = "Lasso"*,<br>
-                  *default_edge_weight = 0.1*,<br>
-                  *degree_threshold = 0.5*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*beta_net = 1*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*alpha_lasso = 0.01*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*model_type = "Lasso"*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*default_edge_weight = 0.1*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*degree_threshold = 0.5*,<br>
                   <!-- degree_pseudocount = 1e-3,<br> -->
-                  *lasso_selection = "cyclic"*,<br>
-                  *view_network = False*, <br>
-                  *y_intercept = False*, <br>
-                  all_pos_coefs = False,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lasso_selection = "cyclic"*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*view_network = False*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*y_intercept = False*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all_pos_coefs = False,<br>
                   tolerance = 1e-4, <br>
                   maxit = 10000,<br>
                   num_jobs = -1,<br>
@@ -153,7 +155,7 @@ $$ -->
 | Parameter | Definition | 
 | --------- | ---------- | 
 | **edge_list**      | ***list*** <br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
-| **gene_expression_nodes**      | ***list, default = []*** <br> A list of predictors (e.g. TFs) to use that typically is found in the training gene expression data $X_{train}$. <br> Any `gene_expression_nodes` that are not found in the `edge_list` will be added into the network prior using default pairwise edge weights. This is *optional* but may boost the speed of training and fitting NetREm models (by adjusting the network prior in the beginning). If not specified, then NetREm will automatically determine gene_expression_nodes when fitting the model with $X_{train}$ data (when the fit method is called), but will need time to recalibrate the network prior. |
+| **gene_expression_nodes**      | ***list, default = []*** <br> A list of predictors (e.g. TFs) to use that typically is found in the training gene expression data $X_{train}$. <br> Any `gene_expression_nodes` that are not found in the `edge_list` will be added into the network prior edge_list using default pairwise edge weights (`default_edge_weight`). This is *optional* but may boost the speed of training and fitting NetREm models (by adjusting the network prior in the beginning). If not specified, then NetREm will automatically determine gene_expression_nodes when fitting the model with $X_{train}$ data (when the fit method is called), but will need time to recalibrate the network prior. |
 | **overlapped_nodes_only**      | ***boolean, default = False*** <br> This focuses on whether NetREm should focus on common nodes found in the `edge_list` and `gene_expression_nodes`. The priority is given to gene_expression_nodes since those have gene expression values that are used by the regression. <br> • If `overlapped_nodes_only = False`, the predictors used will come from `gene_expression_nodes`, even if those are not found in the network `edge_list`. This recognizes that not all predictors may have TF-TF relationships found in the prior network. <br> • If `overlapped_nodes_only = True`, the predictors used will need to be found in both the `edge_list` and the `gene_expression_nodes`. <br> | 
 | **beta_net** | ***float, default = 1*** <br> Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
 | **model_type** | ***{'Lasso', 'LassoCV'}, default = 'Lasso'*** <br> • Lasso: user specifies value of $\alpha_{lasso}$ <br> • LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
