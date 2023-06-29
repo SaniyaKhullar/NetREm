@@ -160,7 +160,7 @@ $$ -->
 | lassocv_n_alphas  | ***int, default = 100*** <br> This corresponds to the `n_alphas` parameter in [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html).  This is the number of alphas along the Lasso regularization path. |
 | lassocv_alphas  |  ***array-like, default = None*** <br>  This corresponds to the `alphas` parameter in [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html). List of alphas where the models to be computed. If `None` then the alphas are set automatically. |
 | num_cv_folds  |  ***float, default = 5*** <br>  By default, sklearn cross-validation is used. This specifies the number of folds for splitting the training data when fitting the NetREm model. |
-| num_jobs | ***int, default = -1***  Number of jobs to run in parallel. None means 1 unless in a joblib.parallel_backend context. -1 means using all of the processors. This is similar to the `n_jobs` parameter in sklearn. |
+| num_jobs | ***int, default = -1*** <br> Number of jobs to run in parallel. None means 1 unless in a joblib.parallel_backend context. -1 means using all of the processors. This is similar to the `n_jobs` parameter in sklearn. |
 <!-- | Parameter | Definition | 
 | --------- | ---------- | 
 | $X$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
@@ -223,7 +223,7 @@ $$ -->
 
 ### Details:
 
- We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{net} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *model_type = Lasso*) or NetREm may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if *model_type = LasssoCV*). Then, **netrem** builds an estimator object from the class Netrem that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained NetREm model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
+ We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{net} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *model_type = Lasso*) or NetREm may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if `model_type = LasssoCV`). Then, **netrem** builds an estimator object from the class Netrem that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained NetREm model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. 
 
 ### Output Values: ###
 
@@ -245,8 +245,8 @@ We can retrieve our model coefficients and other attributes by calling these out
 
 | Output | Definition | 
 | --------- | ---------- | 
-| model_coef_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if *y_intercept = True*) | 
-| optimal_alpha  | If *cv_for_alpha = True*, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
+| model_coef_df  | Pandas dataframe of the Lasso model coefficients for the predictors and y-intercept (if `y_intercept = True`) | 
+| optimal_alpha  | If `model_type = LassoCV`, returns the optimal $\alpha_{lasso}$ found by CV on training data | 
 | all_params_list  | List of lists of the parameters used for GRegulNet model (defensive programming) | 
 | params_df | Pandas dataframe of the parameters used for GRegulNet model (defensive programming) | 
 | mse_train | Mean Square Error (MSE): predicted versus actual values | 
