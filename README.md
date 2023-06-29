@@ -39,9 +39,9 @@ Please note that our package, NetRem, is run by the following function **netrem*
 ## Usage
 
 **netrem**(<br> 
-                  *edge_list*, <br>
-                  *gene_expression_nodes = []*, <br>
-                  *overlapped_nodes_only = False*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
                   *beta_net = 1*, <br>
                   *alpha_lasso = 0.01*, <br>
                   *model_type = "Lasso"*,<br>
