@@ -42,15 +42,15 @@ Please note that our package, NetRem, is run by the following function **netrem*
                   *edge_list*, <br>
                   *gene_expression_nodes = []*, <br>
                   *overlapped_nodes_only = False*,<br>
-                  beta_net = 1, <br>
-                  alpha_lasso = 0.01, <br>
-                  model_type = "Lasso",<br>
-                  default_edge_weight = 0.1,<br>
-                  degree_threshold = 0.5,<br>
+                  *beta_net = 1*, <br>
+                  *alpha_lasso = 0.01*, <br>
+                  *model_type = "Lasso"*,<br>
+                  *default_edge_weight = 0.1*,<br>
+                  *degree_threshold = 0.5*,<br>
                   <!-- degree_pseudocount = 1e-3,<br> -->
-                  lasso_selection = "cyclic",<br>
-                  view_network = False, <br>
-                  y_intercept = False, <br>
+                  *lasso_selection = "cyclic"*,<br>
+                  *view_network = False*, <br>
+                  *y_intercept = False*, <br>
                   all_pos_coefs = False,<br>
                   tolerance = 1e-4, <br>
                   maxit = 10000,<br>
