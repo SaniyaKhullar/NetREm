@@ -36,10 +36,10 @@ alpha_lasso_val = 0.01
 # Building the network regularized regression model: 
 # Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
 netrem_demo = nm.netrem(edge_list = edge_list, 
-                                beta_net = beta_network_val,
-                                alpha_lasso = alpha_lasso_val,
-                                overlapped_nodes_only = False, # so we include TF6
-                                view_network = True)
+                        beta_net = beta_network_val,
+                        alpha_lasso = alpha_lasso_val,
+                        overlapped_nodes_only = False, # so we include TF6
+                        view_network = True)
 
 # Fitting the gregulnet model on training data: X_train and y_train:
 netrem_demo.fit(X_train, y_train)
