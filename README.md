@@ -41,24 +41,24 @@ Please note that our package, NetRem, is run by the following function **netrem*
 netrem(<br> 
                   edge_list, <br>
                   gene_expression_nodes = [], <br>
+                  overlapped_nodes_only = False,<br>
                   beta_net = 1, <br>
                   alpha_lasso = 0.01, <br>
                   model_type = "Lasso",<br>
                   default_edge_weight = 0.1,<br>
                   degree_threshold = 0.5,<br>
-                  degree_pseudocount = 1e-3,<br>
+                  <!-- degree_pseudocount = 1e-3,<br> -->
                   lasso_selection = "cyclic",<br>
                   view_network = False, <br>
-                  num_cv_folds = 5, <br>
                   y_intercept = False, <br>
                   all_pos_coefs = False,<br>
-                  overlapped_nodes_only = False,<br>
                   tolerance = 1e-4, <br>
                   maxit = 10000,<br>
                   num_jobs = -1,<br>
-                  lassocv_eps = 1e-3,<br>
-                  lassocv_n_alphas = 100, # default in sklearn  <br>      
-                  lassocv_alphas = None, # default in sklearn <br>
+                   num_cv_folds = 5, <br>
+                   lassocv_eps = 1e-3,<br>
+                  lassocv_n_alphas = 100,  <br>      
+                  lassocv_alphas = None, <br>
                   verbose = False,<br>
                   hide_warnings = True <br>
                 )
@@ -141,14 +141,21 @@ $$ -->
 | --------- | ---------- | 
 | **edge_list**      | ***list*** <br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | 
 | **gene_expression_nodes**      | ***list, default = []*** <br> A list of predictors (e.g. TFs) to use that typically is found in the training gene expression data $X_{train}$. <br> Any `gene_expression_nodes` that are not found in the `edge_list` will be added into the network prior using default pairwise edge weights. This is *optional* but may boost the speed of training and fitting NetREm models (by adjusting the network prior in the beginning). If not specified, then NetREm will automatically determine gene_expression_nodes when fitting the model with $X_{train}$ data (when the fit method is called), but will need time to recalibrate the network prior. |
-| **overlapped_nodes_only**      | ***boolean, default = False*** <br> This focuses on whether NetREm should focus on common nodes found in the `edge_list` and `gene_expression_nodes`. The priority is given to gene_expression_nodes since those have gene expression values that are used by the regression. <br> • If `overlapped_nodes_only = False`, the predictors used will come from *gene_expression_nodes* even if those are not found in the network `edge_list`. This recognizes that not all predictors may have TF-TF relationships found in the prior network. <br> • If `overlapped_nodes_only = True`, the predictors used will need to be found in both the `edge_list` and the `gene_expression_nodes`. <br> | 
+| **overlapped_nodes_only**      | ***boolean, default = False*** <br> This focuses on whether NetREm should focus on common nodes found in the `edge_list` and `gene_expression_nodes`. The priority is given to gene_expression_nodes since those have gene expression values that are used by the regression. <br> • If `overlapped_nodes_only = False`, the predictors used will come from `gene_expression_nodes`, even if those are not found in the network `edge_list`. This recognizes that not all predictors may have TF-TF relationships found in the prior network. <br> • If `overlapped_nodes_only = True`, the predictors used will need to be found in both the `edge_list` and the `gene_expression_nodes`. <br> | 
 | **beta_net** | ***float, default = 1*** <br> Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
 | **model_type** | ***{'Lasso', 'LassoCV'}, default = 'Lasso'*** <br> • Lasso: user specifies value of $\alpha_{lasso}$ <br> • LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | **alpha_lasso**  | ***float, default = 0.01*** <br> A numerical regularization parameter for the lasso term ($\alpha_{lasso} \geq 0$) needed if `model_type = LassoCV`. Larger values typically reduce the number of final predictors in the model. |
-
+| **lasso_selection** | ***{'cyclic', 'random'}, default = 'cyclic'*** <br> Please note that this is the `selection` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) Lasso and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. | 
+| **tolerance**  | ***float, default = 1e-4*** <br> The tolerance sklearn would use for optimizing the NetREm model. (This is known as `tol` in by Python's sklearn). If the updates to the optiimzation are smaller than `tolerance`, then the optimization code will check the dual gap for optimizality and contine the optimization until that dual gap is smaller than `tolerance`. |
 
 * Parameters if `model_type = LassoCV`:
 
+| Parameter | Definition | 
+| --------- | ---------- | 
+| lassocv_eps  | ***float, default = 1e-3*** <br>  Default edge weight ($w$) assigned to any edge with missing weight | 
+| lassocv_n_alphas  | ***float, default = 100*** <br> Pseudocount to add for the degree of each node in the network. |
+| lassocv_alphas  |  ***float, default = 0.5*** <br>  Edges with weight $w$ > degree_threshold are counted as 1 towards node degree |
+| num_cv_folds  |  ***float, default = 5*** <br>  By default, sklearn cross-validation is used. This specifies the number of folds for splitting the training data when fitting the NetREm model. |
 
 <!-- | Parameter | Definition | 
 | --------- | ---------- | 
@@ -164,7 +171,6 @@ $$ -->
 | alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
   -->
 
-### Default Parameters: ###
 
 * Parameters for the graph prior network:
 
@@ -190,9 +196,9 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| default_edge_weight  | Default edge weight ($w$) assigned to any edge with missing weight | 
-| degree_pseudocount  | Pseudocount to add for the degree of each node in the network. |
-| degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree |
+| default_edge_weight  | ***float, default = 0.1*** <br>  Default edge weight ($w$) assigned to any edge with missing weight | 
+<!-- | degree_pseudocount  | Pseudocount to add for the degree of each node in the network. | -->
+| degree_threshold  |  ***float, default = 0.5*** <br>  Edges with weight $w$ > degree_threshold are counted as 1 towards node degree |
 
 <!-- | degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) | -->
 <!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
