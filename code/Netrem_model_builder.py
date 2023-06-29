@@ -584,7 +584,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             model_to_return = self.return_LassoCV_ML_model(X, y)
         return model_to_return
         
-def netrem(edge_list, gene_expression_nodes = [], beta_net = "default", alpha_lasso = "default", model_type = "Lasso",
+def netrem(edge_list, gene_expression_nodes = [], beta_net = 1, alpha_lasso = 0.01, model_type = "Lasso",
                   default_edge_weight = 0.1,
                   degree_threshold = 0.5,
                   degree_pseudocount = 1e-3,
@@ -602,10 +602,10 @@ def netrem(edge_list, gene_expression_nodes = [], beta_net = "default", alpha_la
         warnings.filterwarnings("ignore")
     default_beta = False
     default_alpha = False
-    if beta_net == "default":
+    if beta_net == 1:
         print("using beta_net default of", 1)
         default_beta = True
-    if alpha_lasso == "default":
+    if alpha_lasso == 0.01:
         if model_type != "LassoCV":
             print("using alpha_lasso default of", 0.01)
             default_alpha = True
