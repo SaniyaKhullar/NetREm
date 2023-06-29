@@ -211,14 +211,14 @@ $$ -->
  | edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False| -->
 <!-- | w_transform_for_d | To calculate degree for a given node, we can choose from 1 of 3 options (if *edge_vals_for_d is True*): <br> * "none": sum original $w$ <br> * "sqrt": sum $\sqrt{w}$ <br> * "square": sum $w^{2}$ |  -->
 
-* Parameters for the network-based regularized model:
+<!-- * Parameters for the network-based regularized model:
 
 | Parameter | Definition | 
 | --------- | ---------- | 
 | use_net  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
 | y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
 | maxit  | the maximum # of iterations we will run Lasso regression model for (if `model_type = LassoCV`) |
-| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) |
+| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) | -->
 
 
 ### Details:
