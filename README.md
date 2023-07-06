@@ -56,6 +56,8 @@ In short, we our code uses the following Python packages: *math, matplotlib, net
 
 Please note that our package, NetREm, is run by the following function **netrem** in Python. NetREm fits a Network-constrained Lasso regression machine learning model given an undirected prior weighted network and regularization parameters. If the input network is unweighted, please provide default weights greater than `default_edge_weight` in the `edge_list` parameter so that nodes that are connected in the network may contain higher weights and therefore more priority (otherwise, all nodes will be connected pairwise and have the same weights and that will render the network useless). 
 
+<!-- For biological applications, it is recommended that the user ensure network names map to gene expression names -->
+
 <!-- SHould we have 2 arguments? 1 for default_edge_weight for nodes found in network. default_weight_prior_edges: for any edge in the edge_list that has an unknown weight, we provide this edge_weight. Thus, we are prioritizing edges provided in the edgelist over those not found in the edge_list originally. Then we can show that since we skipped out on sharing an edge, the code automatically added in an edge with lower edge weight.  
 default_weight_new_edges. -->
 ## Usage 📦
@@ -288,8 +290,13 @@ We can evaluate our model performance capabilities on data like testing data usi
 
 | Parameter | Definition | 
 | --------- | ---------- | 
+| $X$ | Pandas dataframe where the rows are samples and columns are predictors. For biological applications, this data typically would be gene expression data (bulk or single-cell) for the predictors (usually Transcription Factors (TFs)). | 
+| $y$ | Pandas dataframe with 1 column that corresponds to values for the response variable for the same samples found in $X$. For biological applications, this would correspond to the gene expression values for the target gene (TG) $y$. | 
+
+<!-- | Parameter | Definition | 
+| --------- | ---------- | 
 | $X$ | Numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
-| $y$ | Numpy array list for response variable with 1 value for each sample.| 
+| $y$ | Numpy array list for response variable with 1 value for each sample.|  -->
 
 *Returns:*
     Numeric value corresponding to the Mean Square Error (MSE). 
