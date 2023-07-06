@@ -304,9 +304,7 @@ Please suppose that we want to build a machine learning model to predict the gen
 
 ```python
 # Please load our code for NetREm from the code folder
-from packages_needed import *
 import error_metrics as em 
-from packages_needed import *
 import Netrem_model_builder as nm
 import DemoDataBuilderXandY as demo
 import PriorGraphNetwork as graph
@@ -560,7 +558,7 @@ netrem_demo.model_coef_df
 </table>
 </div>
 
-To view the cell-type-specific Protein-Protein Interactions (PPIs) that NetREm learned for this target gene $y$, please note that we can view the B_interaction_df. 
+To view the cell-type-specific Protein-Protein Interactions (PPIs) that NetREm learned for this target gene $y$, please note that we can view the `B_interaction_df`. 
 
 ```python
 netrem_demo.B_interaction_df
