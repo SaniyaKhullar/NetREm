@@ -10,6 +10,7 @@ layout: default
 
 ### By: Saniya Khullar, Xiang Huang, John Svaren, Daifeng Wang
 [Daifeng Wang Lab](https://daifengwanglab.org/)
+[YouTube Tutorials](https://www.youtube.com/c/saniyakhullar)
 
 ## Summary
 
