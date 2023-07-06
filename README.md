@@ -203,8 +203,6 @@ $$ -->
 <!-- | Parameters: |  | 
 | --------- | ---------- | -->
 
-## Parameters
-
 <!-- | Parameter           | Description                                                                                                                      |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | **param_grid**      | Dictionary or list of dictionaries with parameters names (string) as keys and lists of parameter settings to try as values.      |
