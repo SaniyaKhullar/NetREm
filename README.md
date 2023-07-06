@@ -221,7 +221,7 @@ $$ -->
 | Parameter | Definition | 
 | --------- | ---------- | 
 | default_edge_weight  | ***float, default = 0.1*** <br>  Default edge weight ($w$) assigned to any edge with missing weight | 
-| degree_threshold  |  ***float, default = 0.5*** <br>  Edges with weight $w$ > degree_threshold are counted as 1 towards node degree |
+| degree_threshold  |  ***float, default = 0.5*** <br>  Edges with weight $w$ > degree_threshold are counted as 1 towards the node degree $d$ |
 | view_network  |  ***boolean, default = False*** <br>  • If `view_network = True`, then NetREm outputs visualizations 🖼️ of the prior graph network 🎨🕸️. Recommended for small networks (instead of for dense hairballs) <br> If `view_network = False`, then NetREm saves time by not outputting visuals of the network.  |
 
 <!-- | degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) | -->
