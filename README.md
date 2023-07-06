@@ -9,8 +9,8 @@ layout: default
 ##### GRegNet Gene Regular(ized/atory) Network
 
 ### By: Saniya Khullar, Xiang Huang, John Svaren, Daifeng Wang
-[Daifeng Wang Lab](https://daifengwanglab.org/)
-[YouTube Tutorials](https://www.youtube.com/c/saniyakhullar)
+[Daifeng Wang Lab](https://daifengwanglab.org/) <br>
+[YouTube Tutorials](https://www.youtube.com/c/saniyakhullar) <br>
 
 ## Summary
 
