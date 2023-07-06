@@ -44,6 +44,10 @@ netrem_demo = nm.netrem(edge_list = edge_list,
 # Fitting the gregulnet model on training data: X_train and y_train:
 netrem_demo.fit(X_train, y_train)
 
+pred_y_test = netrem_demo.predict(X_test) # predicted values for y_test
+mse_test = netrem_demo.test_mse(X_test, y_test)
+print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
+
 # To view and extract the predicted model coefficients for the predictors: 
 netrem_demo.model_coef_df
 
