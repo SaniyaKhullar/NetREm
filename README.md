@@ -5,10 +5,10 @@ layout: default
 {% include mathjax.html %} -->
 
 # NetREm
+## Network regression embeddings reveal cell-type protein-protein interactions for gene regulation
+##### GRegNet Gene Regular(ized/atory) Network
 
-## GRegNet Gene Regular(ized/atory) Network
-
-#### By: Saniya Khullar, Xiang Huang, John Svaren, Daifeng Wang
+### By: Saniya Khullar, Xiang Huang, John Svaren, Daifeng Wang
 [Daifeng Wang Lab](https://daifengwanglab.org/)
 
 ## Summary
