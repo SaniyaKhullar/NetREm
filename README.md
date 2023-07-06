@@ -39,10 +39,10 @@ The analysis is based on Python version 3.10. Please ensure you have cloned or d
 In the Anaconda navigator prompt, you can create a virtual environment to run our code by running :
 `conda create -n NetREm python=310`
 
-Then, to activate this environment, please run :
+Then, to activate this environment, please run 🔣:
 `conda activate NetREm`
 
-Please change the current directory to the NetREm folder by running `cd NetREm`. 
+Please change the current directory to the NetREm folder 🗂️ by running `cd NetREm`. 
 
 Then, please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: 
 `pip install -r requirements.txt`
@@ -52,13 +52,13 @@ In short, we our code uses the following Python packages: *math, matplotlib, net
 
 
 
-## Description of NetREm pipeline function: netrem
+## Description of NetREm pipeline function: netrem 
 
-Please note that our package, NetRem, is run by the following function **netrem** in Python. Fits a Network-constrained Lasso regression machine learning model given an undirected prior weighted network and regularization parameters. If the input network is unweighted, please provide default weights greater than `default_edge_weight` in the `edge_list` parameter so that nodes that are connected in the network may contain higher weights and therefore more priority (otherwise, all nodes will be connected pairwise and have the same weights and that will render the network useless). 
+Please note that our package, NetREm, is run by the following function **netrem** in Python. NetREm fits a Network-constrained Lasso regression machine learning model given an undirected prior weighted network and regularization parameters. If the input network is unweighted, please provide default weights greater than `default_edge_weight` in the `edge_list` parameter so that nodes that are connected in the network may contain higher weights and therefore more priority (otherwise, all nodes will be connected pairwise and have the same weights and that will render the network useless). 
 
 <!-- SHould we have 2 arguments? 1 for default_edge_weight for nodes found in network. default_weight_prior_edges: for any edge in the edge_list that has an unknown weight, we provide this edge_weight. Thus, we are prioritizing edges provided in the edgelist over those not found in the edge_list originally. Then we can show that since we skipped out on sharing an edge, the code automatically added in an edge with lower edge weight.  
 default_weight_new_edges. -->
-## Usage
+## Usage 📦
 
 **netrem**(<br> 
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
@@ -168,7 +168,7 @@ $$ -->
 | **model_type** | ***{'Lasso', 'LassoCV'}, default = 'Lasso'*** <br> • Lasso: user specifies value of $\alpha_{lasso}$ <br> • LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | **alpha_lasso**  | ***float, default = 0.01*** <br> A numerical regularization parameter for the lasso term ($\alpha_{lasso} \geq 0$) needed if `model_type = LassoCV`. Larger values typically reduce the number of final predictors in the model. |
 | **y_intercept** | ***boolean, default = 'False'*** <br> Please note that this is the `fit_intercept` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. <br> • If `y_intercept = True`, the model will be fit with a y-intercept term included. <br> • If `y_intercept = False`, the model will be fit with no y-intercept term. | 
-| **all_pos_coefs** | ***boolean, default = 'False'*** <br> Please note that this is the `positive` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. <br> • If `all_pos_coefs = True`, the model will be restricted to be fit with all regression coefficients as positive.  <br> • If `all_pos_coefs = False`, the model will be fit with no restrictions on regression coefficients.  | 
+| **all_pos_coefs** | ***boolean, default = 'False'*** <br> Please note that this is the `positive` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. <br> • If `all_pos_coefs = True`, the model will be restricted to be fit with all regression coefficients as positive.  <br> • If `all_pos_coefs = False`, the model will be fit with no restrictions on regression coefficients (can be positive or negative).  | 
 | **lasso_selection** | ***{'cyclic', 'random'}, default = 'cyclic'*** <br> Please note that this is the `selection` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. | 
 | **tolerance**  | ***float, default = 1e-4*** <br> The tolerance sklearn would use for optimizing the NetREm model. (This is known as `tol` in by Python's sklearn). If the updates to the optiimzation are smaller than `tolerance`, then the optimization code will check the dual gap for optimizality and contine the optimization until that dual gap is smaller than `tolerance`. |
 | **maxit** | ***int, default = 10000*** <br> Please note that this is the `max_iter` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. This is the maximum number of iterations that NetREm will perform. | 
@@ -299,6 +299,8 @@ $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 ## Demo (Toy Example) of NetREm:
 
 Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 6 Transcription Factors (TFs) in a particular cell-type 🔬: [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level. :star:
+
+Please note that the Python code for this demo example below is provided in *demo_toy.py* in the *demo* folder 📂.
 
 ```python
 # Please load our code for NetREm from the code folder
@@ -648,7 +650,7 @@ print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
     :) Please note that the testing Mean Square Error (MSE) is 0.10939471847175668
 
     
-
+Please note that we also provide a suite of evaluation functions and explanations of more advanced functionalities. 
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
