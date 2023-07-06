@@ -253,14 +253,22 @@ $$ -->
 
 #### Methods:
 
+We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. Please note that for biolgical applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
+
 * **fit($X$, $y$)**
 
 Building and training the NetREm model with $X$ and $y$ data. 
 
 | Parameter | Definition | 
 | --------- | ---------- | 
+| $X$ | Pandas dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
+| $y$ | Pandas dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
+
+
+<!-- | Parameter | Definition | 
+| --------- | ---------- | 
 | $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample used for training. Here, rows are samples and columns are predictors. | 
-| $y$ | Input numpy array list for model training with 1 value for each sample.| 
+| $y$ | Input numpy array list for model training with 1 value for each sample.|  -->
 
 
 We can retrieve our model coefficients and other attributes by calling these outputs:
@@ -279,7 +287,9 @@ We can use our model to predict values 🔮 for our response variable $y$.
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+| $X$ | Pandas dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
+
+<!-- | $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. |  -->
 
 *Returns:*
   Numpy array of $\hat{y}$ predicted values for $y$.
@@ -290,8 +300,9 @@ We can evaluate our model performance capabilities on data like testing data usi
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| $X$ | Pandas dataframe where the rows are samples and columns are predictors. For biological applications, this data typically would be gene expression data (bulk or single-cell) for the predictors (usually Transcription Factors (TFs)). | 
-| $y$ | Pandas dataframe with 1 column that corresponds to values for the response variable for the same samples found in $X$. For biological applications, this would correspond to the gene expression values for the target gene (TG) $y$. | 
+| $X$ | Pandas dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
+| $y$ | Pandas dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
+
 
 <!-- | Parameter | Definition | 
 | --------- | ---------- | 
@@ -305,7 +316,7 @@ $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 
 ## Demo (Toy Example) of NetREm:
 
-Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of 6 Transcription Factors (TFs) in a particular cell-type 🔬: [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$]. We generate 100 random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level. :star:
+Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the expression levels of $N = 6$ Transcription Factors (TFs) in a particular cell-type 🔬: [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$], which are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$]. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) of predictors with $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level. :star:
 
 Please note that the Python code for this demo example below is provided in *demo_toy.py* in the *demo* folder 📂.
 
