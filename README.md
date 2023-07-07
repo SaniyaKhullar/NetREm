@@ -334,12 +334,16 @@ dummy_data = demo.generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.
                    num_samples_M = 100,
                    train_data_percent = 70)
 ```
+Please note that the Python console or jupyter notebook would print out the following:
+
     :) same_train_test_data = False
     :) Please note that since we hold out 30.0% of our 100 samples for testing, we have:
     :) X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
     :) X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
     :) y_train = 70 corresponding rows (samples) for training.
     :) y_test = 30 corresponding rows (samples) for testing.
+
+The $X$ data should be in the form of a Pandas dataframe as below:
 
 ```python
 X_df = dummy_data.X_df
