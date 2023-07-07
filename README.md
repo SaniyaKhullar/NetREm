@@ -82,7 +82,7 @@ default_weight_new_edges. -->
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*num_jobs = -1*,<br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*num_cv_folds = 5*, <br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_eps = 1e-3*,<br>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_n_alphas = 100*, <br>      
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_n_alphas = 100*, <br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_alphas = None*, <br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*verbose = False*,<br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*hide_warnings = True* <br>
