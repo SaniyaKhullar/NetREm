@@ -254,7 +254,7 @@ $$ -->
 
 #### Methods:
 
-We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. Please note that for biolgical applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
+We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. Please note that for biolgical applications 👨‍🔬👩‍🔬, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
 
 * **fit($X$, $y$)**
 
@@ -656,7 +656,7 @@ netrem_demo.B_interaction_df
 </div>
 
 
-We can test the performance of our data on testing data (30 samples), to understand better the generalizability of our NetREm model on new, unseen, data. 
+We can test the performance of our data on testing data $X_{test}$ ($M = 30$ samples), to understand better the generalizability of our NetREm model on new, unseen, data 🧙‍♀️. 
 
 
 ```python
