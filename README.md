@@ -333,11 +333,7 @@ import essential_functions as ef
 dummy_data = demo.generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
                    num_samples_M = 100,
                    train_data_percent = 70)
-
-X_df = dummy_data.X_df
-X_df.head()
 ```
-
     :) same_train_test_data = False
     :) Please note that since we hold out 30.0% of our 100 samples for testing, we have:
     :) X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
@@ -345,7 +341,10 @@ X_df.head()
     :) y_train = 70 corresponding rows (samples) for training.
     :) y_test = 30 corresponding rows (samples) for testing.
 
-
+```python
+X_df = dummy_data.X_df
+X_df.head()
+```
 <div>
 <table border="1" class="dataframe">
   <thead>
