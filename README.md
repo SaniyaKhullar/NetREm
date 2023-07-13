@@ -29,26 +29,26 @@ NetREm is a software package that utilizes network-constrained regularization fo
 ![png](netrem_pipeline.PNG)
 
 
-## Hardware Requirements 🖥️
+## Hardware Requirements
 
-Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer (e.g. 32 GB RAM and 32 GB storage 💻) with enough RAM to support the operations. 
+Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer (e.g. 32 GB RAM and 32 GB storage) with enough RAM to support the operations. 
 
-## Software Requirements 👩‍💻
+## Software Requirements
 
 The analysis is based on Python version 3.10. Please ensure you have cloned or downloaded our NetREm Github code and package. 
 
 In the Anaconda navigator prompt, you can create a virtual environment to run our code by running :
 `conda create -n NetREm python=310`
 
-Then, to activate this environment, please run 🔣:
+Then, to activate this environment, please run:
 `conda activate NetREm`
 
-Please change the current directory to the NetREm folder 🗂️ by running `cd NetREm`. 
+Please change the current directory to the NetREm folder by running `cd NetREm`. 
 
 Then, please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: 
 `pip install -r requirements.txt`
 
-In short, we our code uses the following Python packages: *math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*. 👨‍💻
+In short, we our code uses the following Python packages: *math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*. 
 <!-- To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt. -->
 
 
@@ -164,7 +164,7 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| **edge_list**      | ***list*** 📝<br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. Nodes found in the `edge_list` 🧾 are referred to as *network nodes* | 
+| **edge_list**      | ***list*** <br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. Nodes found in the `edge_list` 🧾 are referred to as *network nodes* | 
 | **gene_expression_nodes**      | ***list, default = []*** <br> A list of predictors (e.g. TFs) to use that typically is found in the training gene expression data $X_{train}$. <br> Any `gene_expression_nodes` that are not found in the `edge_list` will be added internally into the network prior `edge_list` using default pairwise edge weights (`default_edge_weight`). Specifying `gene_expression_nodes` is *optional* but may boost the speed ⏰ of training and fitting NetREm models (by adjusting the network prior in the beginning). Thus, if the gene expression data ($X$) is available, it is recommended to input this list of `gene_expression_nodes` (based on the columns of $X$ corresponding to potential predictors for $y$). If not specified (that is, the default: `gene_expression_nodes = []`), then NetREm will automatically determine `gene_expression_nodes` when fitting the model with $X_{train}$ gene expression data (when the *fit(X,y)* method is called), but will need time to recalibrate the network prior based on the nodes found in the gene expression data and value set for `overlapped_nodes_only`. |
 | **overlapped_nodes_only**      | ***boolean, default = False*** <br> This focuses on whether NetREm should focus on common nodes found in the *network nodes* (from the `edge_list`) and gene expression data (based on `gene_expression_nodes`). Please note that *network nodes* that are not found in the gene expression data will always be removed. The priority is given to `gene_expression_nodes` since those have gene expression values that are used by the regression. <br> • If `overlapped_nodes_only = False`, the predictors used will come from `gene_expression_nodes`, even if those are not found in the network `edge_list`. This recognizes that not all predictors may have TF-TF relationships found in the prior network. <br> • If `overlapped_nodes_only = True`, the predictors used will need to be a common node: a *network node* that is also found in the `gene_expression_nodes`. <br> | 
 | **beta_net** | ***float, default = 1*** <br> Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
@@ -282,7 +282,7 @@ We can retrieve our model coefficients and other attributes by calling these out
 | params_df | [Pandas](https://pandas.pydata.org/) dataframe of the parameters used for NetREm model (defensive programming) | 
 | mse_train | Mean Square Error (MSE): predicted versus actual values | 
 
-* **predict($X$)** 🧙🧙‍♀️
+* **predict($X$)** 
 
 We can use our model to predict values 🔮 for our response variable $y$. 
 
