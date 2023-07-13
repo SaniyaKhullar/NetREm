@@ -273,25 +273,25 @@ We can evaluate our model performance capabilities on data like testing data usi
 $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 
 ## Demo (Toy Example) of NetREm:
+The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$] in a particular cell-type. Assume the gene expression values for each TF are [$X_{1}$, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$], respectively. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) between gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. 
 
-Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) in a particular cell-type 🔬: [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$]. These are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$]. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) of predictors with TG $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level.
+The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level.
 
 The code for this demo example is *demo_toy.py* in the *demo* folder.
 
-```python
-# Please load our code for NetREm from the code folder
-import error_metrics as em 
-import Netrem_model_builder as nm
-import DemoDataBuilderXandY as demo
+```python 
+from DemoDataBuilderXandY import generate_dummy_data
+from Netrem_model_builder import netrem
 import PriorGraphNetwork as graph
-import netrem_evaluation_functions as nm_eval
+import error_metrics as em 
 import essential_functions as ef
+import netrem_evaluation_functions as nm_eval
 
-dummy_data = demo.generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
-                   num_samples_M = 100,
-                   train_data_percent = 70)
+dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
+                                 num_samples_M = 100,
+                                 train_data_percent = 70)
 ```
-Please note that the Python console or jupyter notebook would print out the following:
+The Python console or Jupyter notebook will  print out the following:
 
     :) same_train_test_data = False
     :) Please note that since we hold out 30.0% of our 100 samples for testing, we have:
@@ -432,7 +432,7 @@ alpha_lasso_val = 0.01
 
 # Building the network regularized regression model: 
 # Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
-netrem_demo = nm.netrem(edge_list = edge_list, 
+netrem_demo = netrem(edge_list = edge_list, 
                                 beta_net = beta_network_val,
                                 alpha_lasso = alpha_lasso_val,
                                 view_network = True)
