@@ -246,7 +246,7 @@ $$ -->
 
 ### Details:
 
- We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{net} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *model_type = Lasso*) or NetREm may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if `model_type = LasssoCV`). Then, **netrem** builds an estimator object from the class Netrem that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained NetREm machine learning model 🤖 is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable 👩‍🔬. Nonetheless, NetREm could be applied in various contexts where a network structure is present among the predictors. 
+ We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{net} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *model_type = Lasso*) or NetREm may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if `model_type = LasssoCV`). Then, **netrem** builds an estimator object from the class Netrem that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained NetREm machine learning model 🤖 is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. Nonetheless, NetREm could be applied in various contexts where a network structure is present among the predictors. 
 
 ### Output Values: ###
 
@@ -284,7 +284,7 @@ We can retrieve our model coefficients and other attributes by calling these out
 
 * **predict($X$)** 
 
-We can use our model to predict values 🔮 for our response variable $y$. 
+We can use our model to predict values for our response variable $y$. 
 
 | Parameter | Definition | 
 | --------- | ---------- | 
@@ -319,7 +319,7 @@ $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 
 Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) in a particular cell-type 🔬: [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$]. These are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$]. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) of predictors with TG $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level. :star:
 
-Please note that the Python code for this demo example below is provided in *demo_toy.py* in the *demo* folder 📂.
+Please note that the Python code for this demo example below is provided in *demo_toy.py* in the *demo* folder.
 
 ```python
 # Please load our code for NetREm from the code folder
@@ -661,7 +661,7 @@ netrem_demo.B_interaction_df
 We predict that positive scores between predictors (e.g. $TF_1$ and $TF_2$ have a score of 0.856197) tend to imply potential cooperativity (e.g. cobinding) among them. Negative scores may suggest antagonistic activity between the TFs (e.g. $TF_1$ and $TF_5$ have a score of -2.315411), where these TFs may compete to regulate the $TG$ through biological mechanisms that may be investigated further through experiments.
 
 
-We can test the performance of our data on testing data $X_{test}$ ($M = 30$ samples), to understand better the generalizability of our NetREm model on new, unseen, data 🧙‍♀️. 
+We can test the performance of our data on testing data $X_{test}$ ($M = 30$ samples), to understand better the generalizability of our NetREm model on new, unseen, data. 
 
 
 ```python
