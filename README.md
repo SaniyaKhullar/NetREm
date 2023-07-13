@@ -33,22 +33,16 @@ NetREm is a software package that utilizes network-constrained regularization fo
 
 The minimum requirement is a computer with 8 GB of RAM and 32 GB of storage. For large prior graph networks, 32 GB of RAM is recommended. 
 
-## Software Requirements
-
-The analysis is based on Python version 3.10. Please ensure you have cloned or downloaded our NetREm Github code and package. 
-
-In the Anaconda navigator prompt, you can create a virtual environment to run our code by running :
-`conda create -n NetREm python=310`
-
-Then, to activate this environment, please run:
-`conda activate NetREm`
-
-Please change the current directory to the NetREm folder by running `cd NetREm`. 
-
-Then, please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: 
+## Software Requirements and Installation Guide
+The software uses Python 3.10. After downloading the NetREm Github code, conda/Anaconda users can use the following steps to install:
+1. In the Anaconda navigator prompt, create a virtual environment of Python 3.10 by running:
+conda create -n NetREm python=3.10
+2. Activate the environment:
+conda activate NetREm
+3. Make sure to change the current directory to the NetREm folder.
+4. Install the packages and dependencies (*math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*):
 `pip install -r requirements.txt`
 
-In short, we our code uses the following Python packages: *math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*. 
 <!-- To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt. -->
 
 
