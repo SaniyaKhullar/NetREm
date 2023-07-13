@@ -74,8 +74,8 @@ default_weight_new_edges. -->
     &nbsp;&nbsp;&nbsp;&nbsp;*lassocv_alphas = None*, <br>
     &nbsp;&nbsp;&nbsp;&nbsp;*verbose = False*,<br>
     &nbsp;&nbsp;&nbsp;&nbsp;*hide_warnings = True* <br>
+)
 <!-- degree_pseudocount = 1e-3,<br> -->
-    )
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
