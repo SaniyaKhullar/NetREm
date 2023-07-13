@@ -31,7 +31,7 @@ NetREm is a software package that utilizes network-constrained regularization fo
 
 ## Hardware Requirements
 
-Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer (e.g. 32 GB RAM and 32 GB storage) with enough RAM to support the operations. 
+The minimum requirement is a computer with 8 GB of RAM and 32 GB of storage. For large prior graph networks, 32 GB of RAM is recommended. 
 
 ## Software Requirements
 
