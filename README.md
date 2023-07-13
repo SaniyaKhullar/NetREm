@@ -54,14 +54,14 @@ NetREm fits a Network-constrained Lasso regression machine learning model with u
 default_weight_new_edges. -->
 **netrem**(<br> 
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*, <br>
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*beta_net = 1*, <br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*alpha_lasso = 0.01*, <br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*model_type = "Lasso"*,<br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*default_edge_weight = 0.1*,<br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*degree_threshold = 0.5*,<br>
-                  <!-- degree_pseudocount = 1e-3,<br> -->
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*, <br>  
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>                                    
+                  <!-- degree_pseudocount = 1e-3,<br> -->                  
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lasso_selection = "cyclic"*,<br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*view_network = False*, <br>
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*y_intercept = False*, <br>
@@ -467,7 +467,6 @@ alpha_lasso_val = 0.01
 netrem_demo = nm.netrem(edge_list = edge_list, 
                                 beta_net = beta_network_val,
                                 alpha_lasso = alpha_lasso_val,
-                                overlapped_nodes_only = False, # so we include TF6
                                 view_network = True)
 
 # Fitting the gregulnet model on training data: X_train and y_train:
