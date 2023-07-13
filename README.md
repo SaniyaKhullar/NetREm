@@ -293,12 +293,12 @@ dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
 ```
 The Python console or Jupyter notebook will  print out the following:
 
-    :) same_train_test_data = False
-    :) Please note that since we hold out 30.0% of our 100 samples for testing, we have:
-    :) X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
-    :) X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
-    :) y_train = 70 corresponding rows (samples) for training.
-    :) y_test = 30 corresponding rows (samples) for testing.
+    same_train_test_data = False
+    Please note that since we hold out 30.0% of our 100 samples for testing, we have:
+    X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
+    X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
+    y_train = 70 corresponding rows (samples) for training.
+    y_test = 30 corresponding rows (samples) for testing.
 
 The $X$ data should be in the form of a Pandas dataframe as below:
 
@@ -424,7 +424,7 @@ y_test = dummy_data.view_y_test_df()
 
 # prior network edge_list:
 edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
-              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
+             ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
 
 beta_network_val = 3 
 # by default, cv_for_alpha is False, so alpha_lasso_val will be specified for the alpha_lasso parameter.
@@ -433,17 +433,13 @@ alpha_lasso_val = 0.01
 # Building the network regularized regression model: 
 # Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
 netrem_demo = netrem(edge_list = edge_list, 
-                                beta_net = beta_network_val,
-                                alpha_lasso = alpha_lasso_val,
-                                view_network = True)
+                     beta_net = beta_network_val,
+                     alpha_lasso = alpha_lasso_val,
+                     view_network = True)
 
-# Fitting the gregulnet model on training data: X_train and y_train:
+# Fitting the NetREm model on training data: X_train and y_train:
 netrem_demo.fit(X_train, y_train)
 ```
-
-    Please note that we need to update the network information
-    
-
 
     
 ![png](output_3_1.png)
@@ -456,7 +452,7 @@ netrem_demo.fit(X_train, y_train)
     
 
 
-    :) 1 new node(s) added to network based on gene expression data ['TF6']
+   1 new node(s) added to network based on gene expression data ['TF6']
     
 
     
@@ -624,13 +620,12 @@ We can test the performance of our data on testing data $X_{test}$ ($M = 30$ sam
 pred_y_test = netrem_demo.predict(X_test) # predicted values for y_test
 mse_test = netrem_demo.test_mse(X_test, y_test)
 
-print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
+print(f"The testing Mean Square Error (MSE) is {mse_test}")
 ```
 
-    :) Please note that the testing Mean Square Error (MSE) is 0.10939471847175668
+    The testing Mean Square Error (MSE) is 0.10939471847175668
 
-    
-Please note that we also provide a suite of evaluation functions and explanations of more advanced functionalities. 
+TODO: We also provide a suite of evaluation functions and explanations of more advanced functionalities. 
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
