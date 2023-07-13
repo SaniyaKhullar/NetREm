@@ -254,7 +254,7 @@ $$ -->
 
 #### Methods:
 
-We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. Please note that for biological applications 👨‍🔬, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
+We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. Please note that for biological applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
 
 * **fit($X$, $y$)**
 
