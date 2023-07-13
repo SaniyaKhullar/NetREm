@@ -53,28 +53,29 @@ NetREm fits a Network-constrained Lasso regression machine learning model with u
 <!-- SHould we have 2 arguments? 1 for default_edge_weight for nodes found in network. default_weight_prior_edges: for any edge in the edge_list that has an unknown weight, we provide this edge_weight. Thus, we are prioritizing edges provided in the edgelist over those not found in the edge_list originally. Then we can show that since we skipped out on sharing an edge, the code automatically added in an edge with lower edge weight.  
 default_weight_new_edges. -->
 **netrem**(<br> 
-    &nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*beta_net = 1*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*alpha_lasso = 0.01*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*model_type = "Lasso"*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*default_edge_weight = 0.1*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*degree_threshold = 0.5*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*lasso_selection = "cyclic"*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*view_network = False*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*y_intercept = False*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*all_pos_coefs = False*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*tolerance = 1e-4*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*maxit = 10000*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*num_jobs = -1*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*num_cv_folds = 5*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*lassocv_eps = 1e-3*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*lassocv_n_alphas = 100*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*lassocv_alphas = None*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*verbose = False*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;*hide_warnings = True* <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*edge_list*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*beta_net = 1*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*alpha_lasso = 0.01*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*model_type = "Lasso"*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*default_edge_weight = 0.1*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*degree_threshold = 0.5*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*gene_expression_nodes = []*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*overlapped_nodes_only = False*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*lasso_selection = "cyclic"*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*view_network = False*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*y_intercept = False*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*all_pos_coefs = False*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*tolerance = 1e-4*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*maxit = 10000*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*num_jobs = -1*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*num_cv_folds = 5*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*lassocv_eps = 1e-3*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*lassocv_n_alphas = 100*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*lassocv_alphas = None*, <br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*verbose = False*,<br>
+    &nnbsp;&nnbsp;&nnbsp;&nnbsp;*hide_warnings = True* <br>
 )
+
 <!-- degree_pseudocount = 1e-3,<br> -->
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
