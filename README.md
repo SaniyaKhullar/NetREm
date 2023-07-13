@@ -61,7 +61,7 @@ Please note that our package, NetREm, is run by the following function **netrem*
 
 <!-- SHould we have 2 arguments? 1 for default_edge_weight for nodes found in network. default_weight_prior_edges: for any edge in the edge_list that has an unknown weight, we provide this edge_weight. Thus, we are prioritizing edges provided in the edgelist over those not found in the edge_list originally. Then we can show that since we skipped out on sharing an edge, the code automatically added in an edge with lower edge weight.  
 default_weight_new_edges. -->
-## Usage 📦
+## Usage 
 
 **netrem**(<br> 
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
