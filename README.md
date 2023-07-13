@@ -53,27 +53,27 @@ NetREm fits a Network-constrained Lasso regression machine learning model with u
 <!-- SHould we have 2 arguments? 1 for default_edge_weight for nodes found in network. default_weight_prior_edges: for any edge in the edge_list that has an unknown weight, we provide this edge_weight. Thus, we are prioritizing edges provided in the edgelist over those not found in the edge_list originally. Then we can show that since we skipped out on sharing an edge, the code automatically added in an edge with lower edge weight.  
 default_weight_new_edges. -->
 **netrem**(<br> 
-    &numsp;&numsp;&numsp;&numsp;*edge_list*, <br>
-    &numsp;&numsp;&numsp;&numsp;*beta_net = 1*, <br>
-    &numsp;&numsp;&numsp;&numsp;*alpha_lasso = 0.01*, <br>
-    &numsp;&numsp;&numsp;&numsp;*model_type = "Lasso"*,<br>
-    &numsp;&numsp;&numsp;&numsp;*default_edge_weight = 0.1*,<br>
-    &numsp;&numsp;&numsp;&numsp;*degree_threshold = 0.5*,<br>
-    &numsp;&numsp;&numsp;&numsp;*gene_expression_nodes = []*,<br>
-    &numsp;&numsp;&numsp;&numsp;*overlapped_nodes_only = False*,<br>
-    &numsp;&numsp;&numsp;&numsp;*lasso_selection = "cyclic"*,<br>
-    &numsp;&numsp;&numsp;&numsp;*view_network = False*, <br>
-    &numsp;&numsp;&numsp;&numsp;*y_intercept = False*, <br>
-    &numsp;&numsp;&numsp;&numsp;*all_pos_coefs = False*,<br>
-    &numsp;&numsp;&numsp;&numsp;*tolerance = 1e-4*, <br>
-    &numsp;&numsp;&numsp;&numsp;*maxit = 10000*,<br>
-    &numsp;&numsp;&numsp;&numsp;*num_jobs = -1*,<br>
-    &numsp;&numsp;&numsp;&numsp;*num_cv_folds = 5*, <br>
-    &numsp;&numsp;&numsp;&numsp;*lassocv_eps = 1e-3*,<br>
-    &numsp;&numsp;&numsp;&numsp;*lassocv_n_alphas = 100*, <br>
-    &numsp;&numsp;&numsp;&numsp;*lassocv_alphas = None*, <br>
-    &numsp;&numsp;&numsp;&numsp;*verbose = False*,<br>
-    &numsp;&numsp;&numsp;&numsp;*hide_warnings = True* <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*beta_net = 1*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*alpha_lasso = 0.01*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*model_type = "Lasso"*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*default_edge_weight = 0.1*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*degree_threshold = 0.5*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lasso_selection = "cyclic"*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*view_network = False*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*y_intercept = False*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*all_pos_coefs = False*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*tolerance = 1e-4*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*maxit = 10000*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*num_jobs = -1*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*num_cv_folds = 5*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_eps = 1e-3*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_n_alphas = 100*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_alphas = None*, <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*verbose = False*,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*hide_warnings = True* <br>
 )
 <!-- degree_pseudocount = 1e-3,<br> -->
 
