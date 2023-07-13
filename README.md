@@ -48,11 +48,8 @@ The software uses Python 3.10. After downloading the NetREm Github code, conda/A
 
 
 ## Description of NetREm pipeline function: netrem 
-
-Please note that our package, NetREm, is run by the following function **netrem** in Python. NetREm fits a Network-constrained Lasso regression machine learning model given an undirected prior weighted network and regularization parameters. If the input network is unweighted, please provide default weights greater than `default_edge_weight` in the `edge_list` parameter so that nodes that are connected in the network may contain higher weights and therefore more priority (otherwise, all nodes will be connected pairwise and have the same weights and that will render the network useless). 
-
+NetREm fits a Network-constrained Lasso regression machine learning model with user-provided weights for the prior network.  The **netrem** is the main function with the following usage:
 <!-- For biological applications, it is recommended that the user ensure network names map to gene expression names -->
-
 <!-- SHould we have 2 arguments? 1 for default_edge_weight for nodes found in network. default_weight_prior_edges: for any edge in the edge_list that has an unknown weight, we provide this edge_weight. Thus, we are prioritizing edges provided in the edgelist over those not found in the edge_list originally. Then we can show that since we skipped out on sharing an edge, the code automatically added in an edge with lower edge weight.  
 default_weight_new_edges. -->
 ## Usage 
