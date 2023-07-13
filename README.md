@@ -164,11 +164,7 @@ $$ -->
 | **lasso_selection** | ***{'cyclic', 'random'}, default = 'cyclic'*** <br> Please note that this is the `selection` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. | 
 | **tolerance**  | ***float, default = 1e-4*** <br> The tolerance sklearn would use for optimizing the NetREm model. (This is known as `tol` in by Python's sklearn). If the updates to the optiimzation are smaller than `tolerance`, then the optimization code will check the dual gap for optimizality and contine the optimization until that dual gap is smaller than `tolerance`. |
 | **maxit** | ***int, default = 10000*** <br> Please note that this is the `max_iter` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. This is the maximum number of iterations that NetREm will perform. | 
-
-* Parameters for the graph prior network:
-
-| Parameter | Definition | 
-| --------- | ---------- | 
+<!-- * Parameters for the graph prior network: -->
 | default_edge_weight  | ***float, default = 0.1*** <br>  Default edge weight ($w$) assigned to any edge with missing weight | 
 | degree_threshold  |  ***float, default = 0.5*** <br>  Edges with weight $w$ > degree_threshold are counted as 1 towards the node degree $d$ |
 | view_network  |  ***boolean, default = False*** <br>  • If `view_network = True`, then NetREm outputs visualizations of the prior graph network. Recommended for small networks (instead of for dense hairballs) <br> If `view_network = False`, then NetREm saves time by not outputting visuals of the network.  |
