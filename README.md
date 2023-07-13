@@ -36,12 +36,12 @@ The minimum requirement is a computer with 8 GB of RAM and 32 GB of storage. For
 ## Software Requirements and Installation Guide
 The software uses Python 3.10. After downloading the NetREm Github code, conda/Anaconda users can use the following steps to install:
 1. In the Anaconda navigator prompt, create a virtual environment of Python 3.10 by running:<br>
-   conda create -n NetREm python=3.10
-3. Activate the environment:<br>
+conda create -n NetREm python=3.10
+2. Activate the environment:<br>
    conda activate NetREm
-5. Make sure to change the current directory to the NetREm folder.
+3. Make sure to change the current directory to the NetREm folder.
 <!-- Saniya: This is operating system dependent, you may add command to change directory for Windows/Madc/Linux, cd for windows/Linux, what Shanw used for Windows is cd C:\C:\Users\Shawn\Code\NetREm -->
-7. Install the packages and dependencies (*math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*):<br>
+4. Install the packages and dependencies (*math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*):<br>
 `pip install -r requirements.txt`
 
 <!-- To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt. -->
