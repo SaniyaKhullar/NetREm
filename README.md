@@ -206,7 +206,8 @@ $$ -->
 
 * A NetREm network-regularized linear model estimator object from the NetREmModel class.
 
-We can retrieve our model coefficients and other attributes by calling these outputs:
+## Usage of the NetREm main object returned from netrem()
+#### Attributes:
 
 | Output | Definition | 
 | --------- | ---------- | 
@@ -222,6 +223,12 @@ We can retrieve our model coefficients and other attributes by calling these out
 There are several methods we can call for our NetREm estimator object:
 
 #### Methods:
+
+put those three as table.
+* **fit($X$, $y$)**
+* **predict($X$)** 
+* **test_mse($X$, $y$)**
+
 
 We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. For biological applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs)) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
 
