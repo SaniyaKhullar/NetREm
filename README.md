@@ -237,7 +237,7 @@ We can retrieve our model coefficients and other attributes by calling these out
 | mse_train | Mean Square Error (MSE): predicted `predY_train` versus actual training values for the response variable Y. | 
 | sorted_coef_df | [Pandas](https://pandas.pydata.org/) dataframe that sorts the final model coefficients (including the y-intercept) based on their absolute values. The rank is provided from least (most important: highest absolute value coefficient) to highest (least important in model). | 
 | final_corr_vs_coef_df | [Pandas](https://pandas.pydata.org/) dataframe with 3 rows. <br> • NetREm regression coefficient for predictor <br> • correlation of each predictor with y based on the training data <br> • absolute value ranking of the coefficients for the predictors |
-| combined_Df | [Pandas](https://pandas.pydata.org/) dataframe with a row for each predictor and several columns detailing:<br> • general NEtREm model information: `y_intercept`, train MSE, `beta_net`, `alpha_lasso`, original number of predictors in $X$, filtered number of predictors input to NetREm (based on pre-processing by user), final number of non-zero predictors selected <br>
+| combined_df | [Pandas](https://pandas.pydata.org/) dataframe with a row for each predictor and several columns detailing:<br> • general NEtREm model information: `y_intercept`, train MSE, `beta_net`, `alpha_lasso`, original number of predictors in $X$, filtered number of predictors input to NetREm (based on pre-processing by user), final number of non-zero predictors selected <br>
 • predictor-specific results: NetREm coefficient for predictor, absolute value of NetREm coefficient, rank of the absolute value of the coefficient (low ranks imply higher | NetREm coefficient | ) |
 
 
@@ -631,7 +631,76 @@ print(f"The testing Mean Square Error (MSE) is {mse_test}")
 
     The testing Mean Square Error (MSE) is 0.10939471847175668
 
+
+We can analyze more metrics about our NetREm model results as below: 
+
+```python
+netrem_demo.final_corr_vs_coef_df
+```
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>info</th>
+      <th>input_data</th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+      <th>TF6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>network regression coeff. with y: y</td>
+      <td>X_train</td>
+      <td>0.309776</td>
+      <td>0.112297</td>
+      <td>0.001116</td>
+      <td>-0.073603</td>
+      <td>-0.21665</td>
+      <td>0.000375</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>corr (r) with y: y</td>
+      <td>X_train</td>
+      <td>0.90244</td>
+      <td>0.440681</td>
+      <td>0.058722</td>
+      <td>-0.163072</td>
+      <td>-0.814564</td>
+      <td>-0.252551</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>Absolute Value NetREm Coefficient Ranking</td>
+      <td>X_train</td>
+      <td>1</td>
+      <td>3</td>
+      <td>5</td>
+      <td>4</td>
+      <td>2</td>
+      <td>6</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+
+
+
 We also provide a suite of evaluation functions and explanations of more advanced functionalities in our [User Guide](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/).
+
+
+
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
