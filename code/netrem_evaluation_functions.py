@@ -64,6 +64,7 @@ class BayesianObjective_Lasso:
         score = -cross_val_score(netrem_model, self.X, self.y, cv=self.cv_folds, scoring=self.scorer_obj).mean()
         return score
 
+    
 def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train, 
                                       beta_net_min = 0.001, 
                                       beta_net_max = 10, 
@@ -118,10 +119,6 @@ def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train
     return results_dict
 
 
-
-
-
-
 def optimal_netrem_model_via_gridsearchCV_param_tuner(netrem_model, X_train, y_train, num_grid_values, num_cv_jobs = -1):
     beta_max = 0.5 * np.max(np.abs(X_train.T.dot(y_train)))
     beta_min = 0.01 * beta_max
@@ -166,8 +163,6 @@ def optimal_netrem_model_via_gridsearchCV_param_tuner(netrem_model, X_train, y_t
     update_gregnet = NetREmModel(**update_gregnet.get_params())
     update_gregnet.fit(X_train, y_train)
     return update_gregnet
-
-
 
 
 def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV_ForNetREm(gene_num, target_genes_list,
@@ -419,7 +414,6 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
         combined_model_compare_df = aaa
         combined_model_compare_df = combined_model_compare_df.drop(columns = ["combo_key"])
     return combined_model_compare_df
-
 
 
 def baseline_metrics_function(X_train, y_train, X_test, y_test, tg, model_name, y_intercept, verbose = False):

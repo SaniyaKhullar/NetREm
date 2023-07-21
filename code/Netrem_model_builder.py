@@ -109,9 +109,11 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.kwargs = kwargs
         self._apply_parameter_constraints() # ensuring that the parameter constraints are met   
    
+
     def __repr__(self):
         args = [f"{k}={v}" for k, v in self.__dict__.items() if k != 'param_grid' and k in self.kwargs]
         return f"{self.__class__.__name__}({', '.join(args)})"    
+    
     
     def check_overlaps_work(self, X):
         X_df = X.sort_index(axis=0).sort_index(axis=1) # sorting the X dataframe by rows and columns. 
@@ -120,6 +122,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         if network_set == final_set:
             return False
         return True
+    
     
     def updating_network_and_X_during_fitting(self, X, y):   
         """ :) Please note that this function will update the prior network information and the 
@@ -179,6 +182,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.y_train = self.preprocess_y_df(y)
         return self
     
+    
     def organize_B_interaction_list(self): # TF-TF interactions to output :)
         self.B_train = self.compute_B_matrix(self.X_train)
         self.B_interaction_df = pd.DataFrame(self.B_train, index = self.final_nodes, columns = self.final_nodes)
@@ -188,6 +192,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
 #         self.B_interaction_df = self.B_interaction_df.sort_values(by = ['B_train_weight'], ascending = False)
 #         self.B_interaction_df["beta_network"] = self.beta_network
         return self
+    
     
     def fit(self, X, y): # fits a model Function used for model training 
         self.updating_network_and_X_during_fitting(X, y)
@@ -228,6 +233,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             if len(selected_cols) > 1: # and self.model_type != "Linear":
                 self.netrem_model_predictor_results(y)
         return self
+    
     
     def netrem_model_predictor_results(self, y):
         """ :) Please note that this function by Saniya works on a netrem model and returns information about the predictors
@@ -282,6 +288,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.combined_df["original_TFs_in_X"] = len(self.gene_expression_nodes)
         return self
 
+    
     def view_W_network(self):
         roundedW = np.round(self.W, decimals=4)
         wMat = ef.view_matrix_as_dataframe(roundedW, column_names_list=self.final_nodes, row_names_list=self.final_nodes)
@@ -306,6 +313,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         labels = {e: G.edges[e]['weight'] for e in G.edges}
         return nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, ax=ax)
     
+    
     def compute_B_matrix_times_M(self, X):
         """ M is N_sample, because ||y - Xc||^2 need to be normalized by 1/n_sample, but not the 2 * beta_L2 * c'Ac term
         see https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html
@@ -319,6 +327,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         B = XtX + part_2 
         return B
     
+    
     def compute_B_matrix(self, X):
         """ M is N_sample, because ||y - Xc||^2 need to be normalized by 1/n_sample, but not the 2 * beta_L2 * c'Ac term
         see https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html
@@ -327,6 +336,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         where M = n_sample 
         Outputting for user """
         return self.compute_B_matrix_times_M(X) / self.M
+    
     
     def compute_X_tilde_y_tilde(self, B, X, y):
         """Compute X_tilde, y_tilde such that X_tilde.T @ X_tilde = B,   y_tilde.T @ X_tilde = y.T @ X """
@@ -346,6 +356,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         y_tilde *= scale
         return X_tilde, y_tilde
     
+    
     def predict_y_from_y_tilda(self, X, X_tilda, pred_y_tilda):
         X = self.preprocess_X_df(X) # calculate transpose of inverse of X
         X_inv = np.linalg.inv(X)
@@ -353,6 +364,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         X_tilda_transpose = X_tilda.T # calculate transpose of X_tilda
         pred_y = X_inv_transpose.dot(X_tilda_transpose).dot(pred_y_tilda) # calculate matrix multiplication
         return pred_y
+    
     
     def _apply_parameter_constraints(self):
         constraints = {**NetREmModel._parameter_constraints}
@@ -367,22 +379,26 @@ class NetREmModel(BaseEstimator, RegressorMixin):
                     setattr(self, key, constraints[key][0])
         return self
         
+        
     def calculate_mean_square_error(self, actual_values, predicted_values):
         difference = (actual_values - predicted_values)# Please note that this function by Saniya calculates the Mean Square Error (MSE)
         squared_diff = difference ** 2 # square of the difference
         mean_squared_diff = np.mean(squared_diff)
         return mean_squared_diff
     
+    
     def predict(self, X_test):
         X_test = self.preprocess_X_df(X_test) # X_test
         return self.regr.predict(X_test)
 
+    
     def test_mse(self, X_test, y_test):
         X_test = self.preprocess_X_df(X_test) # X_test
         y_test = self.preprocess_y_df(y_test) 
         predY_test = self.regr.predict(X_test) # training data   
         mse_test = self.calculate_mean_square_error(y_test, predY_test) # Calculate MSE
         return mse_test #mse_test
+    
     
     def get_params(self, deep=True):
         params_dict = {"info":self.info, "alpha_lasso": self.alpha_lasso, "beta_network": self.beta_network, 
@@ -409,7 +425,8 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             return params_dict
         else:
             return copy.deepcopy(params_dict)
-                
+             
+            
     def set_params(self, **params):
         """ Sets the value of any parameters in this estimator
         Parameters: **params: Dictionary of parameter names mapped to their values
@@ -422,6 +439,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             setattr(self, key, value)
         return self   
     
+    
     def __deepcopy__(self, memo):
         cls = self.__class__
         result = cls.__new__(cls)
@@ -431,9 +449,11 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         result.optimal_alpha = self.optimal_alpha
         return result
 
+    
     def clone(self):
         return deepcopy(self)
 
+    
     def score(self, X, y, zero_coef_penalty=10):
         if isinstance(X, pd.DataFrame):
             X = self.preprocess_X_df(X) # X_test
@@ -525,6 +545,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.tf_names_list = self.nodes
         return self
     
+    
     def preprocess_X_df(self, X):
         if isinstance(X, pd.DataFrame):
             X_df = X 
@@ -541,10 +562,12 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             X = np.array(X_df.values.tolist())      
         return X
     
+    
     def preprocess_y_df(self, y):
         if isinstance(y, pd.DataFrame):
             y = y.values.flatten()
         return y
+        
         
     def return_Linear_ML_model(self, X, y):
         regr = LinearRegression(fit_intercept = self.fit_y_intercept,
@@ -552,6 +575,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
                                n_jobs = self.num_jobs)
         regr.fit(X, y)
         return regr    
+        
         
     def return_Lasso_ML_model(self, X, y):
         regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.fit_y_intercept,
@@ -561,6 +585,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         regr.fit(X, y)
         return regr
 
+    
     def return_LassoCV_ML_model(self, X, y):
         regr = LassoCV(cv = self.num_cv_folds, random_state = 0, 
                     fit_intercept = self.fit_y_intercept, 
@@ -575,6 +600,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         regr.fit(X, y)
         return regr            
 
+    
     def return_fit_ml_model(self, X, y):
         if self.model_type == "Linear":
             model_to_return = self.return_Linear_ML_model(X, y)
@@ -584,20 +610,17 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             model_to_return = self.return_LassoCV_ML_model(X, y)
         return model_to_return
         
-def netrem(edge_list, gene_expression_nodes = [], beta_net = 1, alpha_lasso = 0.01, model_type = "Lasso",
-                  default_edge_weight = 0.1,
-                  degree_threshold = 0.5,
-                  degree_pseudocount = 1e-3,
-                   lasso_selection = "cyclic",
-                   view_network = False, num_cv_folds = 5, 
-                y_intercept = False, all_pos_coefs = False,
-                   overlapped_nodes_only = False,
-                   tolerance = 1e-4, maxit = 10000,
-                  num_jobs = -1, lassocv_eps = 1e-3,
+        
+def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.1,
+                  degree_threshold = 0.5, gene_expression_nodes = [], overlapped_nodes_only = False,
+           y_intercept = False, view_network = False,
+           model_type = "Lasso", lasso_selection = "cyclic", all_pos_coefs = False, tolerance = 1e-4, maxit = 10000,
+                  num_jobs = -1, num_cv_folds = 5, lassocv_eps = 1e-3,
                    lassocv_n_alphas = 100, # default in sklearn        
                 lassocv_alphas = None, # default in sklearn
                    verbose = False,
                    hide_warnings = True):
+    degree_pseudocount = 1e-3
     if hide_warnings:
         warnings.filterwarnings("ignore")
     default_beta = False

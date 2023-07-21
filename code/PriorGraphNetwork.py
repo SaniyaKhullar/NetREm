@@ -30,6 +30,7 @@ from sklearn.exceptions import ConvergenceWarning
 printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
 rng_seed = 2023 # random seed for reproducibility
 randSeed = 123
+
 class PriorGraphNetwork:
     """:) Please note that this class focuses on incorporating information from a prior network (in our case, 
     a biological network of some sort). The input would be an edge list with: source, target, weight. If no
@@ -151,6 +152,7 @@ class PriorGraphNetwork:
         self.node_status_df = self.find_node_status_df()
         self._apply_parameter_constraints()
         
+        
     def find_node_status_df(self):
         """ Returns the node status """
         preprocessed_result = "No :("
@@ -181,11 +183,13 @@ class PriorGraphNetwork:
             full_df["info"] = "Original Network Node"
         return full_df
         
+        
     def network_nodes_from_edge_list(self):
         edge_list = self.edge_list
         network_nodes = list({node for edge in edge_list for node in edge[:2]})
         network_nodes.sort()
         return network_nodes
+        
         
     def _apply_parameter_constraints(self):
         constraints = {**PriorGraphNetwork._parameter_constraints}
@@ -199,6 +203,7 @@ class PriorGraphNetwork:
                 elif value not in constraints[key]:
                     setattr(self, key, constraints[key][0])
         return self
+        
         
     def create_V_matrix(self):
         V = self.N * np.eye(self.N) - np.ones(self.N)
@@ -215,6 +220,7 @@ class PriorGraphNetwork:
             for sublst in self.edge_list
         ]
 
+    
     def undirected_edge_list_to_matrix(self):
         all_nodes = self.final_nodes
         edge_list = self.edge_list
@@ -252,40 +258,6 @@ class PriorGraphNetwork:
         self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.nodes, dtype=np.float64)
         return self
 
-#     def undirected_edge_list_to_matrix(self):
-#         all_nodes = self.final_nodes # gene_expression_nodes # self.nodes
-#         edge_list = self.edge_list
-#         default_edge_weight = self.default_edge_weight
-#         N = len(all_nodes)
-#         self.N = N
-#         num_nodes = len(all_nodes)
-#         num_edges = len(edge_list)
-#         weight_df = np.full((num_nodes, num_nodes), default_edge_weight)
-#         for i in tqdm(range(0, num_edges)) if self.verbose else range(0, num_edges):
-#             edge = edge_list[i]
-#             try:
-#                 source = edge[0]
-#                 target = edge[1]
-#                 weight = edge[2] if len(edge) == 3 else default_edge_weight 
-#                 weight = np.nan_to_num(weight, nan=default_edge_weight)
-#                 source_idx = all_nodes.index(source)
-#                 target_idx = all_nodes.index(target)
-#                 weight_df[source_idx, target_idx] = weight
-#                 weight_df[target_idx, source_idx] = weight
-#             except ValueError as e:
-#                 print(f"An error occurred: {e}")
-#                 continue
-#         weight_df = pd.DataFrame(weight_df, index = all_nodes, columns = all_nodes) 
-#         np.fill_diagonal(weight_df.values, 0)
-#         W = weight_df.values
-#         np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-#         symmetric_W = ef.check_symmetric(W)
-#         if symmetric_W == False:
-#             print(":( W matrix is NOT symmetric")
-#         self.W = W
-#         W_df = pd.DataFrame(W, columns = all_nodes, index = self.nodes, dtype=np.float64)
-#         self.W_df = W_df
-#         return self
 
     def undirected_edge_list_updated(self):
         weight_df = self.W_df
@@ -310,6 +282,7 @@ class PriorGraphNetwork:
             edge_df["edge_type"] = 'network edge'
         return edge_df
 
+    
     def generate_symmetric_weight_matrix(self) -> np.ndarray:
         """generate symmetric W matrix. W matrix (Symmetric --> W = W_Transpose).
         Note: each diagonal element is the summation of other non-diagonal elements in the same row divided by (N-1)
@@ -321,6 +294,7 @@ class PriorGraphNetwork:
             print(":( W matrix is NOT symmetric")
             return None
         return W
+    
 
     def directed_node2vec_similarity(self, edge_list: List[Tuple[int, int, float]],
                                                      dimensions: int = 64,
@@ -399,6 +373,7 @@ class PriorGraphNetwork:
 
         return scaled_similarity_matrix
 
+    
     def return_W_edge_list(self):
         wMat = ef.view_matrix_as_dataframe(self.W, column_names_list = self.tf_names_list, row_names_list = self.tf_names_list)
         w_edgeList = wMat.stack().reset_index()
@@ -407,6 +382,7 @@ class PriorGraphNetwork:
         w_edgeList = w_edgeList.sort_values(by = ["weight"], ascending = False)
         return w_edgeList
 
+    
     def view_W_network(self):
         roundedW = np.round(self.W, decimals=4)
         wMat = ef.view_matrix_as_dataframe(roundedW, column_names_list=self.nodes, row_names_list=self.nodes)
@@ -431,6 +407,7 @@ class PriorGraphNetwork:
         labels = {e: G.edges[e]['weight'] for e in G.edges}
         return nx.draw_networkx_edge_labels(G, pos, edge_labels=labels, ax=ax)
 
+    
     def generate_degree_vector_from_weight_matrix(self) -> np.ndarray:
         """generate d degree vector.  2023.02.14_Xiang TODO: add parameter descriptions
         """
@@ -461,8 +438,8 @@ class PriorGraphNetwork:
             print() #
         return d
 
-    # D matrix
-    def generate_degree_matrix_from_weight_matrix(self):
+    
+    def generate_degree_matrix_from_weight_matrix(self): # D matrix
         """:) Please note that this function returns the D matrix as a diagonal matrix 
         where the entries are 1/sqrt(d). Here, d is a vector corresponding to the degree of each matrix"""
         # we see that the D matrix is higher for nodes that are singletons, a much higher value because it is not connected
@@ -472,10 +449,9 @@ class PriorGraphNetwork:
         D = ef.DiagonalLinearOperator(d_inv_sqrt)
         return D
     
-    # A matrix
-    def create_A_matrix(self):
-        """
-        Please note that this function by Saniya creates the A matrix, which is:   
+    
+    def create_A_matrix(self): # A matrix
+        """ Please note that this function by Saniya creates the A matrix, which is:   
         :) here: %*% refers to matrix multiplication
         and * refers to element-wise multiplication (for 2 dataframes with same exact dimensions,
         component-wise multiplication)
@@ -490,6 +466,7 @@ class PriorGraphNetwork:
             print(f":( False. A is NOT a symmetric matrix.")
             print(A)
         return False
+    
     
     def full_lists(self):
             # network arguments used:

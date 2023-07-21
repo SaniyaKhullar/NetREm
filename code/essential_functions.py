@@ -45,6 +45,7 @@ def view_matrix_as_dataframe(matrix, column_names_list = [], row_names_list = []
         matDF.index = row_names_list    
     return matDF
 
+
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     # https://stackoverflow.com/questions/42908334/checking-if-a-matrix-is-symmetric-in-numpy
     # Please note that this function checks if a matrix is symmetric in Python

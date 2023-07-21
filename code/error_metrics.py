@@ -30,12 +30,10 @@ randSeed = 123
 
 def calculate_mean_square_error(actual_values, predicted_values):
     # Please note that this function by Saniya calculates the Mean Square Error (MSE)
-    
     difference = (actual_values - predicted_values)
     squared_diff = difference ** 2 # square of the difference
     mean_squared_diff = np.mean(squared_diff)
     return mean_squared_diff
-
 
 
 def mse(REF: np.ndarray, X: np.ndarray, axis: Optional[int] = None) -> np.float:
@@ -140,8 +138,6 @@ def psnr(REF: np.ndarray, X: np.ndarray, axis: Optional[int] = None, max_: Optio
         return psnr(REF.real, X.real, axis, max_) + 1j * psnr(REF.imag, X.imag, axis, max_)
 
     
-
-
 def nmse_custom_score(y_true, y_pred):
     """
     Calculates the negative normalized mean squared error (MSE) between the true and predicted values.
@@ -155,7 +151,6 @@ def nmse_custom_score(y_true, y_pred):
         return -np.inf  # return a high negative score
     nmseVal = nmse(y_true, y_pred)
     return -nmseVal
-
 
 
 def mse_custom_score(y_true, y_pred):
@@ -178,7 +173,6 @@ def snr_custom_score(y_true, y_pred):
     """
     Higher the SNR the better 
     """
-    import numpy as np
     if isinstance(y_true, pd.DataFrame):
         y_true = y_true.values.flatten()
     if isinstance(y_pred, pd.DataFrame):
@@ -188,11 +182,11 @@ def snr_custom_score(y_true, y_pred):
     snrVal = snr(y_true, y_pred)
     return snrVal
 
+
 def psnr_custom_score(y_true, y_pred):
     """
     Higher the psnr, the better
     """
-    import numpy as np
     if isinstance(y_true, pd.DataFrame):
         y_true = y_true.values.flatten()
     if isinstance(y_pred, pd.DataFrame):
@@ -225,7 +219,6 @@ def generate_model_metrics_for_baselines_df(X_train, y_train, X_test, y_test, mo
         model_df = pd.DataFrame(regr.coef_)
     else:
         model_df = pd.DataFrame(regr.coef_).transpose()
-    #print(model_df)
     model_df.columns = X_train.columns.tolist()
     selected_row = model_df.iloc[0]
     selected_cols = selected_row[selected_row != 0].index # Filter out the columns with value 0
@@ -308,74 +301,7 @@ def generate_model_metrics_for_netrem_model_object(netrem_model, y_intercept_fit
     netrem_dict = {"sorted_df_netrem":sorted_df_netrem, "tf_netrem_found":tf_netrem_found}
     return netrem_dict
 
-    
-# def metrics_for_netrem_models_versus_other_models(netrem_with_intercept, netrem_no_intercept, X_train, y_train, X_test, y_test, filtered_results = False, tf_name = "SOX10", target_gene = "y"):
-#     """ :) This is similar to function metrics_for_netrem_versus_other_models() except it focuses on 2 types of NetREm models:
-#     1. with y-intercept fitted
-#     2. with no y-intercept fitted
-#     :) Please note:
-#         MSE (Mean Squared Error) and NMSE (Normalized Mean Squared Error) are both measures of the average difference between the predicted and actual values, where lower values indicate better performance.
 
-#         PSNR (Peak Signal-to-Noise Ratio) and SNR (Signal-to-Noise Ratio) are both measures of the ratio between the maximum possible signal power and the power of the noise, where higher values indicate better performance.
-
-#         However, the specific metrics that are most relevant to a particular machine learning problem can vary depending on the application and the specific goals of the model. So, it's important to consider the context and objectives of each project when selecting evaluation metrics.
-#     """
-#     focus_gene = target_gene
-    
-#     netrem_with_intercept_sorted_dict = generate_model_metrics_for_netrem_model_object(netrem_with_intercept, True, X_train, y_train, X_test, y_test, filtered_results, tf_name, focus_gene)
-#     netrem_no_intercept_sorted_dict = generate_model_metrics_for_netrem_model_object(netrem_no_intercept, False, X_train, y_train, X_test, y_test, filtered_results, tf_name, focus_gene)        
-
-#     netrem_with_intercept_sorted_df = netrem_with_intercept_sorted_dict["sorted_df_netrem"]
-#     netrem_with_intercept_sorted_df["y_intercept"] = "True :)"
-#     netrem_no_intercept_sorted_df = netrem_no_intercept_sorted_dict["sorted_df_netrem"]
-#     netrem_no_intercept_sorted_df["y_intercept"] = "False :("
-#     tf_netrem_found_with_intercept = netrem_with_intercept_sorted_dict["tf_netrem_found"]
-#     tf_netrem_found_no_intercept = netrem_no_intercept_sorted_dict["tf_netrem_found"]
-    
-    
-#     sorted_df_elasticcv = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "ElasticNetCV", y_intercept = False, tf_name = tf_name)
-#     sorted_df_lassocv = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "LassoCV", y_intercept = False, tf_name = tf_name)
-#     sorted_df_ridgecv = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "RidgeCV", y_intercept = False, tf_name = tf_name)
-#     sorted_df_linear = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "LinearRegression", y_intercept = False, tf_name = tf_name)
-#     sorted_df_elasticcv2 = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "ElasticNetCV", y_intercept = True, tf_name = tf_name)
-#     sorted_df_lassocv2 = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "LassoCV", y_intercept = True, tf_name = tf_name)
-#     sorted_df_ridgecv2 = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "RidgeCV", y_intercept = True, tf_name = tf_name)
-#     sorted_df_linear2 = generate_model_metrics_for_baselines_df(X_train = X_train, y_train = y_train, X_test = X_test, y_test = y_test, model_name = "LinearRegression", y_intercept = True, tf_name = tf_name)
-
-#     sorty_combo = pd.concat([netrem_no_intercept_sorted_df, sorted_df_elasticcv, sorted_df_ridgecv, sorted_df_lassocv, sorted_df_linear])
-#     sorty_combo = pd.concat([sorty_combo, netrem_with_intercept_sorted_df, sorted_df_elasticcv2, sorted_df_ridgecv2, sorted_df_lassocv2, sorted_df_linear2])
-#     sorty_combo = sorty_combo[sorty_combo["TF"] == tf_name]
-#     sorty_combo["TG"] = focus_gene
-#     sorty_combo = sorty_combo.reset_index().drop(columns = ["index"])
-#     sorty_combo = sorty_combo[['AbsoluteVal_coefficient', 'Rank', 'TF', 'Info', 'y_intercept', 'num_TFs', 'TG', 'train_mse',
-#        'test_mse', 'train_nmse', 'test_nmse', 'train_snr', 'test_snr',
-#        'train_psnr', 'test_psnr']]
-#     aaa = sorty_combo
-#     aaa['rank_mse_train'] = aaa['train_mse'].rank(ascending=True).astype(int)
-#     aaa['rank_mse_test'] = aaa['test_mse'].rank(ascending=True).astype(int)
-#     aaa['rank_nmse_train'] = aaa['train_nmse'].rank(ascending=True).astype(int)
-#     aaa['rank_nmse_test'] = aaa['test_nmse'].rank(ascending=True).astype(int)
-
-#     aaa['rank_snr_train'] = aaa['train_snr'].rank(ascending=False).astype(int)
-#     aaa['rank_snr_test'] = aaa['test_snr'].rank(ascending=False).astype(int)
-#     aaa['rank_psnr_train'] = aaa['train_psnr'].rank(ascending=False).astype(int)
-#     aaa['rank_psnr_test'] = aaa['test_psnr'].rank(ascending=False).astype(int)
-#     aaa["total_metrics_rank"] = aaa['rank_mse_train'] + aaa['rank_mse_test'] + aaa['rank_nmse_train'] + aaa['rank_nmse_test'] 
-#     aaa["total_metrics_rank"] +=  aaa['rank_snr_train'] + aaa['rank_snr_test'] + aaa['rank_psnr_train'] + aaa['rank_psnr_test']
-#     sorty_combo = aaa
-    
-#     reduced_results_df = sorty_combo[sorty_combo["Rank"] != "N/A"]
-#     reduced_results_df = reduced_results_df.sort_values(by = ["Rank"])
-    
-    
-#     if tf_netrem_found_with_intercept:
-#         print(netrem_with_intercept.final_corr_vs_coef_df[["info"] + [tf_name]])
-#     elif tf_netrem_found_no_intercept:
-#         print(netrem_no_intercept.final_corr_vs_coef_df[["info"] + [tf_name]])
-#     if filtered_results:
-#         return reduced_results_df
-#     else:
-#         return sorty_combo
 def metrics_for_netrem_models_versus_other_models(netrem_with_intercept, netrem_no_intercept, X_train, y_train, X_test, y_test, filtered_results = False, tf_name = "SOX10", target_gene = "y"):
     """ :) This is similar to function metrics_for_netrem_versus_other_models() except it focuses on 2 types of NetREm models:
     1. with y-intercept fitted

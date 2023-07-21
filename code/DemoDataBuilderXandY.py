@@ -27,7 +27,8 @@ from sklearn.exceptions import ConvergenceWarning
 printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
 rng_seed = 2023 # random seed for reproducibility
 randSeed = 123
-#from packages_needed import *
+
+
 class DemoDataBuilderXandY: 
     """:) Please note that this class focuses on building Y data based on a normal distribution (specified mean
     and standard deviation). M is the # of samples we want to generate. Thus, Y is a vector with M elements. 
@@ -109,6 +110,7 @@ class DemoDataBuilderXandY:
         self.y_df = self.view_original_y_df()
         self.combined_train_test_x_and_y_df = self.combine_X_and_y_train_and_test_data()
         
+        
     def _apply_parameter_constraints(self):
         constraints = {**DemoDataBuilderXandY._parameter_constraints}
         for key, value in self.__dict__.items():
@@ -125,6 +127,7 @@ class DemoDataBuilderXandY:
                     setattr(self, key, constraints[key][0])
         return self
         
+        
     def get_tf_names_list(self):
         tf_names_list = []
         for i in range(0, self.N):
@@ -132,50 +135,61 @@ class DemoDataBuilderXandY:
             tf_names_list.append(term)
         return tf_names_list
     
-    # getter method
-    def get_N(self):
+    
+    def get_N(self): # getter method
         N = len(self.corrVals)
         return N 
+    
     
     def get_X_train(self):
         return self.data_sets[0] #X_train
 
+    
     def get_y_train(self):
         return self.data_sets[2] # y_train
+    
     
     def get_X_test(self):
         return self.data_sets[1]
     
+    
     def get_y_test(self):       
         return self.data_sets[3]
 
+    
     def view_original_X_df(self):
         import pandas as pd
         X_df = pd.DataFrame(self.X, columns = self.tf_names_list)
         return X_df
+    
     
     def view_original_y_df(self):
         import pandas as pd
         y_df = pd.DataFrame(self.y, columns = ["y"])
         return y_df
     
+    
     def view_X_train_df(self):
         import pandas as pd
         X_train_df = pd.DataFrame(self.X_train, columns = self.tf_names_list)
         return X_train_df
 
+    
     def view_y_train_df(self):
         import pandas as pd
         y_train_df = pd.DataFrame(self.y_train, columns = ["y"])
         return y_train_df
     
+    
     def view_X_test_df(self):
         X_test_df = pd.DataFrame(self.X_test, columns = self.tf_names_list)
         return X_test_df
     
+    
     def view_y_test_df(self):
         y_test_df = pd.DataFrame(self.y_test, columns = ["y"])
         return y_test_df
+    
     
     def combine_X_and_y_train_and_test_data(self):
         X_p1 = self.X_train_df
@@ -192,6 +206,7 @@ class DemoDataBuilderXandY:
         combining_df["y"] = y_combined["y"]
         return combining_df
 
+    
     def return_correlations_dataframe(self):
         corr_info = ["expected_correlations"] * self.N
         corr_df = pd.DataFrame(corr_info, columns = ["info"])
@@ -200,14 +215,15 @@ class DemoDataBuilderXandY:
         corr_df["data"] = "correlations"
         return corr_df
     
+    
     def generate_Y(self):
         seed_val = self.rng_seed
         rng = np.random.default_rng(seed=seed_val)
         y = rng.normal(self.mu, self.std_dev, self.M)
         return y
     
-        # Check if Q is orthogonal using the is_orthogonal function
-    def is_orthogonal(matrix):
+        
+    def is_orthogonal(matrix): # Check if Q is orthogonal using the is_orthogonal function
         """
         Checks if a given matrix is orthogonal.
         Parameters:
@@ -295,6 +311,7 @@ class DemoDataBuilderXandY:
                                                                              self.same_train_and_test_data_bool)
         return combined_correlations_df
     
+    
     def actual_vs_expected_corrs_DefensiveProgramming_all_groups(self, X, y, X_train, y_train, X_test, y_test,
                                                                 corrVals, tf_names_list,
                                                                  same_train_and_test_data_bool):
@@ -306,6 +323,7 @@ class DemoDataBuilderXandY:
                                                                                          tf_names_list, same_train_and_test_data_bool, "Testing")
         combined_correlations_df = pd.concat([overall_corrs_df, training_corrs_df, testing_corrs_df]).drop_duplicates()
         return combined_correlations_df
+    
     
     def compare_actual_and_expected_correlations_DefensiveProgramming_one_data_group(self, X_matrix, y, corrVals, 
                                                               predictor_names_list,
@@ -330,6 +348,7 @@ class DemoDataBuilderXandY:
             comparisonDF["num_samples"] = "unique " + str(num_samples)
         return comparisonDF
 
+    
         # Visualizing Functions :)
     def view_input_correlations(self):
         corr_val_df = pd.DataFrame(self.corrVals, columns = ["correlation"])#.transpose()
