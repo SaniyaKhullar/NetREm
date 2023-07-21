@@ -224,13 +224,21 @@ There are several methods we can call for our NetREm estimator object:
 
 #### Methods:
 
+We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. For biological applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs)) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
+
+| Method  | Definition | Returns |
+| --------- |  ---------- |  ---------- | 
+| fit($X$, $y$) |  Building and training the NetREm model with $X$ and $y$ data. | Fitted NetREm Object. <br> • If `model_type = LassoCV`, will also return optimal value for alpha. |
+| predict($X$) | Use our model to predict values for our response variable $y$. Numpy array of $\hat{y}$ predicted values for $y$ |  Numpy array of $\hat{y}$ predicted values for $y$ | 
+| test_mse($X$, $y$) | Evaluate our model performance capabilities on testing data using Mean Squared Error (MSE) as our metric.  | Numeric value corresponding to the Mean Square Error (MSE). <br>  $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$ | 
+
 put those three as table.
 * **fit($X$, $y$)**
 * **predict($X$)** 
 * **test_mse($X$, $y$)**
 
 
-We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. For biological applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs)) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
+
 
 * **fit($X$, $y$)**
 
