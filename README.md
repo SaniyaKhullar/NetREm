@@ -455,7 +455,7 @@ netrem_demo.fit(X_train, y_train)
     
 ![png](output_3_5.png)
 
-![png](gregnet_estimator.png)
+![png](netrem_estimator.png)
 
 <!-- There is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. The remaining relationships among the other TFs is assumed to be the default (edge weight of 0.1). -->
 <!-- Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using $X_{train}$ and $y_{train}$ data (70 samples). -->
@@ -622,7 +622,7 @@ print(f"The testing Mean Square Error (MSE) is {mse_test}")
 
     The testing Mean Square Error (MSE) is 0.10939471847175668
 
-TODO: We also provide a suite of evaluation functions and explanations of more advanced functionalities. 
+We also provide a suite of evaluation functions and explanations of more advanced functionalities in our [User Guide](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/).
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
