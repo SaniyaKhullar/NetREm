@@ -538,6 +538,8 @@ netrem_demo.model_coef_df
 </table>
 </div>
 
+In the context of gene regulation (in biology), we predict that predictors with negative NetREm coefficients for target gene (TG) $y$ may be repressors (their activity focuses on reducing expression of $y$) and those with positive coefficients for $y$ may be activators. 
+
 To view the cell-type-specific Protein-Protein Interactions (PPIs) that NetREm learned for this target gene $y$, we can view the `B_interaction_df`.  
 
 ```python
@@ -692,10 +694,11 @@ netrem_demo.final_corr_vs_coef_df
 </div>
 
 
+In the context of gene regulation, our results may thereby be interpreted in the following way:
 
+![png](netrem_final_demo.PNG)
 
-
-
+Nonetheless, NetREm can be applied to solve a suite of regression problems where there is an underlying connection among the predictors and their correlation with one another may be utilized jointly for the predictive task rather than discarded. 
 
 We also provide a suite of evaluation functions and explanations of more advanced functionalities in our [User Guide](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/).
 
