@@ -207,9 +207,27 @@ $$ -->
 * A NetREm network-regularized linear model estimator object from the NetREmModel class.
 
 ## Usage of the NetREm main object returned from netrem()
+
+#### Methods:
+
+We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. For biological applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs)) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
+
+| Method  | Definition | Returns |
+| --------- |  ---------- |  ---------- | 
+| fit($X$, $y$) |  Building and training the NetREm model with $X$ and $y$ data. | Fitted NetREm Object with several updated attributes. For instance, if `model_type = LassoCV`, will also return optimal value for alpha. |
+| predict($X$) | Use our model to predict values for our response variable $y$. Numpy array of $\hat{y}$ predicted values for $y$ |  Numpy array of $\hat{y}$ predicted values for $y$ | 
+| test_mse($X$, $y$) | Evaluate our model performance capabilities on testing data using Mean Squared Error (MSE) as our metric.  | Numeric value corresponding to the Mean Square Error (MSE). <br>  $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$ | 
+
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
+| $y$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
+
+
 #### Attributes:
 
-| Output | Definition | 
+| Attribute | Definition | 
 | --------- | ---------- | 
 | model_coef_df  | [Pandas](https://pandas.pydata.org/) dataframe of the Lasso model coefficients for all of the predictors and y-intercept (if `y_intercept = True`) | 
 | model_nonzero_coef_df  | Filtered [Pandas](https://pandas.pydata.org/) dataframe of the Lasso model coefficients for only the predictors and y-intercept (if `y_intercept = True`) that have non-zero values. | 
@@ -222,79 +240,7 @@ $$ -->
 
 There are several methods we can call for our NetREm estimator object:
 
-#### Methods:
 
-We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. For biological applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs)) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
-
-| Method  | Definition | Returns |
-| --------- |  ---------- |  ---------- | 
-| fit($X$, $y$) |  Building and training the NetREm model with $X$ and $y$ data. | Fitted NetREm Object with several updated attributes. For instance, if `model_type = LassoCV`, will also return optimal value for alpha. |
-| predict($X$) | Use our model to predict values for our response variable $y$. Numpy array of $\hat{y}$ predicted values for $y$ |  Numpy array of $\hat{y}$ predicted values for $y$ | 
-| test_mse($X$, $y$) | Evaluate our model performance capabilities on testing data using Mean Squared Error (MSE) as our metric.  | Numeric value corresponding to the Mean Square Error (MSE). <br>  $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$ | 
-
-put those three as table.
-* **fit($X$, $y$)**
-* **predict($X$)** 
-* **test_mse($X$, $y$)**
-
-
-
-
-* **fit($X$, $y$)**
-
-Building and training the NetREm model with $X$ and $y$ data. 
-
-| Parameter | Definition | 
-| --------- | ---------- | 
-| $X$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
-| $y$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
-
-
-<!-- | Parameter | Definition | 
-| --------- | ---------- | 
-| $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample used for training. Here, rows are samples and columns are predictors. | 
-| $y$ | Input numpy array list for model training with 1 value for each sample.|  -->
-
-
-
-
-
-<!-- | all_params_list  | List of lists of the parameters used for NetREm model (defensive programming) | 
-| network_params | List of lists of the parameters for the prior network used for NetREm model (defensive programming). <br> [] |  -->
-
-
-* **predict($X$)** 
-
-We can use our model to predict values for our response variable $y$. 
-
-| Parameter | Definition | 
-| --------- | ---------- | 
-| $X$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
-
-<!-- | $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. |  -->
-
-*Returns:*
-  Numpy array of $\hat{y}$ predicted values for $y$.
-
-* **test_mse($X$, $y$)**
-
-We can evaluate our model performance capabilities on data like testing data using the Mean Squared Error (MSE) as our metric. 
-
-| Parameter | Definition | 
-| --------- | ---------- | 
-| $X$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
-| $y$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
-
-
-<!-- | Parameter | Definition | 
-| --------- | ---------- | 
-| $X$ | Numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
-| $y$ | Numpy array list for response variable with 1 value for each sample.|  -->
-
-*Returns:*
-    Numeric value corresponding to the Mean Square Error (MSE). 
-  
-$$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 
 ## Demo (Toy Example) of NetREm:
 The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$] in a particular cell-type. Assume the gene expression values for each TF are [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$], respectively. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) between gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. 
