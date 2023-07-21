@@ -228,7 +228,7 @@ We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors
 
 | Method  | Definition | Returns |
 | --------- |  ---------- |  ---------- | 
-| fit($X$, $y$) |  Building and training the NetREm model with $X$ and $y$ data. | Fitted NetREm Object. <br> • If `model_type = LassoCV`, will also return optimal value for alpha. |
+| fit($X$, $y$) |  Building and training the NetREm model with $X$ and $y$ data. | Fitted NetREm Object with several updated attributes. For instance, if `model_type = LassoCV`, will also return optimal value for alpha. |
 | predict($X$) | Use our model to predict values for our response variable $y$. Numpy array of $\hat{y}$ predicted values for $y$ |  Numpy array of $\hat{y}$ predicted values for $y$ | 
 | test_mse($X$, $y$) | Evaluate our model performance capabilities on testing data using Mean Squared Error (MSE) as our metric.  | Numeric value corresponding to the Mean Square Error (MSE). <br>  $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$ | 
 
