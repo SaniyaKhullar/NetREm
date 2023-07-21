@@ -283,7 +283,7 @@ The goal is to build a machine learning model to predict the gene expression lev
 
 The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in [Dummy_Data_Demo_Example.ipynb](https://github.com/SaniyaKhullar/NetREm/blob/main/Dummy_Data_Demo_Example.ipynb). Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level.
 
-The code for this demo example is *demo_toy.py* in the *demo* folder.
+The code for this demo example is [demo_toy.py](https://github.com/SaniyaKhullar/NetREm/blob/main/demo/demo_toy.py) in the *demo* folder.
 
 ```python 
 from DemoDataBuilderXandY import generate_dummy_data

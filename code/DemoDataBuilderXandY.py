@@ -1,5 +1,33 @@
 # DemoDataBuilder Class: :)
-from packages_needed import *
+import pandas as pd
+import numpy as np
+import random
+import copy
+from tqdm import tqdm
+import os
+import sys # https://www.dev2qa.com/how-to-run-python-script-py-file-in-jupyter-notebook-ipynb-file-and-ipython/#:~:text=How%20To%20Run%20Python%20Script%20.py%20File%20In,2.%20Invoke%20Python%20Script%20File%20From%20Ipython%20Command-Line.
+import networkx as nx
+import scipy
+from scipy.linalg import svd as robust_svd
+from sklearn.model_selection import KFold, train_test_split, GridSearchCV, cross_val_score
+from sklearn.decomposition import TruncatedSVD
+from sklearn import linear_model
+from sklearn.linear_model import Lasso, LassoCV, LinearRegression, ElasticNetCV, Ridge
+from numpy.typing import ArrayLike
+# from skopt import gp_minimize, space
+from typing import Optional, List, Tuple
+from sklearn.metrics import make_scorer
+import plotly.express as px
+from sklearn.base import RegressorMixin, ClassifierMixin, BaseEstimator
+import matplotlib.pyplot as plt
+from numpy.typing import ArrayLike
+from scipy.sparse.linalg.interface import LinearOperator
+import warnings
+from sklearn.exceptions import ConvergenceWarning
+printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
+rng_seed = 2023 # random seed for reproducibility
+randSeed = 123
+#from packages_needed import *
 class DemoDataBuilderXandY: 
     """:) Please note that this class focuses on building Y data based on a normal distribution (specified mean
     and standard deviation). M is the # of samples we want to generate. Thus, Y is a vector with M elements. 
