@@ -694,9 +694,7 @@ netrem_demo.final_corr_vs_coef_df
 </div>
 
 
-In the context of gene regulation, our results may thereby be interpreted in the following way:
-
-![png](netrem_final_demo.png)
+In the context of gene regulation, our results may thereby be interpreted in the [following way](https://github.com/SaniyaKhullar/NetREm/blob/main/netrem_final_demo.png).
 
 Nonetheless, NetREm can be applied to solve a suite of regression problems where there is an underlying connection among the predictors and their correlation with one another may be utilized jointly for the predictive task rather than discarded. 
 
