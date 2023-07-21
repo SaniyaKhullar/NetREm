@@ -10,12 +10,13 @@ layout: default
 
 ### By: Saniya Khullar, Xiang Huang, John Svaren, Daifeng Wang
 [Daifeng Wang Lab](https://daifengwanglab.org/) <br>
+[YouTube Tutorials](https://www.youtube.com/c/saniyakhullar) <br>
 
 ## Summary
 
-NetREm is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes (TGs) in gene regulatory networks (GRNs). NetREm incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, reveal novel regularized embeddings for genes, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. NetREm can incorporate multiple types of network data, including Protein-Protein Interaction (PPI) networks, gene co-expression networks, and metabolic networks. 
+NetREm is a software package that utilizes network-constrained regularization for biological applications 🧬 and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes (TGs) in gene regulatory networks (GRNs). NetREm incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, reveal novel regularized embeddings for genes, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. NetREm can incorporate multiple types of network data, including Protein-Protein Interaction (PPI) networks, gene co-expression networks, and metabolic networks. 
 
-
+![png](netrem_info.PNG)
 
 
 <!-- GRegNet is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes in gene regulatory networks (GRNs). GRegNet incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. GRegNet can incorporate multiple types of network data, including PPI networks, gene co-expression networks, and metabolic networks. -->
@@ -28,43 +29,64 @@ NetREm is a software package that utilizes network-constrained regularization fo
 ![png](netrem_pipeline.PNG)
 
 
-## Hardware Requirements
+## Hardware Requirements 🖥️
 
-The minimum requirement is a computer with 8 GB of RAM and 32 GB of storage. For large prior graph networks, 32 GB of RAM is recommended. 
+Please note that larger prior graph networks may require more memory, space, and time. We anticipate that you would only need a standard computer (e.g. 32 GB RAM and 32 GB storage 💻) with enough RAM to support the operations. 
 
-## Software Requirements and Installation Guide
-The software uses Python 3.10. After downloading the NetREm Github code, conda/Anaconda users can use the following steps to install:
-1. In the Anaconda navigator prompt, create a virtual environment of Python 3.10 by running:<br>
-`conda create -n NetREm python=3.10`
-2. Activate the environment:<br>
+## Software Requirements 👩‍💻
+
+The analysis is based on Python version 3.10. Please ensure you have cloned or downloaded our NetREm Github code and package. 
+
+In the Anaconda navigator prompt, you can create a virtual environment to run our code by running :
+`conda create -n NetREm python=310`
+
+Then, to activate this environment, please run 🔣:
 `conda activate NetREm`
-3. Make sure to change the current directory to the NetREm folder.<!-- Saniya: This is operating system dependent, you may add command to change directory for Windows/Madc/Linux, cd for windows/Linux, what Shanw used for Windows is cd C:\C:\Users\Shawn\Code\NetREm -->
-4. Install the packages and dependencies (*math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*):<br>
+
+Please change the current directory to the NetREm folder 🗂️ by running `cd NetREm`. 
+
+Then, please run the following command in the terminal or command prompt window to install the packages (and respective package versions and other dependencies) specified in our *requirements.txt* file: 
 `pip install -r requirements.txt`
 
+In short, our code uses the following Python packages: *math, matplotlib, networkx, numpy, typing, os, pandas, plotly.express, random, scipy, scikit-optimize, sklearn, sys, tqdm, warnings*. 👨‍💻
 <!-- To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt. -->
 
 
 
-## Usage of the NetREm main function netrem()
-NetREm fits a Network-constrained Lasso regression machine learning model with user-provided weights for the prior network.  The **netrem** is the main function with the following usage:
+## Description of NetREm pipeline function: netrem 
+
+NetREm is run by the following function **netrem** in Python. NetREm fits a Network-constrained Lasso regression machine learning model given an undirected prior weighted network and regularization parameters. If the input network is unweighted, please provide default weights greater than `default_edge_weight` in the `edge_list` parameter so that nodes that are connected in the network may contain higher weights and therefore more priority (otherwise, all nodes will be connected pairwise and have the same weights and that will render the network useless). 
+
 <!-- For biological applications, it is recommended that the user ensure network names map to gene expression names -->
+
 <!-- SHould we have 2 arguments? 1 for default_edge_weight for nodes found in network. default_weight_prior_edges: for any edge in the edge_list that has an unknown weight, we provide this edge_weight. Thus, we are prioritizing edges provided in the edgelist over those not found in the edge_list originally. Then we can show that since we skipped out on sharing an edge, the code automatically added in an edge with lower edge weight.  
 default_weight_new_edges. -->
+## Usage 📦
+
 **netrem**(<br> 
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*beta_net = 1*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*alpha_lasso = 0.01*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*default_edge_weight = 0.1*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*degree_threshold = 0.5*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*y_intercept = False*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*view_network = False*, <br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*model_type = "Lasso"*,<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
-)
-<!-- degree_pseudocount = 1e-3,<br> -->
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*edge_list*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*gene_expression_nodes = []*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*overlapped_nodes_only = False*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*beta_net = 1*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*alpha_lasso = 0.01*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*model_type = "Lasso"*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*default_edge_weight = 0.1*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*degree_threshold = 0.5*,<br>
+                  <!-- degree_pseudocount = 1e-3,<br> -->
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lasso_selection = "cyclic"*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*view_network = False*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*y_intercept = False*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*all_pos_coefs = False*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*tolerance = 1e-4*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*maxit = 10000*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*num_jobs = -1*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*num_cv_folds = 5*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_eps = 1e-3*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_n_alphas = 100*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*lassocv_alphas = None*, <br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*verbose = False*,<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*hide_warnings = True* <br>
+                )
 
 <!-- has 2 options with respect to the alpha_lasso_val ($\alpha_{lasso} \geq 0$) for the lasso regularization on the overall model: 
 * default: the user may specify $\alpha_{lasso}$ manually (if *cv_for_alpha_lasso_model_bool = False*). If no alpha_lasso_val is specified, 0.1 will be used. 
@@ -130,6 +152,8 @@ $$ -->
 
 <!-- * *alpha_lasso_val*:  A numerical value for $\alpha_{lasso} \geq 0$. If *cv_for_alpha_lasso_model_bool* is False, the user is then advised to specify this $\alpha_{lasso}$ parameter (alpha_lasso_val). Otherwise, if no $\alpha_{lasso}$ value is specified, then the default value of $\alpha_{lasso} = 0.1$ will be used.  -->
 
+### Main Inputs:
+
 <!-- | Parameter | Definition | Default |
 | --------- | ---------- | ---------- |
 | edge_list       | list of lists: [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]] | value needed |
@@ -140,17 +164,32 @@ $$ -->
 
 | Parameter | Definition | 
 | --------- | ---------- | 
-| **edge_list**      | ***list*** <br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. Nodes found in the `edge_list` are referred to as *network nodes* | 
+| **edge_list**      | ***list*** 📝<br> A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): <br> [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. Nodes found in the `edge_list` 🧾 are referred to as *network nodes* | 
+| **gene_expression_nodes**      | ***list, default = []*** <br> A list of predictors (e.g. TFs) to use that typically is found in the training gene expression data $X_{train}$. <br> Any `gene_expression_nodes` that are not found in the `edge_list` will be added internally into the network prior `edge_list` using default pairwise edge weights (`default_edge_weight`). Specifying `gene_expression_nodes` is *optional* but may boost the speed ⏰ of training and fitting NetREm models (by adjusting the network prior in the beginning). Thus, if the gene expression data ($X$) is available, it is recommended to input this list of `gene_expression_nodes` (based on the columns of $X$ corresponding to potential predictors for $y$). If not specified (that is, the default: `gene_expression_nodes = []`), then NetREm will automatically determine `gene_expression_nodes` when fitting the model with $X_{train}$ gene expression data (when *fit(X,y)* method is called), but will need time to recalibrate the network prior based on the nodes found in the gene expression data and value set for `overlapped_nodes_only`. |
+| **overlapped_nodes_only**      | ***boolean, default = False*** <br> This determines whether NetREm should focus on common nodes found in the *network nodes* (from the `edge_list`) and gene expression data (based on `gene_expression_nodes`). Please note that *network nodes* that are not found in the gene expression data will always be removed. The priority is given to `gene_expression_nodes` since those have gene expression values that are used by the regression. <br> • If `overlapped_nodes_only = False`, the predictors used will come from `gene_expression_nodes`, even if those are not found in the network `edge_list`. This recognizes that not all predictors may have TF-TF relationships found in the prior network. <br> • If `overlapped_nodes_only = True`, the predictors used will need to be a common node: a *network node* that is also found in the `gene_expression_nodes`. <br> | 
 | **beta_net** | ***float, default = 1*** <br> Regularization parameter for network penalization: $\beta_{net} \geq 0$. | 
-| **alpha_lasso**  | ***float, default = 0.01*** <br> A numerical regularization parameter for the lasso term ($\alpha_{lasso} \geq 0$) needed if `model_type = LassoCV`. Larger values typically reduce the number of final predictors in the model. |
-| **default_edge_weight**  | ***float, default = 0.1*** <br>  Default edge weight ($w$) assigned to any edge with missing weight | 
-| **degree_threshold**  |  ***float, default = 0.5*** <br>  Edges with weight $w$ > degree_threshold are counted as 1 towards the node degree $d$ |
-| **gene_expression_nodes**      | ***list, default = []*** <br> **TODO-clear description:** A list of predictors (e.g. TFs) to use that typically is found in the training gene expression data $X_{train}$. <br> Any `gene_expression_nodes` that are not found in the `edge_list` will be added internally into the network prior `edge_list` using default pairwise edge weights (`default_edge_weight`). Specifying `gene_expression_nodes` is *optional* but may boost the speed of training and fitting NetREm models (by adjusting the network prior in the beginning). Thus, if the gene expression data ($X$) is available, it is recommended to input this list of `gene_expression_nodes` (based on the columns of $X$ corresponding to potential predictors for $y$). If not specified (that is, the default: `gene_expression_nodes = []`), then NetREm will automatically determine `gene_expression_nodes` when fitting the model with $X_{train}$ gene expression data (when the *fit(X,y)* method is called), but will need time to recalibrate the network prior based on the nodes found in the gene expression data and value set for `overlapped_nodes_only`. |
-| **overlapped_nodes_only**      | ***boolean, default = False*** <br> **TODO-clear description:** This focuses on whether NetREm should focus on common nodes found in the *network nodes* (from the `edge_list`) and gene expression data (based on `gene_expression_nodes`). Please note that *network nodes* that are not found in the gene expression data will always be removed. The priority is given to `gene_expression_nodes` since those have gene expression values that are used by the regression. <br> • If `overlapped_nodes_only = False`, the predictors used will come from `gene_expression_nodes`, even if those are not found in the network `edge_list`. This recognizes that not all predictors may have TF-TF relationships found in the prior network. <br> • If `overlapped_nodes_only = True`, the predictors used will need to be a common node: a *network node* that is also found in the `gene_expression_nodes`. <br> | 
-| **y_intercept** | ***boolean, default = 'False'*** <br> Please note that this is the `fit_intercept` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. <br> • If `y_intercept = True`, the model will be fit with a y-intercept term included. <br> • If `y_intercept = False`, the model will be fit with no y-intercept term. | 
-| **view_network**  |  ***boolean, default = False*** <br>  • If `view_network = True`, then NetREm outputs visualizations of the prior graph network. Recommended for small networks (instead of for dense hairballs) <br> If `view_network = False`, then NetREm saves time by not outputting visuals of the network.  |
 | **model_type** | ***{'Lasso', 'LassoCV'}, default = 'Lasso'*** <br> • Lasso: user specifies value of $\alpha_{lasso}$ <br> • LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
-| **... (additional parameters)** |Read more in the User Guide for more parameters after **model_type** |
+| **alpha_lasso**  | ***float, default = 0.01*** <br> A numerical regularization parameter for the lasso term ($\alpha_{lasso} \geq 0$) needed if `model_type = LassoCV`. Larger values typically reduce the number of final predictors in the model. |
+| **y_intercept** | ***boolean, default = 'False'*** <br> Please note that this is the `fit_intercept` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. <br> • If `y_intercept = True`, the model will be fit with a y-intercept term included. <br> • If `y_intercept = False`, the model will be fit with no y-intercept term. | 
+| **all_pos_coefs** | ***boolean, default = 'False'*** <br> Please note that this is the `positive` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. <br> • If `all_pos_coefs = True`, the model will be restricted to be fit with all regression coefficients as positive.  <br> • If `all_pos_coefs = False`, the model will be fit with no restrictions on regression coefficients (can be positive or negative).  | 
+| **lasso_selection** | ***{'cyclic', 'random'}, default = 'cyclic'*** <br> Please note that this is the `selection` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. | 
+| **tolerance**  | ***float, default = 1e-4*** <br> The tolerance sklearn would use for optimizing the NetREm model. (This is known as `tol` in by Python's sklearn). If the updates to the optiimzation are smaller than `tolerance`, then the optimization code will check the dual gap for optimizality and contine the optimization until that dual gap is smaller than `tolerance`. |
+| **maxit** | ***int, default = 10000*** <br> Please note that this is the `max_iter` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. This is the maximum number of iterations that NetREm will perform. | 
+
+
+* Parameters if `model_type = LassoCV` are derived from the [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) class in sklearn:
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| lassocv_eps  | ***float, default = 1e-3*** <br>  This corresponds to the `eps` epsilon parameter in [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html). It is the length of the path. Here, `lassocv_eps = 1e-3` means that `alpha_min / alpha_max = 1e-3`. | 
+| lassocv_n_alphas  | ***int, default = 100*** <br> This corresponds to the `n_alphas` parameter in [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html).  This is the number of alphas along the Lasso regularization path. |
+| lassocv_alphas  |  ***array-like, default = None*** <br>  This corresponds to the `alphas` parameter in [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html). List of alphas where the models to be computed. If `None` then the alphas are set automatically. |
+| num_cv_folds  |  ***float, default = 5*** <br>  By default, sklearn cross-validation is used. This specifies the number of folds for splitting the training data when fitting the NetREm model. |
+| num_jobs | ***int, default = -1*** <br> Number of computational jobs to run in parallel, which is used to determine burden, efficiency, and load (resource management). ⌛ None means 1 unless in a joblib.parallel_backend context. -1 means using all of the processors. This is similar to the `n_jobs` parameter in Python's  [sklearn](https://scikit-learn.org/stable/computing/parallelism.html). | 
+<!-- | Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | Input numpy array matrix (list of lists) each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+| $y$ | Input numpy array list with 1 value for each sample.|  -->
 
 
 <!-- | Parameter | Definition | More information |
@@ -161,6 +200,8 @@ $$ -->
 | alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
   -->
 
+
+* Parameters for the graph prior network:
 
 <!-- | Parameters: |  | 
 | --------- | ---------- | -->
@@ -180,6 +221,11 @@ $$ -->
 
 
 
+| Parameter | Definition | 
+| --------- | ---------- | 
+| default_edge_weight  | ***float, default = 0.1*** <br>  Default edge weight ($w$) assigned to any edge with missing weight | 
+| degree_threshold  |  ***float, default = 0.5*** <br>  Edges with weight $w$ > degree_threshold are counted as 1 towards the node degree $d$ |
+| view_network  |  ***boolean, default = False*** <br>  • If `view_network = True`, then NetREm outputs visualizations 🖼️ of the prior graph network 🎨🕸️. Recommended for small networks (instead of for dense hairballs) <br> If `view_network = False`, then NetREm saves time by not outputting visuals of the network.  |
 
 <!-- | degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) | -->
 <!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
@@ -200,7 +246,7 @@ $$ -->
 
 ### Details:
 
- We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_network_val ($\beta_{net} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso_val ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *model_type = Lasso*) or NetREm may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if `model_type = LasssoCV`). Then, **netrem** builds an estimator object from the class Netrem that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained NetREm machine learning model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. Nonetheless, NetREm could be applied in various contexts where a network structure is present among the predictors. 
+ We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_net ($\beta_{net} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if *model_type = Lasso*) or NetREm may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if `model_type = LasssoCV`). Then, **netrem** builds an estimator object from the class Netrem that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained NetREm machine learning model 🤖 is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable 👩‍🔬. Nonetheless, NetREm could be applied in various contexts where a network structure is present among the predictors. 
 
 ### Output Values: ###
 
@@ -208,7 +254,7 @@ $$ -->
 
 #### Methods:
 
-We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. Please note that for biological applications, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
+We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors. Please note that for biological applications 👨‍🔬, the $X$ data would typically be gene expression data (bulk or single-cell) for the $N$ predictors (usually Transcription Factors (TFs) for the $M$ samples. Then, the $y$ values would correspond to the gene expression values for the target gene (TG) $y$ for those same $M$ samples. 
 
 * **fit($X$, $y$)**
 
@@ -236,9 +282,9 @@ We can retrieve our model coefficients and other attributes by calling these out
 | params_df | [Pandas](https://pandas.pydata.org/) dataframe of the parameters used for NetREm model (defensive programming) | 
 | mse_train | Mean Square Error (MSE): predicted versus actual values | 
 
-* **predict($X$)** 
+* **predict($X$)** 🧙🧙‍♀️
 
-We can use our model to predict values for our response variable $y$. 
+We can use our model to predict values 🔮 for our response variable $y$. 
 
 | Parameter | Definition | 
 | --------- | ---------- | 
@@ -251,7 +297,7 @@ We can use our model to predict values for our response variable $y$.
 
 * **test_mse($X$, $y$)**
 
-We can evaluate our model performance capabilities on data like testing data using the Mean Squared Error (MSE) as our metric. 
+We can evaluate our model performance capabilities on data like testing data using the Mean Squared Error (MSE) as our metric 🧚. 
 
 | Parameter | Definition | 
 | --------- | ---------- | 
@@ -270,32 +316,32 @@ We can evaluate our model performance capabilities on data like testing data usi
 $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 
 ## Demo (Toy Example) of NetREm:
-The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$] in a particular cell-type. Assume the gene expression values for each TF are [$X_{1}$, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$], respectively. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) between gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. 
 
-The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level.
+Please suppose that we want to build a machine learning model to predict the gene expression level of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) in a particular cell-type 🔬: [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$]. These are our respective predictors [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$]. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) of predictors with TG $y$ are *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in *Dummy_Data_Demo_Example.ipynb*. Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level. :star:
 
-The code for this demo example is *demo_toy.py* in the *demo* folder.
+The code for this demo example is *demo_toy.py* in the *demo* folder 📂.
 
-```python 
-from DemoDataBuilderXandY import generate_dummy_data
-from Netrem_model_builder import netrem
-import PriorGraphNetwork as graph
+```python
+# Please load our code for NetREm from the code folder
 import error_metrics as em 
-import essential_functions as ef
+import Netrem_model_builder as nm
+import DemoDataBuilderXandY as demo
+import PriorGraphNetwork as graph
 import netrem_evaluation_functions as nm_eval
+import essential_functions as ef
 
-dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
-                                 num_samples_M = 100,
-                                 train_data_percent = 70)
+dummy_data = demo.generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
+                   num_samples_M = 100,
+                   train_data_percent = 70)
 ```
-The Python console or Jupyter notebook will  print out the following:
+Please note that the Python console or jupyter notebook would print out the following:
 
-    same_train_test_data = False
-    Please note that since we hold out 30.0% of our 100 samples for testing, we have:
-    X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
-    X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
-    y_train = 70 corresponding rows (samples) for training.
-    y_test = 30 corresponding rows (samples) for testing.
+    :) same_train_test_data = False
+    :) Please note that since we hold out 30.0% of our 100 samples for testing, we have:
+    :) X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
+    :) X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
+    :) y_train = 70 corresponding rows (samples) for training.
+    :) y_test = 30 corresponding rows (samples) for testing.
 
 The $X$ data should be in the form of a Pandas dataframe as below:
 
@@ -421,7 +467,7 @@ y_test = dummy_data.view_y_test_df()
 
 # prior network edge_list:
 edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
-             ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
+              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
 
 beta_network_val = 3 
 # by default, cv_for_alpha is False, so alpha_lasso_val will be specified for the alpha_lasso parameter.
@@ -429,14 +475,19 @@ alpha_lasso_val = 0.01
 
 # Building the network regularized regression model: 
 # Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
-netrem_demo = netrem(edge_list = edge_list, 
-                     beta_net = beta_network_val,
-                     alpha_lasso = alpha_lasso_val,
-                     view_network = True)
+netrem_demo = nm.netrem(edge_list = edge_list, 
+                                beta_net = beta_network_val,
+                                alpha_lasso = alpha_lasso_val,
+                                overlapped_nodes_only = False, # so we include TF6
+                                view_network = True)
 
-# Fitting the NetREm model on training data: X_train and y_train:
+# Fitting the gregulnet model on training data: X_train and y_train:
 netrem_demo.fit(X_train, y_train)
 ```
+
+    Please note that we need to update the network information
+    
+
 
     
 ![png](output_3_1.png)
@@ -449,7 +500,7 @@ netrem_demo.fit(X_train, y_train)
     
 
 
-   1 new node(s) added to network based on gene expression data ['TF6']
+    :) 1 new node(s) added to network based on gene expression data ['TF6']
     
 
     
@@ -607,22 +658,23 @@ netrem_demo.B_interaction_df
 </table>
 </div>
 
-We predict that positive scores between predictors (e.g. $TF_1$ and $TF_2$ have a score of 0.856197) tend to imply potential cooperativity (e.g. cobinding) among them. Negative scores may suggest antagonistic activity between the TFs (e.g. $TF_1$ and $TF_5$ have a score of -2.315411), where these TFs may compete to regulate the $TG$ through biological mechanisms that may be investigated further through experiments.
+We predict that positive scores between predictors (e.g. $TF_1$ and $TF_2$ have a score of 0.856197) tend to imply potential cooperativity (e.g. cobinding) among them. Negative scores may suggest antagonistic activity between the TFs (e.g. $TF_1$ and $TF_5$ have a score of -2.315411), where these TFs may compete with each other to regulate the $TG$ through biological mechanisms that may be investigated further through experiments.
 
 
-We can test the performance of our data on testing data $X_{test}$ ($M = 30$ samples), to understand better the generalizability of our NetREm model on new, unseen, data. 
+We can test the performance of our data on testing data $X_{test}$ ($M = 30$ samples), to understand better the generalizability of our NetREm model on new, unseen, data 🧙‍♀️. 
 
 
 ```python
 pred_y_test = netrem_demo.predict(X_test) # predicted values for y_test
 mse_test = netrem_demo.test_mse(X_test, y_test)
 
-print(f"The testing Mean Square Error (MSE) is {mse_test}")
+print(f"Please note that the testing Mean Square Error (MSE) is {mse_test}")
 ```
 
-    The testing Mean Square Error (MSE) is 0.10939471847175668
+    :) Please note that the testing Mean Square Error (MSE) is 0.10939471847175668
 
-TODO: We also provide a suite of evaluation functions and explanations of more advanced functionalities. 
+    
+Please note that we also provide a suite of evaluation functions and explanations of more advanced functionalities. 
 
 <!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
 
