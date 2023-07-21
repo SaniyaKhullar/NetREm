@@ -300,7 +300,7 @@ dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
 The Python console or Jupyter notebook will  print out the following:
 
     same_train_test_data = False
-    Please note that since we hold out 30.0% of our 100 samples for testing, we have:
+    We hold out 30.0% of our 100 samples for testing, so that:
     X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
     X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
     y_train = 70 corresponding rows (samples) for training.
