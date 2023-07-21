@@ -212,7 +212,7 @@ We input an edge list of the prior graph network (constrains the model via netwo
 
 <br> 
 
-## Usage of the NetREm main object returned from netrem()
+## Usage of the NetREmModel object returned from netrem()
 
 ### Methods:
 | Method  | Definition | Returns |
