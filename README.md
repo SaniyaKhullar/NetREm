@@ -5,10 +5,10 @@ layout: default
 {% include mathjax.html %} -->
 
 # NetREm
-## Network regression embeddings reveal cell-type protein-protein interactions for gene regulation
+## Network regression embeddings reveal cell-type transcription factor interactions for gene regulation
 <!-- ##### GRegNet Gene Regular(ized/atory) Network -->
 
-### By: Saniya Khullar, Xiang Huang, John Svaren, Daifeng Wang
+### By: Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang
 [Daifeng Wang Lab](https://daifengwanglab.org/) <br>
 
 ## Summary
@@ -152,6 +152,8 @@ $$ -->
 | **view_network**  |  ***boolean, default = False*** <br>  • If `view_network = True`, then NetREm outputs visualizations of the prior graph network. Recommended for small networks (instead of for dense hairballs) <br> If `view_network = False`, then NetREm saves time by not outputting visuals of the network.  |
 | **model_type** | ***{'Lasso', 'LassoCV'}, default = 'Lasso'*** <br> • Lasso: user specifies value of $\alpha_{lasso}$ <br> • LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
 | **... (additional parameters)** |Read more in the [User Guide: Additional Parameters](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Additional_NetREm_Parameters.md) for more parameters after **model_type** |
+<<<<<<< HEAD
+=======
 
 
 <!-- | Parameter | Definition | More information |
@@ -197,6 +199,7 @@ $$ -->
 | y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
 | maxit  | the maximum # of iterations we will run Lasso regression model for (if `model_type = LassoCV`) |
 | num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) | -->
+>>>>>>> 0352e4ffa5fdcac7c6c9404e2f79ac4c0fd12c6c
 
 
 ### Details:
@@ -228,6 +231,60 @@ We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors
 | $y$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
 
 
+<<<<<<< HEAD
+
+We can retrieve our model coefficients and other attributes by calling these outputs:
+
+| Output | Definition | 
+| --------- | ---------- | 
+| model_coef_df  | [Pandas](https://pandas.pydata.org/) dataframe of the Lasso model coefficients for all of the predictors and y-intercept (if `y_intercept = True`) | 
+| model_nonzero_coef_df  | Filtered [Pandas](https://pandas.pydata.org/) dataframe of the Lasso model coefficients for only the predictors and y-intercept (if `y_intercept = True`) that have non-zero values. | 
+| optimal_alpha  | If `model_type = LassoCV`, returns the optimal $\alpha_{lasso}$ found by performing cross validation (CV) on training data | 
+| predY_train | NetREm's predicted values for the training response $y$ data (used to fit the model). | 
+| mse_train | Mean Square Error (MSE): predicted `predY_train` versus actual training values for the response variable Y. | 
+| sorted_coef_df | [Pandas](https://pandas.pydata.org/) dataframe that sorts the final model coefficients (including the y-intercept) based on their absolute values. The rank is provided from least (most important: highest absolute value coefficient) to highest (least important in model). | 
+| final_corr_vs_coef_df | [Pandas](https://pandas.pydata.org/) dataframe with 3 rows. <br> • NetREm regression coefficient for predictor <br> • correlation of each predictor with y based on the training data <br> • absolute value ranking of the coefficients for the predictors |
+| combined_df | [Pandas](https://pandas.pydata.org/) dataframe with a row for each predictor and several columns detailing:<br> • general NetREm model information: `y_intercept`, train MSE, `beta_net`, `alpha_lasso`, original number of predictors in $X$, filtered number of predictors input to NetREm (based on pre-processing by user), final number of non-zero predictors selected <br>
+• predictor-specific results: NetREm coefficient for predictor, absolute value of NetREm coefficient, rank of the absolute value of the coefficient (low ranks imply higher | NetREm coefficient | ) |
+
+
+<!-- | all_params_list  | List of lists of the parameters used for NetREm model (defensive programming) | 
+| network_params | List of lists of the parameters for the prior network used for NetREm model (defensive programming). <br> [] |  -->
+
+
+* **predict($X$)** 
+
+We can use our model to predict values for our response variable $y$. 
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
+
+<!-- | $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. |  -->
+
+*Returns:*
+  Numpy array of $\hat{y}$ predicted values for $y$.
+
+* **test_mse($X$, $y$)**
+
+We can evaluate our model performance capabilities on data like testing data using the Mean Squared Error (MSE) as our metric. 
+
+| Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by $N$ columns) where the rows are samples and columns are predictors.  | 
+| $y$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
+
+
+<!-- | Parameter | Definition | 
+| --------- | ---------- | 
+| $X$ | Numpy array matrix (list of lists) where each list corresponds to a sample. Here, rows are samples and columns are predictors. | 
+| $y$ | Numpy array list for response variable with 1 value for each sample.|  -->
+
+*Returns:*
+    Numeric value corresponding to the Mean Square Error (MSE). 
+  
+$$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
+=======
 ### Attributes:
 
 | Attribute | Definition | 
@@ -242,6 +299,7 @@ We assume that our $X$ and $y$ data correspond to $M$ samples and $N$ predictors
 | **combined_df** | [Pandas](https://pandas.pydata.org/) dataframe with a row for each predictor and several columns detailing:<br> • general NEtREm model information: `y_intercept`, train MSE, `beta_net`, `alpha_lasso`, original number of predictors in $X$, filtered number of predictors input to NetREm (based on pre-processing by user), final number of non-zero predictors selected <br>• predictor-specific results: NetREm coefficient for predictor, absolute value of NetREm coefficient, rank of the absolute value of the coefficient (low ranks imply higher absolute value for the NetREm coefficient ) |
 
 <br>
+>>>>>>> 0352e4ffa5fdcac7c6c9404e2f79ac4c0fd12c6c
 
 ## Demo (Toy Example) of NetREm:
 The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$] in a particular cell-type. Assume the gene expression values for each TF are [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$], respectively. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) between gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. 
@@ -393,6 +451,9 @@ y_train = dummy_data.view_y_train_df()
 X_test = dummy_data.view_X_test_df()
 y_test = dummy_data.view_y_test_df()
 
+Our generated data looks like this:
+![png](netrem_gexpr_demo.png)
+
 # prior network edge_list:
 edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
@@ -505,7 +566,7 @@ netrem_demo.model_coef_df
 
 In the context of gene regulation (in biology), we predict that predictors with negative NetREm coefficients for target gene (TG) $y$ may be repressors (their activity focuses on reducing expression of $y$) and those with positive coefficients for $y$ may be activators. 
 
-To view the cell-type-specific Protein-Protein Interactions (PPIs) that NetREm learned for this target gene $y$, we can view the `B_interaction_df`.  
+To view the TG-specific TF-TF interactome that NetREm learned for this target gene $y$, in our given cell-type, we can view the `B_interaction_df`.  
 
 ```python
 netrem_demo.B_interaction_df
@@ -668,111 +729,6 @@ We also provide a suite of evaluation functions and explanations of more advance
 
 
 
-<!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
-
-We will use the same $X_{train}$, $y_{train}$, $X_{test}$, and $y_{test}$ data and same prior network here to compare illustrate the effectiveness of GRegulNet in terms of a lower testing MSE (relative to a baseline model that incorporates no prior network). For ease of comparison, we will select the optimal alpha_lasso for each model using cross validation (CV) on the training data (that is, *cv_for_alpha_lasso_model_bool* = True). This example also shows how to run **geneRegulatNet** when alpha_lasso is determined by CV. 
-
-#### GRegulNet using Cross validation for Alpha Lasso 
-```python
-# geneRegulatNet where alpha_lasso is determined by cross-validation on training data: :)
-gregulnet_cv_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = 10,
-                              alpha_lasso_val = alpha_lasso_val, 
-                              cv_for_alpha_lasso_model_bool = True)
-gregulnet_cv_demo.fit(X_train, y_train)
-print(gregulnet_cv_demo.optimal_alpha)
-gregulnet_cv_mse_test = gregulnet_cv_demo.predict(X_test, y_test)
-print(f"Please note that the testing Mean Square Error (MSE) for GRegulNet-CV model is {gregulnet_cv_mse_test}")
-gregulnet_cv_demo.model_coefficients_df
-```
-
-    prior graph network used
-    :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
-    :) We also add 0.001 as a pseudocount to our degree value for each node.
-    
-    network used
-    Training GRegulNet :)
-    Cross-Validation optimal alpha lasso: 0.0041235620913686235
-    Testing GRegulnet :)
-    Please note that the testing Mean Square Error (MSE) for GRegulNet-CV model is 0.020310913421979375
-    
-
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>y_intercept</th>
-      <th>TF1</th>
-      <th>TF2</th>
-      <th>TF3</th>
-      <th>TF4</th>
-      <th>TF5</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>None</td>
-      <td>0.236283</td>
-      <td>0.116051</td>
-      <td>0.001487</td>
-      <td>-0.037593</td>
-      <td>-0.161468</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-    
-<!-- ![png](output_27_2.png) -->
-    
-<!-- 
-#### Baseline Model using Cross validation for Alpha Lasso 
-```python
-# baseline lasso model (no prior network). Optimal alpha_lasso determined by cross-validation
-# on the training data: :)
-baseline_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = None,
-                              alpha_lasso_val = alpha_lasso_val, 
-                              cv_for_alpha_lasso_model_bool = True,
-                              use_network = False)
-
-baseline_demo.fit(X_train, y_train)
-print(baseline_demo.optimal_alpha)
-baseline_mse_test = baseline_demo.predict(X_test, y_test)
-print(f"Please note that the testing Mean Square Error (MSE) for the baseline model is {baseline_mse_test}")
-baseline_demo.model_coefficients_df
-```
-
-    baseline model (no prior network)
-    Cross-Validation optimal alpha lasso: 0.022006210642838385
-    Please note that the testing Mean Square Error (MSE) for the baseline model is 0.1630541856987722
-    
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>y_intercept</th>
-      <th>TF1</th>
-      <th>TF2</th>
-      <th>TF3</th>
-      <th>TF4</th>
-      <th>TF5</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>None</td>
-      <td>0.256041</td>
-      <td>0.036381</td>
-      <td>0.076338</td>
-      <td>0</td>
-      <td>-0.208916</td>
-    </tr>
-  </tbody>
-</table>
-</div> --> 
 
 ## References
 
