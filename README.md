@@ -451,7 +451,6 @@ X_test = dummy_data.view_X_test_df()
 y_test = dummy_data.view_y_test_df()
 ```
 Our generated data looks like this:
-![png](netrem_gexpr_demo.png)
 <img src="netrem_gexpr_demo.png" style="width: 200px;"/>
 
 ```python
@@ -721,7 +720,9 @@ netrem_demo.final_corr_vs_coef_df
 </div>
 
 
-In the context of gene regulation, our results may thereby be interpreted in the [following way](https://github.com/SaniyaKhullar/NetREm/blob/main/netrem_final_demo.png).
+In the context of gene regulation, our results may thereby be interpreted in the [following way](https://github.com/SaniyaKhullar/NetREm/blob/main/netrem_final_demo.png):
+<img src="netrem_final_demo.png" style="width: 400px;"/>
+
 
 Nonetheless, NetREm can be applied to solve a suite of regression problems where there is an underlying connection among the predictors and their correlation with one another may be utilized jointly for the predictive task rather than discarded. 
 
