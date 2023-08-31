@@ -451,7 +451,7 @@ X_test = dummy_data.view_X_test_df()
 y_test = dummy_data.view_y_test_df()
 ```
 Our generated data looks like this:
-![png](netrem_gexpr_demo.PNG)
+![png](netrem_gexpr_demo.png)
 
 ```python
 # prior network edge_list:
