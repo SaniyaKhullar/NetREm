@@ -55,7 +55,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         "alpha_lasso": (0, None),
         "beta_net": (0, None),
         "num_cv_folds": (0, None),
-        "fit_y_intercept": [False, True],
+        "y_intercept": [False, True],
         "use_network": [True, False],
         "max_lasso_iterations": (1, None),
         "model_type": ["Lasso", "LassoCV", "Linear"],
@@ -75,7 +75,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.all_pos_coefs = False # for coefficients
         self.model_type = "Lasso"
         self.use_network = True
-        self.fit_y_intercept = False
+        self.y_intercept = False
         self.max_lasso_iterations = 10000
         self.view_network = False
         self.model_info = "unfitted_model :("
@@ -278,13 +278,13 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             print(self.optimal_alpha)
         self.coef = ml_model.coef_ # Please Get the coefficients
         self.coef[self.coef == -0.0] = 0
-        if self.fit_y_intercept:
+        if self.y_intercept:
             self.intercept = ml_model.intercept_
         self.predY_tilda_train = ml_model.predict(self.X_training_to_use) # training data   
         self.mse_tilda_train = self.calculate_mean_square_error(self.y_training_to_use, self.predY_tilda_train) # Calculate MSE
         self.predY_train = ml_model.predict(self.X_train) # training data   
         self.mse_train = self.calculate_mean_square_error(self.y_train, self.predY_train) # Calculate MSE      
-        if self.fit_y_intercept:
+        if self.y_intercept:
             coeff_terms = [self.intercept] + list(self.coef)
             index_names = ["y_intercept"] + self.nodes 
             self.model_coef_df = pd.DataFrame(coeff_terms, index = index_names).transpose()
@@ -341,7 +341,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         netrem_model_df.columns = ["coef"]
         netrem_model_df["TF"] = netrem_model_df.index.tolist()
         netrem_model_df["TG"] = tg
-        if self.fit_y_intercept:
+        if self.y_intercept:
             netrem_model_df["info"] = "netrem_with_intercept"
         else:
             netrem_model_df["info"] = "netrem_no_intercept"
@@ -490,7 +490,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
     
     def get_params(self, deep=True):
         params_dict = {"info":self.info, "alpha_lasso": self.alpha_lasso, "beta_net": self.beta_net, 
-                "fit_y_intercept": self.fit_y_intercept, "model_type":self.model_type, 
+                "y_intercept": self.y_intercept, "model_type":self.model_type, 
                       "max_lasso_iterations":self.max_lasso_iterations, 
                        "network":self.network, "verbose":self.verbose,
                       "all_pos_coefs":self.all_pos_coefs, "model_info":self.model_info,
@@ -745,7 +745,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         
         
     def return_Linear_ML_model(self, X, y):
-        regr = LinearRegression(fit_intercept = self.fit_y_intercept,
+        regr = LinearRegression(fit_intercept = self.y_intercept,
                                positive = self.all_pos_coefs,
                                n_jobs = self.num_jobs)
         regr.fit(X, y)
@@ -753,7 +753,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         
         
     def return_Lasso_ML_model(self, X, y):
-        regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.fit_y_intercept,
+        regr = Lasso(alpha = self.alpha_lasso, fit_intercept = self.y_intercept,
                     max_iter = self.max_lasso_iterations, tol = self.tolerance,
                     selection = self.lasso_selection,
                     positive = self.all_pos_coefs)
@@ -763,7 +763,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
     
     def return_LassoCV_ML_model(self, X, y):
         regr = LassoCV(cv = self.num_cv_folds, random_state = 0, 
-                    fit_intercept = self.fit_y_intercept, 
+                    fit_intercept = self.y_intercept, 
                      max_iter = self.max_lasso_iterations,
                       n_jobs = self.num_jobs,
                       tol = self.tolerance,
@@ -825,7 +825,7 @@ def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.
     greg_dict = {"network": netty,
                 "model_type": model_type,
                  "use_network":True,
-                 "fit_y_intercept":y_intercept, 
+                 "y_intercept":y_intercept, 
                  "overlapped_nodes_only":overlapped_nodes_only,
                  "max_lasso_iterations":maxit,
                  "all_pos_coefs":all_pos_coefs,
@@ -850,7 +850,7 @@ def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.
 
 
 
-def generate_beta_networks(X_train, y_train, prior_network, overlapped_nodes_only = False, num = 10):
+def generate_beta_networks(X_train, y_train, prior_network, overlapped_nodes_only = False, num = 10, max_beta = 200):
     """
     Generate a grid of beta_network values to transform X_train.
 
@@ -878,6 +878,15 @@ def generate_beta_networks(X_train, y_train, prior_network, overlapped_nodes_onl
         y_train = y_train.values.flatten()    
     beta_max = 0.5 * np.max(np.abs(X_train.T.dot(y_train)))
     beta_min = 0.01 * beta_max
+    
+    var_X = np.var(X_train)
+    var_y = np.var(y_train)
+    if beta_max > max_beta: # max_beta used to prevent explosion of beta_net values
+        print(":) using variance to define beta_net values")
+        beta_max = 0.5 * np.max(np.abs(var_X * var_y)) * 100
+        beta_min = 0.01 * beta_max
+    print(f"beta_min = {beta_min} and beta_max = {beta_max}")    
+    
     return np.logspace(np.log10(beta_max), np.log10(beta_min), num=num)
 
 
@@ -887,6 +896,7 @@ def generate_alpha_beta_pairs(X_train,
                               overlapped_nodes_only: bool = False, 
                               num_beta: int = 50,
                               num_alpha: int = 10,
+                              max_beta: float = 200,
                               y_intercept: bool = False, 
                               maxit: int = 10000,
                               all_pos_coefs: bool = False,
@@ -910,7 +920,7 @@ def generate_alpha_beta_pairs(X_train,
     Returns:
     dict: Dictionary containing grid of alpha_lasso values and beta_network values.
     """
-    beta_grid = generate_beta_networks(X_train, y_train, prior_network, overlapped_nodes_only, num=num_beta)
+    beta_grid = generate_beta_networks(X_train, y_train, prior_network, overlapped_nodes_only, num=num_beta, max_beta = max_beta)
     beta_alpha_grid_dict = {"beta_network_vals": [], "alpha_lasso_vals": []}
     
     try:
@@ -968,6 +978,7 @@ def custom_mse(y_true, y_pred):
 def netremCV(edge_list, X, y, 
              num_beta: int = 50,
             num_alpha: int = 10,
+             max_beta: float = 200,  # max_beta used to help prevent explosion of beta_net values
             reduced_cv_search: bool = False, # should we do a reduced search (Randomized Search) or a GridSearch?
              default_edge_weight: float = 0.1,
             degree_threshold: float = 0.5,
@@ -1023,7 +1034,7 @@ def netremCV(edge_list, X, y,
         print(":) Performing NetREmCV with both beta_network and alpha_lasso as UNKNOWN.")
 
         initial_greg =  nm.NetREmModel(network=network_to_use, 
-                                       fit_y_intercept = y_intercept, 
+                                       y_intercept = y_intercept, 
                                        max_lasso_iterations=maxit,
                                        all_pos_coefs=all_pos_coefs,
                                        lasso_selection = lasso_selection,
@@ -1040,12 +1051,12 @@ def netremCV(edge_list, X, y,
                                        param_grid, 
                                        n_iter=num_alpha, 
                                        cv=num_cv_folds, 
-                                       scoring=make_scorer(custom_mse, greater_is_better=False),
+                                       #scoring=make_scorer(custom_mse, greater_is_better=False),
                                        verbose=searchVerbosity)
         else:
         # Run GridSearchCV
             grid_search = GridSearchCV(initial_greg, param_grid=param_grid, cv=num_cv_folds, 
-                                       scoring=make_scorer(custom_mse, greater_is_better=False),
+                                       #scoring=make_scorer(custom_mse, greater_is_better=False),
                                       verbose = searchVerbosity)
         grid_search.fit(X_train, y_train)
 
@@ -1058,7 +1069,7 @@ def netremCV(edge_list, X, y,
         newest_netrem = nm.NetREmModel(alpha_lasso = optimal_alpha,
                                        beta_net = optimal_beta, 
                                        network = network_to_use,
-                                       fit_y_intercept = y_intercept, 
+                                       y_intercept = y_intercept, 
                                        max_lasso_iterations=maxit,
                                        all_pos_coefs=all_pos_coefs,
                                        lasso_selection = lasso_selection,
