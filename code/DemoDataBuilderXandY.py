@@ -1,34 +1,5 @@
 # DemoDataBuilder Class: :)
-import pandas as pd
-import numpy as np
-import random
-import copy
-from tqdm import tqdm
-import os
-import sys # https://www.dev2qa.com/how-to-run-python-script-py-file-in-jupyter-notebook-ipynb-file-and-ipython/#:~:text=How%20To%20Run%20Python%20Script%20.py%20File%20In,2.%20Invoke%20Python%20Script%20File%20From%20Ipython%20Command-Line.
-import networkx as nx
-import scipy
-from scipy.linalg import svd as robust_svd
-from sklearn.model_selection import KFold, train_test_split, GridSearchCV, cross_val_score
-from sklearn.decomposition import TruncatedSVD
-from sklearn import linear_model
-from sklearn.linear_model import Lasso, LassoCV, LinearRegression, ElasticNetCV, Ridge
-from numpy.typing import ArrayLike
-# from skopt import gp_minimize, space
-from typing import Optional, List, Tuple
-from sklearn.metrics import make_scorer
-import plotly.express as px
-from sklearn.base import RegressorMixin, ClassifierMixin, BaseEstimator
-import matplotlib.pyplot as plt
-from numpy.typing import ArrayLike
-from scipy.sparse.linalg.interface import LinearOperator
-import warnings
-from sklearn.exceptions import ConvergenceWarning
-printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
-rng_seed = 2023 # random seed for reproducibility
-randSeed = 123
-
-
+from packages_needed import *
 class DemoDataBuilderXandY: 
     """:) Please note that this class focuses on building Y data based on a normal distribution (specified mean
     and standard deviation). M is the # of samples we want to generate. Thus, Y is a vector with M elements. 
@@ -48,7 +19,6 @@ class DemoDataBuilderXandY:
         "randSeed": (0, None),
         "ortho_scalar": (1, None),
         "orthogonal_X_bool": [True, False],
-        "scale_data": [True, False],
         "view_input_correlations_plot": [False, True],
         "num_samples_M": (1, None),
         "corrVals": list
@@ -72,7 +42,6 @@ class DemoDataBuilderXandY:
         self.randSeed = 123 # for X
         self.orthogonal_X_bool = False
         self.ortho_scalar = 10
-        self.scale_data = True
         self.view_input_correlations_plot = False
         # reading in user inputs
         self.__dict__.update(kwargs)
@@ -112,7 +81,6 @@ class DemoDataBuilderXandY:
         self.y_df = self.view_original_y_df()
         self.combined_train_test_x_and_y_df = self.combine_X_and_y_train_and_test_data()
         
-        
     def _apply_parameter_constraints(self):
         constraints = {**DemoDataBuilderXandY._parameter_constraints}
         for key, value in self.__dict__.items():
@@ -129,7 +97,6 @@ class DemoDataBuilderXandY:
                     setattr(self, key, constraints[key][0])
         return self
         
-        
     def get_tf_names_list(self):
         tf_names_list = []
         for i in range(0, self.N):
@@ -137,61 +104,50 @@ class DemoDataBuilderXandY:
             tf_names_list.append(term)
         return tf_names_list
     
-    
-    def get_N(self): # getter method
+    # getter method
+    def get_N(self):
         N = len(self.corrVals)
         return N 
-    
     
     def get_X_train(self):
         return self.data_sets[0] #X_train
 
-    
     def get_y_train(self):
         return self.data_sets[2] # y_train
-    
     
     def get_X_test(self):
         return self.data_sets[1]
     
-    
     def get_y_test(self):       
         return self.data_sets[3]
 
-    
     def view_original_X_df(self):
         import pandas as pd
         X_df = pd.DataFrame(self.X, columns = self.tf_names_list)
         return X_df
-    
     
     def view_original_y_df(self):
         import pandas as pd
         y_df = pd.DataFrame(self.y, columns = ["y"])
         return y_df
     
-    
     def view_X_train_df(self):
         import pandas as pd
         X_train_df = pd.DataFrame(self.X_train, columns = self.tf_names_list)
         return X_train_df
 
-    
     def view_y_train_df(self):
         import pandas as pd
         y_train_df = pd.DataFrame(self.y_train, columns = ["y"])
         return y_train_df
     
-    
     def view_X_test_df(self):
         X_test_df = pd.DataFrame(self.X_test, columns = self.tf_names_list)
         return X_test_df
     
-    
     def view_y_test_df(self):
         y_test_df = pd.DataFrame(self.y_test, columns = ["y"])
         return y_test_df
-    
     
     def combine_X_and_y_train_and_test_data(self):
         X_p1 = self.X_train_df
@@ -208,7 +164,6 @@ class DemoDataBuilderXandY:
         combining_df["y"] = y_combined["y"]
         return combining_df
 
-    
     def return_correlations_dataframe(self):
         corr_info = ["expected_correlations"] * self.N
         corr_df = pd.DataFrame(corr_info, columns = ["info"])
@@ -217,15 +172,14 @@ class DemoDataBuilderXandY:
         corr_df["data"] = "correlations"
         return corr_df
     
-    
     def generate_Y(self):
         seed_val = self.rng_seed
         rng = np.random.default_rng(seed=seed_val)
         y = rng.normal(self.mu, self.std_dev, self.M)
         return y
     
-        
-    def is_orthogonal(matrix): # Check if Q is orthogonal using the is_orthogonal function
+        # Check if Q is orthogonal using the is_orthogonal function
+    def is_orthogonal(matrix):
         """
         Checks if a given matrix is orthogonal.
         Parameters:
@@ -282,32 +236,23 @@ class DemoDataBuilderXandY:
         same_train_and_test_data_bool = self.same_train_and_test_data_bool 
         X = self.X
         y = self.y
-        main_df = pd.DataFrame(X, columns=[f'TF{i+1}' for i in range(X.shape[1])])  # Convert to DataFrame
-        #main_df = X
-        main_df["y"] = y
-        print(main_df)
-        if self.scale_data:
-            print(":) scaling the data")
-            main_standardized = (main_df - main_df.mean()) / main_df.std()
-            y = main_standardized["y"]
-            X = main_standardized.drop(columns = ["y"])
         if same_train_and_test_data_bool == False: # different training and testing datasets
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = self.testing_size)
             if self.verbose:
-                print(f":) Please note that since we hold out {self.testing_size * 100.0}% of our {self.M} samples for testing, we have:")
-                print(f":) X_train = {X_train.shape[0]} rows (samples) and {X_train.shape[1]} columns (N = {self.N} predictors) for training.")
-                print(f":) X_test = {X_test.shape[0]} rows (samples) and {X_test.shape[1]} columns (N = {self.N} predictors) for testing.")
-                print(f":) y_train = {y_train.shape[0]} corresponding rows (samples) for training.")
-                print(f":) y_test = {y_test.shape[0]} corresponding rows (samples) for testing.")
+                print(f"Please note that since we hold out {self.testing_size * 100.0}% of our {self.M} samples for testing, we have:")
+                print(f"X_train = {X_train.shape[0]} rows (samples) and {X_train.shape[1]} columns (N = {self.N} predictors) for training.")
+                print(f"X_test = {X_test.shape[0]} rows (samples) and {X_test.shape[1]} columns (N = {self.N} predictors) for testing.")
+                print(f"y_train = {y_train.shape[0]} corresponding rows (samples) for training.")
+                print(f"y_test = {y_test.shape[0]} corresponding rows (samples) for testing.")
         else: # training and testing datasets are the same :)
             X_train, X_test, y_train, y_test = X, X, y, y
             y_train = y
             y_test = y_train
             X_test = X_train
             if self.verbose:
-                print(f":) Please note that since we use the same data for training and for testing :) of our {self.M} samples. Thus, we have:")
-                print(f":) X_train = X_test = {X_train.shape[0]} rows (samples) and {X_train.shape[1]} columns (N = {self.N} predictors) for training and for testing")
-                print(f":) y_train = y_test = {y_train.shape[0]} corresponding rows (samples) for training and for testing.")    
+                print(f"Please note that since we use the same data for training and for testing :) of our {self.M} samples. Thus, we have:")
+                print(f"X_train = X_test = {X_train.shape[0]} rows (samples) and {X_train.shape[1]} columns (N = {self.N} predictors) for training and for testing")
+                print(f"y_train = y_test = {y_train.shape[0]} corresponding rows (samples) for training and for testing.")    
         return [X_train, X_test, y_train, y_test]
     
     
@@ -322,7 +267,6 @@ class DemoDataBuilderXandY:
                                                                              self.same_train_and_test_data_bool)
         return combined_correlations_df
     
-    
     def actual_vs_expected_corrs_DefensiveProgramming_all_groups(self, X, y, X_train, y_train, X_test, y_test,
                                                                 corrVals, tf_names_list,
                                                                  same_train_and_test_data_bool):
@@ -334,7 +278,6 @@ class DemoDataBuilderXandY:
                                                                                          tf_names_list, same_train_and_test_data_bool, "Testing")
         combined_correlations_df = pd.concat([overall_corrs_df, training_corrs_df, testing_corrs_df]).drop_duplicates()
         return combined_correlations_df
-    
     
     def compare_actual_and_expected_correlations_DefensiveProgramming_one_data_group(self, X_matrix, y, corrVals, 
                                                               predictor_names_list,
@@ -359,7 +302,6 @@ class DemoDataBuilderXandY:
             comparisonDF["num_samples"] = "unique " + str(num_samples)
         return comparisonDF
 
-    
         # Visualizing Functions :)
     def view_input_correlations(self):
         corr_val_df = pd.DataFrame(self.corrVals, columns = ["correlation"])#.transpose()
