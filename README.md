@@ -449,10 +449,11 @@ y_train = dummy_data.view_y_train_df()
 # 30 samples for testing data
 X_test = dummy_data.view_X_test_df()
 y_test = dummy_data.view_y_test_df()
-
+```
 Our generated data looks like this:
 ![png](netrem_gexpr_demo.PNG)
 
+```python
 # prior network edge_list:
 edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
