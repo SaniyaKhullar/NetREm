@@ -5,10 +5,10 @@ layout: default
 {% include mathjax.html %} -->
 
 # NetREm
-## Network regression embeddings reveal cell-type protein-protein interactions for gene regulation
+## Network regression embeddings reveal cell-type transcription factor interactions for gene regulation
 <!-- ##### GRegNet Gene Regular(ized/atory) Network -->
 
-### By: Saniya Khullar, Xiang Huang, John Svaren, Daifeng Wang
+### By: Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang
 [Daifeng Wang Lab](https://daifengwanglab.org/) <br>
 
 ## Summary
@@ -150,52 +150,7 @@ $$ -->
 | **y_intercept** | ***boolean, default = 'False'*** <br> This is the `fit_intercept` parameter found in the [Lasso](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html) and [LassoCV](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LassoCV.html) classes in sklearn. <br> • If `y_intercept = True`, the model will be fit with a y-intercept term included. <br> • If `y_intercept = False`, the model will be fit with no y-intercept term. | 
 | **view_network**  |  ***boolean, default = False*** <br>  • If `view_network = True`, then NetREm outputs visualizations of the prior graph network. Recommended for small networks (instead of for dense hairballs) <br> If `view_network = False`, then NetREm saves time by not outputting visuals of the network.  |
 | **model_type** | ***{'Lasso', 'LassoCV'}, default = 'Lasso'*** <br> • Lasso: user specifies value of $\alpha_{lasso}$ <br> • LassoCV: NetREm performs cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  | 
-| **... (additional parameters)** |Read more in the [User Guide: Additional Paramters](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Additional_NetREm_Parameters.md) for more parameters after **model_type** |
-
-
-<!-- | Parameter | Definition | More information |
-| --------- | ---------- | ---------- |
-| edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | This prior network constrains our model. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and other directions are assumed automatically). The default edge weight is utilized for any edge with a missing edge weight.|
-| beta_network_val: $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | Value needed, which scales the strength of network penalization |
-| cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? | Default boolean value: False. <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  |
-| alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
-  -->
-
-
-<!-- | Parameters: |  | 
-| --------- | ---------- | -->
-
-<!-- | Parameter           | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| **param_grid**      | Dictionary or list of dictionaries with parameters names (string) as keys and lists of parameter settings to try as values.      |
-| **scoring**         | A single string or a callable to evaluate the predictions on the test set. If None, the estimator's default scorer is used.       |
-| **cv**              | Determines the cross-validation splitting strategy. Possible inputs are:<br> - None: to use the default 5-fold cross-validation<br> - integer: to specify the number of folds in a `(Stratified)KFold`<br> - an object to be used as a cross-validation generator. |
-| **verbose**         | Controls the verbosity: the higher, the more messages.                                                                           |
-| **n_jobs**          | Number of jobs to run in parallel.                                                                                              |
-| **refit**           | If set to True, refit an estimator using the best found parameters on the whole dataset.                                         |
-| **return_train_score** | If `False`, the `cv_results_` attribute will not include training scores.                                                        |
-| **pre_dispatch**    | Controls the number of jobs that get dispatched during parallel execution.                                                        |
-| **error_score**     | Value to assign to the score if an error occurs in estimator fitting.                                                            |
-                                                         | -->
-
-
-
-
-<!-- | degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) | -->
-<!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
-| square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) | -->
- <!-- self_loops  | True: Add 1 to each degree ($d$) for each node in the network (for self-loops)| 
- | edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False| -->
-<!-- | w_transform_for_d | To calculate degree for a given node, we can choose from 1 of 3 options (if *edge_vals_for_d is True*): <br> * "none": sum original $w$ <br> * "sqrt": sum $\sqrt{w}$ <br> * "square": sum $w^{2}$ |  -->
-
-<!-- * Parameters for the network-based regularized model:
-
-| Parameter | Definition | 
-| --------- | ---------- | 
-| use_net  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
-| y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
-| maxit  | the maximum # of iterations we will run Lasso regression model for (if `model_type = LassoCV`) |
-| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) | -->
+| **... (additional parameters)** |Read more in the [User Guide: Additional Parameters](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Additional_NetREm_Parameters.md) for more parameters after **model_type** |
 
 
 ### Details:
@@ -220,11 +175,6 @@ Building and training the NetREm model with $X$ and $y$ data.
 | $y$ | [Pandas](https://pandas.pydata.org/) dataframe ($M$ rows by 1 column) with 1 column that corresponds to values for the response variable for the same samples found in $X$. | 
 
 
-<!-- | Parameter | Definition | 
-| --------- | ---------- | 
-| $X$ | Input numpy array matrix (list of lists) where each list corresponds to a sample used for training. Here, rows are samples and columns are predictors. | 
-| $y$ | Input numpy array list for model training with 1 value for each sample.|  -->
-
 
 We can retrieve our model coefficients and other attributes by calling these outputs:
 
@@ -237,7 +187,7 @@ We can retrieve our model coefficients and other attributes by calling these out
 | mse_train | Mean Square Error (MSE): predicted `predY_train` versus actual training values for the response variable Y. | 
 | sorted_coef_df | [Pandas](https://pandas.pydata.org/) dataframe that sorts the final model coefficients (including the y-intercept) based on their absolute values. The rank is provided from least (most important: highest absolute value coefficient) to highest (least important in model). | 
 | final_corr_vs_coef_df | [Pandas](https://pandas.pydata.org/) dataframe with 3 rows. <br> • NetREm regression coefficient for predictor <br> • correlation of each predictor with y based on the training data <br> • absolute value ranking of the coefficients for the predictors |
-| combined_df | [Pandas](https://pandas.pydata.org/) dataframe with a row for each predictor and several columns detailing:<br> • general NEtREm model information: `y_intercept`, train MSE, `beta_net`, `alpha_lasso`, original number of predictors in $X$, filtered number of predictors input to NetREm (based on pre-processing by user), final number of non-zero predictors selected <br>
+| combined_df | [Pandas](https://pandas.pydata.org/) dataframe with a row for each predictor and several columns detailing:<br> • general NetREm model information: `y_intercept`, train MSE, `beta_net`, `alpha_lasso`, original number of predictors in $X$, filtered number of predictors input to NetREm (based on pre-processing by user), final number of non-zero predictors selected <br>
 • predictor-specific results: NetREm coefficient for predictor, absolute value of NetREm coefficient, rank of the absolute value of the coefficient (low ranks imply higher | NetREm coefficient | ) |
 
 
@@ -428,6 +378,9 @@ y_train = dummy_data.view_y_train_df()
 X_test = dummy_data.view_X_test_df()
 y_test = dummy_data.view_y_test_df()
 
+Our generated data looks like this:
+![png](netrem_gexpr_demo.png)
+
 # prior network edge_list:
 edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
@@ -540,7 +493,7 @@ netrem_demo.model_coef_df
 
 In the context of gene regulation (in biology), we predict that predictors with negative NetREm coefficients for target gene (TG) $y$ may be repressors (their activity focuses on reducing expression of $y$) and those with positive coefficients for $y$ may be activators. 
 
-To view the cell-type-specific Protein-Protein Interactions (PPIs) that NetREm learned for this target gene $y$, we can view the `B_interaction_df`.  
+To view the TG-specific TF-TF interactome that NetREm learned for this target gene $y$, in our given cell-type, we can view the `B_interaction_df`.  
 
 ```python
 netrem_demo.B_interaction_df
@@ -703,111 +656,6 @@ We also provide a suite of evaluation functions and explanations of more advance
 
 
 
-<!-- ### Comparison Demo: GRegulNet versus Baseline Model for Cross-Validation Alpha Lasso
-
-We will use the same $X_{train}$, $y_{train}$, $X_{test}$, and $y_{test}$ data and same prior network here to compare illustrate the effectiveness of GRegulNet in terms of a lower testing MSE (relative to a baseline model that incorporates no prior network). For ease of comparison, we will select the optimal alpha_lasso for each model using cross validation (CV) on the training data (that is, *cv_for_alpha_lasso_model_bool* = True). This example also shows how to run **geneRegulatNet** when alpha_lasso is determined by CV. 
-
-#### GRegulNet using Cross validation for Alpha Lasso 
-```python
-# geneRegulatNet where alpha_lasso is determined by cross-validation on training data: :)
-gregulnet_cv_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = 10,
-                              alpha_lasso_val = alpha_lasso_val, 
-                              cv_for_alpha_lasso_model_bool = True)
-gregulnet_cv_demo.fit(X_train, y_train)
-print(gregulnet_cv_demo.optimal_alpha)
-gregulnet_cv_mse_test = gregulnet_cv_demo.predict(X_test, y_test)
-print(f"Please note that the testing Mean Square Error (MSE) for GRegulNet-CV model is {gregulnet_cv_mse_test}")
-gregulnet_cv_demo.model_coefficients_df
-```
-
-    prior graph network used
-    :) Please note that we count the number of edges with weight > 0.5 to get the degree for a given node.
-    :) We also add 0.001 as a pseudocount to our degree value for each node.
-    
-    network used
-    Training GRegulNet :)
-    Cross-Validation optimal alpha lasso: 0.0041235620913686235
-    Testing GRegulnet :)
-    Please note that the testing Mean Square Error (MSE) for GRegulNet-CV model is 0.020310913421979375
-    
-
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>y_intercept</th>
-      <th>TF1</th>
-      <th>TF2</th>
-      <th>TF3</th>
-      <th>TF4</th>
-      <th>TF5</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>None</td>
-      <td>0.236283</td>
-      <td>0.116051</td>
-      <td>0.001487</td>
-      <td>-0.037593</td>
-      <td>-0.161468</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-    
-<!-- ![png](output_27_2.png) -->
-    
-<!-- 
-#### Baseline Model using Cross validation for Alpha Lasso 
-```python
-# baseline lasso model (no prior network). Optimal alpha_lasso determined by cross-validation
-# on the training data: :)
-baseline_demo = geneRegulatNet(edge_list = edge_list, beta_network_val = None,
-                              alpha_lasso_val = alpha_lasso_val, 
-                              cv_for_alpha_lasso_model_bool = True,
-                              use_network = False)
-
-baseline_demo.fit(X_train, y_train)
-print(baseline_demo.optimal_alpha)
-baseline_mse_test = baseline_demo.predict(X_test, y_test)
-print(f"Please note that the testing Mean Square Error (MSE) for the baseline model is {baseline_mse_test}")
-baseline_demo.model_coefficients_df
-```
-
-    baseline model (no prior network)
-    Cross-Validation optimal alpha lasso: 0.022006210642838385
-    Please note that the testing Mean Square Error (MSE) for the baseline model is 0.1630541856987722
-    
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>y_intercept</th>
-      <th>TF1</th>
-      <th>TF2</th>
-      <th>TF3</th>
-      <th>TF4</th>
-      <th>TF5</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>None</td>
-      <td>0.256041</td>
-      <td>0.036381</td>
-      <td>0.076338</td>
-      <td>0</td>
-      <td>-0.208916</td>
-    </tr>
-  </tbody>
-</table>
-</div> --> 
 
 ## References
 

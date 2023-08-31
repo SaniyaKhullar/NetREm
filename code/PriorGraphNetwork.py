@@ -1,35 +1,56 @@
 # PriorGraphNetwork Class: :)
-import essential_functions as ef
-import error_metrics as em # why to do import
-import DemoDataBuilderXandY as demo
-import pandas as pd
-import numpy as np
+# Standard libraries
+import os
+import sys
 import random
 import copy
-from tqdm import tqdm
-import os
-import sys # https://www.dev2qa.com/how-to-run-python-script-py-file-in-jupyter-notebook-ipynb-file-and-ipython/#:~:text=How%20To%20Run%20Python%20Script%20.py%20File%20In,2.%20Invoke%20Python%20Script%20File%20From%20Ipython%20Command-Line.
+import warnings
+
+# Third-party libraries
+import pandas as pd
+import numpy as np
 import networkx as nx
 import scipy
-from scipy.linalg import svd as robust_svd
+import matplotlib.pyplot as plt
+import plotly.express as px
+from tqdm import tqdm
+import jinja2
+
+# Scikit-learn imports
+from sklearn import linear_model
+from sklearn.metrics import make_scorer
+from sklearn.exceptions import ConvergenceWarning
+from sklearn.base import RegressorMixin, ClassifierMixin, BaseEstimator
 from sklearn.model_selection import KFold, train_test_split, GridSearchCV, cross_val_score
 from sklearn.decomposition import TruncatedSVD
-from sklearn import linear_model
 from sklearn.linear_model import Lasso, LassoCV, LinearRegression, ElasticNetCV, Ridge
-from numpy.typing import ArrayLike
-# from skopt import gp_minimize, space
-from typing import Optional, List, Tuple
-from sklearn.metrics import make_scorer
-import plotly.express as px
-from sklearn.base import RegressorMixin, ClassifierMixin, BaseEstimator
-import matplotlib.pyplot as plt
-from numpy.typing import ArrayLike
+
+# Scipy imports
+from scipy.linalg import svd as robust_svd
 from scipy.sparse.linalg.interface import LinearOperator
-import warnings
-from sklearn.exceptions import ConvergenceWarning
-printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
-rng_seed = 2023 # random seed for reproducibility
+
+# Type hinting
+from typing import Optional, List, Tuple
+from numpy.typing import ArrayLike
+
+# Custom module imports
+import essential_functions as ef
+import error_metrics as em
+import DemoDataBuilderXandY as demo
+
+
+import math
+from sklearn.metrics.pairwise import cosine_similarity
+from node2vec import Node2Vec
+
+        
+# Constants
+rng_seed = 2023  # random seed for reproducibility
 randSeed = 123
+
+# Utility functions
+printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
+
 
 class PriorGraphNetwork:
     """:) Please note that this class focuses on incorporating information from a prior network (in our case, 
@@ -50,16 +71,7 @@ class PriorGraphNetwork:
         "verbose":[True, False]}
     
     def __init__(self, **kwargs): # define default values for constants
-        import networkx as nx
-        import math
-        import numpy as np
-        import pandas as pd
-        from sklearn.metrics.pairwise import cosine_similarity
-        from node2vec import Node2Vec
-        import networkx as nx
-        from typing import List, Tuple
-        import matplotlib.pyplot as plt
-        
+
         self.edge_values_for_degree = False # we instead consider a threshold by default (for counting edges into our degrees)
         self.consider_self_loops = False # no self loops considered
         self.verbose = True # printing out statements
@@ -76,15 +88,15 @@ class PriorGraphNetwork:
         self.threshold_for_degree = 0.5
         self.view_network = False
         ####################
-        self.dimensions = 64
-        self.walk_length = 30
-        self.num_walks = 200
-        self.p = 1
-        self.q = 0.5
-        self.workers = 4
-        self.window = 10
-        self.min_count = 1
-        self.batch_words = 4
+#         self.dimensions = 64
+#         self.walk_length = 30
+#         self.num_walks = 200
+#         self.p = 1
+#         self.q = 0.5
+#         self.workers = 4
+#         self.window = 10
+#         self.min_count = 1
+#         self.batch_words = 4
         self.node_color_name = "yellow"
         self.added_node_color_name = "lightblue"
         self.edge_color_name = "red"
@@ -100,6 +112,10 @@ class PriorGraphNetwork:
             raise ValueError(f":( Please note since edge_values_for_degree = {self.edge_values_for_degree} ye are missing information for these keys: {missing_keys}")
         self.network_nodes = self.network_nodes_from_edge_list()
         # other defined results:
+        # added Aug 30th:
+        if isinstance(self.edge_list, pd.DataFrame):
+            print(":( Please input edgelist as a list of lists instead of a dataframe. For your edge_df, try: edge_df.values.tolist()")
+            #self.edge_list = self.edge_list.values.tolist()
         self.original_edge_list = self.edge_list
         if len(self.gene_expression_nodes) > 0: # is not None:
             self.preprocessed_network = True
@@ -125,7 +141,7 @@ class PriorGraphNetwork:
             self.directed=False
             self.undirected_edge_list_to_matrix()
             self.W_original = self.W 
-            self.edge_df = self.undirected_edge_list_updated().drop_duplicates()
+            #self.edge_df = self.undirected_edge_list_updated().drop_duplicates()
         else:
             self.directed=True
             self.W_original = self.directed_node2vec_similarity(self.edge_list, self.dimensions,
@@ -210,78 +226,54 @@ class PriorGraphNetwork:
         return V
     
     
-    def preprocess_edge_list(self): # Iterate through each sub-list
-        default_edge_weight = self.default_edge_weight
-        return [
-            sublst + [default_edge_weight] if len(sublst) == 2 else [
-                default_edge_weight if isinstance(item, float) and math.isnan(item) else item
-                for item in sublst
-            ]
-            for sublst in self.edge_list
-        ]
-
     
+        # Optimized functions
+    def preprocess_edge_list(self):
+        processed_edge_list = []
+        default_edge_weight = self.default_edge_weight
+
+        for sublst in self.edge_list:
+            if len(sublst) == 2:
+                processed_edge_list.append(sublst + [default_edge_weight])
+            else:
+                processed_edge_list.append(sublst)
+
+        return processed_edge_list
+
     def undirected_edge_list_to_matrix(self):
         all_nodes = self.final_nodes
-        edge_list = self.edge_list
+        edge_list = self.preprocess_edge_list()
         default_edge_weight = self.default_edge_weight
         N = len(all_nodes)
         self.N = N
-        num_nodes = len(all_nodes)
-        num_edges = len(edge_list)
-        weight_df = np.full((num_nodes, num_nodes), default_edge_weight)
+        weight_df = np.full((N, N), default_edge_weight)
 
-        for i, edge in enumerate(tqdm(edge_list)) if self.verbose else enumerate(edge_list):
+        # Create a mapping from node to index
+        node_to_idx = {node: idx for idx, node in enumerate(all_nodes)}
+
+        for edge in tqdm(edge_list) if self.verbose else edge_list:
             try:
-                source = edge[0]
-                target = edge[1]
-                weight = edge[2] if len(edge) == 3 else default_edge_weight
+                source, target, *weight = edge
+                weight = weight[0] if weight else default_edge_weight
                 weight = np.nan_to_num(weight, nan=default_edge_weight)
-                source_idx = all_nodes.index(source)
-                target_idx = all_nodes.index(target)
+                source_idx, target_idx = node_to_idx[source], node_to_idx[target]
                 weight_df[source_idx, target_idx] = weight
                 weight_df[target_idx, source_idx] = weight
             except ValueError as e:
                 print(f"An error occurred: {e}")
                 continue
 
-        weight_df = pd.DataFrame(weight_df, index=all_nodes, columns=all_nodes)
-        np.fill_diagonal(weight_df.values, 0)
-        W = weight_df.values
+        np.fill_diagonal(weight_df, 0)
+        W = weight_df
         np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-        symmetric_W = ef.check_symmetric(W)
 
-        if not symmetric_W:
+        if not ef.check_symmetric(W):
             print(":( W matrix is NOT symmetric")
 
         self.W = W
-        self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.nodes, dtype=np.float64)
+        self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
         return self
-
-
-    def undirected_edge_list_updated(self):
-        weight_df = self.W_df
-        n = weight_df.shape[0] # melt the dataframe into source, target, and weight columns
-        df_melted = pd.melt(weight_df.reset_index(), id_vars=['index'], value_vars=weight_df.columns)
-        df_melted.columns = ['source', 'target', 'weight'] # add the reverse edges to the dataframe
-        df_melted_reverse = df_melted.copy()
-        df_melted_reverse.columns = ['target', 'source', 'weight']
-        df_melted_reverse['weight'] = df_melted['weight']
-        df_melted = pd.concat([df_melted, df_melted_reverse])
-        df_melted = df_melted[df_melted["source"] != df_melted["target"]]
-        edge_df = df_melted
-        edge_df["info"] = "undirected_prior_networks"
-        if self.preprocessed_network:
-            edge_df["Preprocessed"] = "Yes :)"
-        else:
-            edge_df["Preprocessed"] = "No :("
-        if self.preprocessed_network and len(self.gex_nodes_to_add) > 0:
-            edge_df['edge_type'] = np.where(edge_df['source'].isin(self.gex_nodes_to_add) | edge_df['target'].isin(self.gex_nodes_to_add), 
-                                            'artificial based on gene expression nodes', 'network edge')
-        else:
-            edge_df["edge_type"] = 'network edge'
-        return edge_df
-
+    
     
     def generate_symmetric_weight_matrix(self) -> np.ndarray:
         """generate symmetric W matrix. W matrix (Symmetric --> W = W_Transpose).
@@ -295,84 +287,6 @@ class PriorGraphNetwork:
             return None
         return W
     
-
-    def directed_node2vec_similarity(self, edge_list: List[Tuple[int, int, float]],
-                                                     dimensions: int = 64,
-                                                     walk_length: int = 30,
-                                                     num_walks: int = 200,
-                                                     p: float = 1, q: float = 0.5,
-                                                     workers: int = 4, window: int = 10,
-                                                     min_count: int = 1,
-                                                     batch_words: int = 4) -> np.ndarray:
-        print("directed_node2vec_similarity")
-        """ Given an edge list and node2vec parameters, returns a scaled similarity matrix for the node embeddings generated
-        by training a node2vec model on the directed graph defined by the edge list.
-
-        Parameters:
-        -----------
-        edge_list: List[List[int, int, float]]
-            A list of lists representing the edges of a directed graph. Each edge should be a list of three values:
-            [source_node, target_node, edge_weight]. If no edge weight is specified, it is assumed to be 1.0.
-
-        dimensions: int, optional (default=64)
-            The dimensionality of the node embeddings.
-
-        walk_length: int, optional (default=30)
-            The length of each random walk during the node2vec training process.
-
-        num_walks: int, optional (default=200)
-            The number of random walks to generate for each node during the node2vec training process.
-
-        p: float, optional (default=1)
-            The return parameter for the node2vec algorithm.
-
-        q: float, optional (default=0.5)
-            The in-out parameter for the node2vec algorithm.
-
-        workers: int, optional (default=4)
-            The number of worker threads to use during the node2vec training process.
-
-        window: int, optional (default=10)
-            The size of the window for the skip-gram model during training.
-
-        min_count: int, optional (default=1)
-            The minimum count for a word in the training data to be included in the model.
-
-        batch_words: int, optional (default=4)
-            The number of words in each batch during training.
-
-        Returns:
-        --------
-        scaled_similarity_matrix: np.ndarray
-            A scaled (0-1 range) cosine similarity matrix for the node embeddings generated by training a node2vec model
-            on the directed graph defined by the edge list.
-        """
-        # Create directed graph from edge list
-        directed_graph = nx.DiGraph()
-        for edge in edge_list:
-            source, target = edge[:2]
-            weight = edge[2] if len(edge) == 3 else 1.0
-            directed_graph.add_edge(source, target, weight=weight)
-
-        # Initialize the Node2Vec model
-        model = Node2Vec(directed_graph, dimensions=dimensions, walk_length=walk_length, 
-                         num_walks=num_walks, p=p, q=q, workers=workers)
-
-        # Train the model
-        model = model.fit(window=window, min_count=min_count, batch_words=batch_words)
-
-        # Get node embeddings
-        node_embeddings = model.wv.vectors
-
-        # Calculate cosine similarity matrix
-        from sklearn.metrics.pairwise import cosine_similarity
-        similarity_matrix = cosine_similarity(node_embeddings)
-
-        # Scale similarity matrix to 0-1 range
-        scaled_similarity_matrix = (similarity_matrix + 1) / 2
-
-        return scaled_similarity_matrix
-
     
     def return_W_edge_list(self):
         wMat = ef.view_matrix_as_dataframe(self.W, column_names_list = self.tf_names_list, row_names_list = self.tf_names_list)
@@ -530,3 +444,104 @@ def build_prior_network(edge_list, gene_expression_nodes = [], default_edge_weig
         print("prior graph network used")
     netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix. ####################
     return netty
+
+
+def directed_node2vec_similarity(edge_list: List[Tuple[int, int, float]],
+                                                 dimensions: int = 64,
+                                                 walk_length: int = 30,
+                                                 num_walks: int = 200,
+                                                 p: float = 1, q: float = 0.5,
+                                                 workers: int = 4, window: int = 10,
+                                                 min_count: int = 1,
+                                                 batch_words: int = 4) -> np.ndarray:
+    print("directed_node2vec_similarity")
+    """ Given an edge list and node2vec parameters, returns a scaled similarity matrix for the node embeddings generated
+    by training a node2vec model on the directed graph defined by the edge list.
+
+    Parameters:
+    -----------
+    edge_list: List[List[int, int, float]]
+        A list of lists representing the edges of a directed graph. Each edge should be a list of three values:
+        [source_node, target_node, edge_weight]. If no edge weight is specified, it is assumed to be 1.0.
+
+    dimensions: int, optional (default=64)
+        The dimensionality of the node embeddings.
+
+    walk_length: int, optional (default=30)
+        The length of each random walk during the node2vec training process.
+
+    num_walks: int, optional (default=200)
+        The number of random walks to generate for each node during the node2vec training process.
+
+    p: float, optional (default=1)
+        The return parameter for the node2vec algorithm.
+
+    q: float, optional (default=0.5)
+        The in-out parameter for the node2vec algorithm.
+
+    workers: int, optional (default=4)
+        The number of worker threads to use during the node2vec training process.
+
+    window: int, optional (default=10)
+        The size of the window for the skip-gram model during training.
+
+    min_count: int, optional (default=1)
+        The minimum count for a word in the training data to be included in the model.
+
+    batch_words: int, optional (default=4)
+        The number of words in each batch during training.
+
+    Returns:
+    --------
+    scaled_similarity_matrix: np.ndarray
+        A scaled (0-1 range) cosine similarity matrix for the node embeddings generated by training a node2vec model
+        on the directed graph defined by the edge list.
+    """
+    print("Creating directed graph from edge list")
+    directed_graph = nx.DiGraph()
+    for edge in edge_list:
+        source, target = edge[:2]
+        weight = edge[2] if len(edge) == 3 else 1.0
+        directed_graph.add_edge(source, target, weight=weight)
+    
+    # Extract unique node names from the graph
+    node_names = list(directed_graph.nodes)
+    
+    print("Initializing the Node2Vec model")
+    model = Node2Vec(directed_graph, dimensions=dimensions, walk_length=walk_length, 
+                     num_walks=num_walks, p=p, q=q, workers=workers)
+    
+    print("Training the model")
+    model = model.fit(window=window, min_count=min_count, batch_words=batch_words)
+    
+    print("Getting node embeddings")
+    node_embeddings = np.array([model.wv[node] for node in node_names])
+    
+    print("Calculating cosine similarity matrix")
+    similarity_matrix = cosine_similarity(node_embeddings)
+    
+    print("Scaling similarity matrix to 0-1 range")
+    scaled_similarity_matrix = (similarity_matrix + 1) / 2
+    
+    # Create a DataFrame with rows and columns labeled as node names
+    similarity_matrix = pd.DataFrame(scaled_similarity_matrix, index=node_names, columns=node_names)
+    print(f":) First 5 entries of the symmetric similarity matrix for {similarity_matrix.shape[0]} nodes.")
+    print(similarity_matrix.iloc[0:5, 0:5])
+    
+    similarity_df = similarity_matrix.reset_index().melt(id_vars='index', var_name='TF2', value_name='cosine_similarity')
+    #similarity_df = similarity_df[similarity_df['index'] < similarity_df['TF2']]
+    similarity_df = similarity_df.rename(columns = {"index":"node_1", "TF2":"node_2"})
+    similarity_df = similarity_df[similarity_df["node_1"] != similarity_df["node_2"]]
+    results_dict = {}
+    print("\n :) ######################################################## \n")
+    print(":) Please note that we return a dictionary with 3 keys based on Node2Vec and cosine similarity computations:")
+    print("1. similarity_matrix: the cosine similarity matrix for the nodes in the original directed graph")
+    results_dict["similarity_matrix"] = similarity_matrix
+    print("2. similarity_df: simplified dataframe of the cosine similarity values from the similarity_matrix.")
+
+    results_dict["similarity_df"] = similarity_df
+    print("3. NetREm_edgelist: an edge_list that is based on similarity_df that is ready to be input for NetREm.")
+
+    results_dict["NetREm_edgelist"] = similarity_df.values.tolist()
+    print(results_dict.keys())
+    return results_dict

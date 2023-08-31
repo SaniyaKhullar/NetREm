@@ -9,7 +9,7 @@ import sys # https://www.dev2qa.com/how-to-run-python-script-py-file-in-jupyter-
 import networkx as nx
 import scipy
 from scipy.linalg import svd as robust_svd
-from sklearn.model_selection import KFold, train_test_split, GridSearchCV, cross_val_score
+from sklearn.model_selection import KFold, train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.decomposition import TruncatedSVD
 from sklearn import linear_model
 from sklearn.linear_model import Lasso, LassoCV, LinearRegression, ElasticNetCV, Ridge
@@ -31,58 +31,84 @@ from error_metrics import *
 from DemoDataBuilderXandY import *
 from PriorGraphNetwork import *
 from Netrem_model_builder import *
-
+from sklearn.linear_model import ElasticNetCV, LinearRegression, LassoCV, RidgeCV
+from skopt import gp_minimize, space
+from skopt.utils import use_named_args
 
 class BayesianObjective_Lasso:
-    def __init__(self, X, y, cv_folds, model, scorer = "mse", print_network = False):
-        from skopt import gp_minimize, space
+    def __init__(self, X, y, cv_folds, model, scorer="mse", print_network=False):
         self.X = X
         self.y = y
         self.cv_folds = cv_folds
         model.view_network = print_network
         self.model = model
-        self.scorer_obj = 'neg_mean_squared_error' # the default
+        self.scorer_obj = 'neg_mean_squared_error'  # the default
         if scorer == "mse":
-            self.scorer_obj = mse_custom_scorer
+            self.scorer_obj = em.mse_custom_scorer
         elif scorer == "nmse":
-            self.scorer_obj = nmse_custom_scorer
+            self.scorer_obj = em.nmse_custom_scorer
         elif scorer == "snr":
-            self.scorer_obj = snr_custom_scorer
+            self.scorer_obj = em.snr_custom_scorer
         elif scorer == "psnr":
-            self.scorer_obj = psnr_custom_scorer
+            self.scorer_obj = em.psnr_custom_scorer
 
-        
     def __call__(self, params):
-        
-        alpha_lasso, beta_network = params
-        #network = PriorGraphNetwork(edge_list = edge_list)
-        netrem_model = self.model
-        #print(netrem_model.get_params())
-        netrem_model.alpha_lasso = alpha_lasso 
-        netrem_model.beta_network = beta_network
-        #netrem_model.view_network = self.view_network
-        score = -cross_val_score(netrem_model, self.X, self.y, cv=self.cv_folds, scoring=self.scorer_obj).mean()
-        return score
+        try:
+            alpha_lasso, beta_network = params
+            # print(f"Testing with alpha_lasso = {alpha_lasso}, beta_network = {beta_network}")
 
+            netrem_model = self.model
+            #print(netrem_model.get_params())
+            netrem_model.alpha_lasso = alpha_lasso 
+            netrem_model.beta_network = beta_network
+
+            cv_scores = cross_val_score(netrem_model, self.X, self.y, cv=self.cv_folds, scoring=self.scorer_obj)
+
+            # Check for infinite values
+            if np.any(np.isinf(cv_scores)):
+                # print("Cross-validation scores contain infinite values.")
+                #return np.inf
+                return 1e100  # Replace infinite score with large finite value
+
+            # Debugging: Print the individual cross-validation scores
+            # print(f"Individual cross-validation scores: {cv_scores}")
+
+            score = -cv_scores.mean()
+            # print(f"Score with alpha_lasso = {alpha_lasso}, beta_network = {beta_network} is {score}")
+
+            #if np.isinf(score):
+                #print("Score is infinite!")
+
+            return score
+
+        except Exception as e:
+            #print(f"An exception occurred: {e}")
+            #return np.inf  # Return a high "bad" value to indicate failure
+            return 1e100  # Replace infinite score with large finite value
+
+
+# Define a callback function to update the progress bar
+def progress_bar_callback(res):
+    progress_bar.update(1)
     
 def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train, 
-                                      beta_net_min = 0.001, 
-                                      beta_net_max = 10, 
+                                      beta_net_min = 0.5, 
+                                      beta_net_max = 1000, 
                                       alpha_lasso_min = 0.0001,
-                                      alpha_lasso_max = 0.1,
+                                      alpha_lasso_max = 0.1,                                                 
                                       num_grid_values = 100,
-                                      gridSearchCV_folds = 5,
+                                      cv_folds = 5,
                                      scorer = "mse",
                                      verbose = False):
+
+    print(":) Please note that we are running: optimal_netrem_model_via_bayesian_param_tuner")
     if verbose:
         print(f":) Please note we are running Bayesian optimization (via skopt Python package) for parameter hunting for beta_network and alpha_lasso with model evaluation scorer: {scorer} :)")
         print("we use gp_minimize here for hyperparameter tuning")
         print(f":) Please note this is a start-to-finish optimizer for NetREm (Network regression embeddings reveal cell-type protein-protein interactions for gene regulation)")
-    from skopt import gp_minimize, space
-    model_type = netrem_model.model_type
-#     param_space = [space.Real(alpha_lasso_min, alpha_lasso_max, name='alpha_lasso', prior='log-uniform'),
-#            space.Real(beta_net_min, beta_net_max, name='beta_network', prior='log-uniform')]
 
+        
+    model_type = netrem_model.model_type
     if model_type == "LassoCV": 
         print("please note that we can only do this for Lasso model not for LassoCV :(")
         print("Thus, we will alter the model_type to make it Lasso")
@@ -90,10 +116,12 @@ def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train
 
     param_space = [space.Real(alpha_lasso_min, alpha_lasso_max, name='alpha_lasso', prior='log-uniform'),
            space.Real(beta_net_min, beta_net_max, name='beta_network', prior='log-uniform')]
-    objective = BayesianObjective_Lasso(X_train, y_train, cv_folds = gridSearchCV_folds, model = netrem_model, scorer = scorer)
+    objective = BayesianObjective_Lasso(X_train, y_train, cv_folds = cv_folds, model = netrem_model, scorer = scorer)
 
+    
     # Perform Bayesian optimization
     result = gp_minimize(objective, param_space, n_calls=num_grid_values, random_state=123)
+    
     results_dict = {}
     optimal_model = netrem_model
     if verbose:
@@ -110,13 +138,98 @@ def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train
         print(":) ######################################################################\n")
         print("Fitting the model using these optimal hyperparameters for beta_net and alpha_lasso...")
     dict_ex = optimal_model.get_params()
-    optimal_model = GRegNet(**dict_ex)
+    optimal_model = nm.NetREmModel(**dict_ex)
     optimal_model.fit(X_train, y_train)
     print(optimal_model.get_params())
     results_dict["optimal_model"] = optimal_model
     results_dict["bayesian_beta"] = bayesian_beta
+    results_dict["bayesian_alpha"] = bayesian_alpha
     results_dict["result"] = result
     return results_dict
+
+# class BayesianObjective_Lasso:
+#     def __init__(self, X, y, cv_folds, model, scorer = "mse", print_network = False):
+#         self.X = X
+#         self.y = y
+#         self.cv_folds = cv_folds
+#         model.view_network = print_network
+#         self.model = model
+#         self.scorer_obj = 'neg_mean_squared_error' # the default
+#         if scorer == "mse":
+#             self.scorer_obj = mse_custom_scorer
+#         elif scorer == "nmse":
+#             self.scorer_obj = nmse_custom_scorer
+#         elif scorer == "snr":
+#             self.scorer_obj = snr_custom_scorer
+#         elif scorer == "psnr":
+#             self.scorer_obj = psnr_custom_scorer
+
+        
+#     def __call__(self, params):
+        
+#         alpha_lasso, beta_network = params
+#         #network = PriorGraphNetwork(edge_list = edge_list)
+#         netrem_model = self.model
+#         #print(netrem_model.get_params())
+#         netrem_model.alpha_lasso = alpha_lasso 
+#         netrem_model.beta_network = beta_network
+#         #netrem_model.view_network = self.view_network
+#         score = -cross_val_score(netrem_model, self.X, self.y, cv=self.cv_folds, scoring=self.scorer_obj).mean()
+#         return score
+
+    
+# def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train, 
+#                                       beta_net_min = 0.001, 
+#                                       beta_net_max = 10, 
+#                                       alpha_lasso_min = 0.0001,
+#                                       alpha_lasso_max = 0.1,
+#                                       num_grid_values = 100,
+#                                       gridSearchCV_folds = 5,
+#                                      scorer = "mse",
+#                                      verbose = False):
+#     if verbose:
+#         print(f":) Please note we are running Bayesian optimization (via skopt Python package) for parameter hunting for beta_network and alpha_lasso with model evaluation scorer: {scorer} :)")
+#         print("we use gp_minimize here for hyperparameter tuning")
+#         print(f":) Please note this is a start-to-finish optimizer for NetREm (Network regression embeddings reveal cell-type protein-protein interactions for gene regulation)")
+#     from skopt import gp_minimize, space
+#     model_type = netrem_model.model_type
+# #     param_space = [space.Real(alpha_lasso_min, alpha_lasso_max, name='alpha_lasso', prior='log-uniform'),
+# #            space.Real(beta_net_min, beta_net_max, name='beta_network', prior='log-uniform')]
+
+#     if model_type == "LassoCV": 
+#         print("please note that we can only do this for Lasso model not for LassoCV :(")
+#         print("Thus, we will alter the model_type to make it Lasso")
+#         netrem_model.model_type = "Lasso"
+
+#     param_space = [space.Real(alpha_lasso_min, alpha_lasso_max, name='alpha_lasso', prior='log-uniform'),
+#            space.Real(beta_net_min, beta_net_max, name='beta_network', prior='log-uniform')]
+#     objective = BayesianObjective_Lasso(X_train, y_train, cv_folds = gridSearchCV_folds, model = netrem_model, scorer = scorer)
+
+#     # Perform Bayesian optimization
+#     result = gp_minimize(objective, param_space, n_calls=num_grid_values, random_state=123)
+#     results_dict = {}
+#     optimal_model = netrem_model
+#     if verbose:
+#         print(":) ######################################################################\n")
+#         print(f":) Please note the optimal model based on Bayesian optimization found: ")
+
+#     bayesian_alpha = result.x[0]
+#     bayesian_beta = result.x[1]
+#     optimal_model.alpha_lasso = bayesian_alpha
+#     optimal_model.beta_network = bayesian_beta
+#     results_dict["bayesian_alpha"] = bayesian_alpha
+#     print(f"alpha_lasso = {bayesian_alpha} ; beta_network = {bayesian_beta}")
+#     if verbose:
+#         print(":) ######################################################################\n")
+#         print("Fitting the model using these optimal hyperparameters for beta_net and alpha_lasso...")
+#     dict_ex = optimal_model.get_params()
+#     optimal_model = NetREmModel(**dict_ex)
+#     optimal_model.fit(X_train, y_train)
+#     print(optimal_model.get_params())
+#     results_dict["optimal_model"] = optimal_model
+#     results_dict["bayesian_beta"] = bayesian_beta
+#     results_dict["result"] = result
+#     return results_dict
 
 
 def optimal_netrem_model_via_gridsearchCV_param_tuner(netrem_model, X_train, y_train, num_grid_values, num_cv_jobs = -1):
@@ -156,13 +269,13 @@ def optimal_netrem_model_via_gridsearchCV_param_tuner(netrem_model, X_train, y_t
         optimal_alpha = optimal_alpha[0]
     if isinstance(optimal_beta, np.ndarray):
         optimal_beta = optimal_beta[0]
-    print(f":) GRegNetCV found that the optimal alpha_lasso = {optimal_alpha} and optimal beta_network = {optimal_beta}")
-    update_gregnet = NetREmModel(**original_dict)
-    update_gregnet.beta_network = optimal_beta
-    update_gregnet.alpha_lasso = optimal_alpha
-    update_gregnet = NetREmModel(**update_gregnet.get_params())
-    update_gregnet.fit(X_train, y_train)
-    return update_gregnet
+    print(f":) NetREmModelCV found that the optimal alpha_lasso = {optimal_alpha} and optimal beta_network = {optimal_beta}")
+    update_NetREmModel = NetREmModel(**original_dict)
+    update_NetREmModel.beta_network = optimal_beta
+    update_NetREmModel.alpha_lasso = optimal_alpha
+    update_NetREmModel = NetREmModel(**update_NetREmModel.get_params())
+    update_NetREmModel.fit(X_train, y_train)
+    return update_NetREmModel
 
 
 def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV_ForNetREm(gene_num, target_genes_list,
@@ -331,7 +444,7 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
                                                                                       gridSearchCV_folds,
                                                                                      scorer,
                                                                                      verbose)
-        #optimal_netrem_with_intercept = optimal_netrem_model_via_bayesian_param_tuner(netrem_with_intercept, X_train, y_train, verbose = verbose)
+
         optimal_netrem_with_intercept = optimal_netrem_with_intercept["optimal_model"]
         with_intercept = True
 
@@ -417,7 +530,7 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
 
 
 def baseline_metrics_function(X_train, y_train, X_test, y_test, tg, model_name, y_intercept, verbose = False):
-    from sklearn.linear_model import ElasticNetCV, LinearRegression, LassoCV, RidgeCV
+
     if verbose:
         print(f"{model_name} results :) for fitting y_intercept = {y_intercept}")
     try:

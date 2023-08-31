@@ -48,6 +48,7 @@ class DemoDataBuilderXandY:
         "randSeed": (0, None),
         "ortho_scalar": (1, None),
         "orthogonal_X_bool": [True, False],
+        "scale_data": [True, False],
         "view_input_correlations_plot": [False, True],
         "num_samples_M": (1, None),
         "corrVals": list
@@ -71,6 +72,7 @@ class DemoDataBuilderXandY:
         self.randSeed = 123 # for X
         self.orthogonal_X_bool = False
         self.ortho_scalar = 10
+        self.scale_data = True
         self.view_input_correlations_plot = False
         # reading in user inputs
         self.__dict__.update(kwargs)
@@ -280,6 +282,15 @@ class DemoDataBuilderXandY:
         same_train_and_test_data_bool = self.same_train_and_test_data_bool 
         X = self.X
         y = self.y
+        main_df = pd.DataFrame(X, columns=[f'TF{i+1}' for i in range(X.shape[1])])  # Convert to DataFrame
+        #main_df = X
+        main_df["y"] = y
+        print(main_df)
+        if self.scale_data:
+            print(":) scaling the data")
+            main_standardized = (main_df - main_df.mean()) / main_df.std()
+            y = main_standardized["y"]
+            X = main_standardized.drop(columns = ["y"])
         if same_train_and_test_data_bool == False: # different training and testing datasets
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = self.testing_size)
             if self.verbose:
