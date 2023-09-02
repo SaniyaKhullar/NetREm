@@ -310,9 +310,9 @@ import error_metrics as em
 import essential_functions as ef
 import netrem_evaluation_functions as nm_eval
 
-dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
-                                 num_samples_M = 100,
-                                 train_data_percent = 70)
+dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3], # the # of elements in corrVals is the # of predictors (X)
+                                 num_samples_M = 100, # the number of samples M
+                                 train_data_percent = 70) # the remainder out of 100 will be kept for testing. If 100, all data is used for training and testing.
 ```
 The Python console or Jupyter notebook will  print out the following:
 
@@ -449,7 +449,7 @@ Our generated single-cell gene expression data (X, y) looks like this:
 <img src="netrem_expression_demo.png" style="width: 200px;"/>
 
 ```python
-# prior network edge_list:
+# prior network edge_list (missing edges or edges with no edge weight will be added with the default_edge_list so the network is fully-connected):
 edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
 
@@ -458,7 +458,8 @@ beta_network_val = 3
 alpha_lasso_val = 0.01
 
 # Building the network regularized regression model: 
-# Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5):
+# Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5).
+# By default, edges are constructed between all of the nodes; nodes with a missing edge are assigned the default_edge_weight. 
 netrem_demo = netrem(edge_list = edge_list, 
                      beta_net = beta_network_val,
                      alpha_lasso = alpha_lasso_val,
