@@ -1,15 +1,15 @@
 import sys
 sys.path.append("../code")  # assuming "code" is one directory up and then down into "code"
-
-from DemoDataBuilderXandY import generate_dummy_data
-from Netrem_model_builder import netrem, netremCV
-import PriorGraphNetwork as graph
+from packages_needed import *
 import error_metrics as em 
-import essential_functions as ef
-import netrem_evaluation_functions as nm_eval
+from packages_needed import *
 import Netrem_model_builder as nm
+import DemoDataBuilderXandY as demo
+import PriorGraphNetwork as graph
+import netrem_evaluation_functions as nm_eval
+import essential_functions as ef
 
-dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
+dummy_data = demo.generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
                    num_samples_M = 100,
                    train_data_percent = 70)
 
