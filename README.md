@@ -44,6 +44,9 @@ The software uses Python 3.10. After downloading the NetREm Github code, conda/A
 
 <!-- To install these packages manually, please run *pip install [package]* or *pip3 install [package]* in the terminal or run *conda install [package]* in the Anaconda navigator prompt. -->
 
+Please note that if you encounter import errors from files or functions in the code folder (such as `Netrem_model_builder.py`), add an empty file named __init__.py to the code folder, and add the "code." prefix to all imports from the "code" folder. For example, `import Netrem_model_builder as nm` => `import code.Netrem_model_builder as nm`.
+
+
 
 <br>
 
