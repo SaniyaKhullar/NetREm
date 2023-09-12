@@ -193,8 +193,9 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         """ Update the prior network information and the 
         X input data (training) during the fitting of the model. It determines if the common predictors
         should be used (based on if overlapped_nodes_only is True) or if all of the X input data should be used. """
+        X_df = X.sort_index(axis=1)  # sorting the X dataframe by columns. (rows are samples)
 
-        X_df = X.sort_index(axis=0).sort_index(axis=1)  # sorting the X dataframe by rows and columns. 
+        #X_df = X.sort_index(axis=0).sort_index(axis=1)  # sorting the X dataframe by rows and columns. 
         self.X_df = X_df
         self.target_gene_y = y.columns[0]
 
