@@ -10,6 +10,8 @@ import netrem_evaluation_functions as nm_eval
 import Netrem_model_builder as nm
 
 dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3],
+                    standardize_X = False,
+                    center_y = False, 
                    num_samples_M = 100,
                    train_data_percent = 70)
 
