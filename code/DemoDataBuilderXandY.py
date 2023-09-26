@@ -1,5 +1,11 @@
 # DemoDataBuilder Class: :)
 from packages_needed import *
+import pandas as pd
+import numpy as np
+from tqdm.auto import tqdm
+import numpy as np
+from sklearn.model_selection import train_test_split
+import plotly.express as px
 class DemoDataBuilderXandY: 
     """:) Please note that this class focuses on building Y data based on a normal distribution (specified mean
     and standard deviation). M is the # of samples we want to generate. Thus, Y is a vector with M elements. 
@@ -25,12 +31,7 @@ class DemoDataBuilderXandY:
     }
     
     def __init__(self, **kwargs):
-        import pandas as pd
-        import numpy as np
-        from tqdm import tqdm
-        import numpy as np
-        from sklearn.model_selection import train_test_split
-        import plotly.express as px
+
         # define default values for constants
         self.same_train_test_data = False
         self.test_data_percent = 30
@@ -40,8 +41,9 @@ class DemoDataBuilderXandY:
         self.num_iters_to_generate_X = 100
         self.rng_seed = 2023 # for Y
         self.randSeed = 123 # for X
-        self.orthogonal_X_bool = False
+        self.orthogonal_X_bool = True # False adjustment made on 9/20
         self.ortho_scalar = 10
+        self.tol = 1e-2
         self.view_input_correlations_plot = False
         # reading in user inputs
         self.__dict__.update(kwargs)
@@ -196,8 +198,566 @@ class DemoDataBuilderXandY:
         # Check if the product is equal to the identity matrix
         return np.allclose(matrix_matrix_T, np.eye(matrix.shape[0]))
 
+#     # Define the modified generate_X function
+#     def generate_X(self):
+#         """Generates a design matrix X with the given correlations while introducing noise and dependencies.
+#         Parameters:
+#         orthogonal (bool): Whether to generate an orthogonal matrix (default=False).
 
+#         Returns:
+#         numpy.ndarray: The design matrix X.
+#         """
+#         orthogonal = self.orthogonal_X_bool
+#         scalar = self.ortho_scalar
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N # len(corrVals)
+#         numIterations = self.num_iters_to_generate_X
+#         correlations = self.corrVals
+#         corrVals = [correlations[0]] + correlations
+
+#         # Step 1: Generate Initial X
+#         e = np.random.normal(0, 1, (n, numTFs + 1))
+#         X = np.copy(e)
+#         X[:, 0] = y * np.sqrt(1.0 - corrVals[0]**2) / np.sqrt(1.0 - np.corrcoef(y, X[:,0])[0,1]**2)
+#         for j in range(numIterations):
+#             for i in range(1, numTFs + 1):
+#                 corr = np.corrcoef(y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
+
+#         # Step 2: Add Noise
+#         noise_scale = 0.1  # You can adjust this value
+#         X += np.random.normal(0, noise_scale, X.shape)
+
+#         # Step 3: Introduce Inter-dependencies
+#         # Make the second predictor a combination of the first and third predictors
+#         X[:, 1] += 0.3 * X[:, 0] + 0.7 * X[:, 2]
+
+#         # Step 4: Adjust for Correlations
+#         for j in range(numIterations):
+#             for i in range(1, numTFs + 1):
+#                 corr = np.corrcoef(y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
+
+#         if orthogonal:
+#             # Compute the QR decomposition of X and take only the Q matrix
+#             Q = np.linalg.qr(X)[0]
+#             Q = scalar * Q
+#             return Q[:, 1:]
+#         else:
+#             # Return the X matrix without orthogonalization
+#             return X[:, 1:]
+
+#     # # Display the modified function to ensure it looks okay
+#     # print(generate_X_modified)
+
+#     def generate_X(self):
+#         """Generates a design matrix X with the given correlations and introduces an interaction term.
+
+#         Returns:
+#         numpy.ndarray: The design matrix X.
+#         """
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N  # Number of predictors
+#         numIterations = self.num_iters_to_generate_X
+#         corrVals = self.corrVals
+
+#         # Step 1: Generate Initial X based on the specified correlations with Y
+#         e = np.random.normal(0, 1, (n, numTFs))
+#         X = np.copy(e)
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
+
+#         # Step 2: Introduce Interaction Term into Y
+#         interaction_term = X[:, 3] * X[:, 4]
+#         self.y = y + 0.5 * interaction_term  # Adjust the coefficient as needed
+
+#         # Step 3: Re-adjust for specified correlations with Y
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(self.y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * self.y
+
+#         return X
+
+
+
+    # Define the modified generate_X function to highlight the benefits of network-regularized regression
+#     def generate_X(self):
+#         """Generates a design matrix X to highlight the benefits of network-regularized regression.
+
+#         Returns:
+#         numpy.ndarray: The design matrix X.
+#         """
+#         np.random.seed(self.randSeed)
+#         n = len(self.y)
+#         numTFs = self.N  # Number of predictors
+#         numIterations = self.num_iters_to_generate_X
+#         corrVals = self.corrVals
+
+#         # Step 1: Generate Initial X based on the specified correlations with Y
+#         e = np.random.normal(0, 1, (n, numTFs))
+#         X = np.copy(e)
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(self.y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * self.y
+
+#         # Step 2: Weaken X2 and X4 as predictors by introducing interactions in Y
+#         interaction_term = 0.3 * (X[:, 0] * X[:, 1]) + 0.3 * (X[:, 3] * X[:, 4])  # Interaction terms
+#         self.y = self.y + interaction_term  # Update Y
+
+#         # Step 3: Strengthen network edges by making X1 and X2, and X4 and X5 highly correlated
+#         X[:, 1] = 0.7 * X[:, 0] + 0.3 * X[:, 1]  # X1 and X2
+#         X[:, 3] = 0.7 * X[:, 4] + 0.3 * X[:, 3]  # X4 and X5
+
+#         # Step 4: Re-adjust for specified correlations with Y
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(self.y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * self.y
+
+#         return X
+#     def generate_X(self):
+#         """Generates a design matrix X with the given correlations and introduces specified network edges and interactions.
+
+#         Returns:
+#         numpy.ndarray: The design matrix X.
+#         """
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N  # Number of predictors
+#         numIterations = self.num_iters_to_generate_X
+#         corrVals = self.corrVals
+
+#         # Step 1: Generate Initial X based on the specified correlations with Y
+#         e = np.random.normal(0, 1, (n, numTFs))
+#         X = np.copy(e)
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
+
+#         # Step 2: Weaken X2 and X4 as predictors by introducing interactions in Y
+#         self.y = y + 0.3 * (X[:, 1] * X[:, 0]) + 0.3 * (X[:, 3] * X[:, 4])  # Adjust the coefficients as needed
+
+#         # Step 3: Strengthen network edges by making X1 and X2, and X4 and X5 highly correlated
+#         X[:, 1] = 0.7 * X[:, 0] + 0.3 * X[:, 1]  # X1 and X2
+#         X[:, 3] = 0.7 * X[:, 4] + 0.3 * X[:, 3]  # X4 and X5
+
+#         # Step 4: Re-adjust for specified correlations with Y
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(self.y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * self.y
+
+#         return X
+#     def generate_X(self):
+#         """Generates a design matrix X with given correlations and introduces inter-predictor correlations.
+
+#         Returns:
+#         numpy.ndarray: The design matrix X.
+#         """
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N  # Number of predictors
+#         numIterations = self.num_iters_to_generate_X
+#         corrVals = self.corrVals
+
+#         # Step 1: Generate Initial X based on the specified correlations with Y
+#         e = np.random.normal(0, 1, (n, numTFs))
+#         X = np.copy(e)
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
+
+#         # Step 2: Introduce Inter-predictor Correlations
+#         # Make X1 and X2 highly correlated
+#         X[:, 0] = 0.5 * X[:, 0] + 0.5 * X[:, 1]
+#         # Make X4 and X5 highly correlated
+#         X[:, 3] = 0.525 * X[:, 3] + 0.475 * X[:, 4]
+
+#         # Step 3: Re-adjust for specified correlations with Y
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
+
+#         return X
+
+#     def generate_X(self, tol=1e-4):
+#         orthogonal = self.orthogonal_X_bool
+#         scalar = self.ortho_scalar
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N
+
+#         # Initialize X with standard normal distribution
+#         X = np.random.normal(0, 1, (n, numTFs))
+
+#         for i in range(numTFs):
+#             desired_corr = self.corrVals[i]
+
+#             while True:
+#                 # Create a new predictor as a linear combination of original predictor and y
+#                 X[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X[:, i]
+
+#                 # Standardize the predictor to have mean 0 and variance 1
+#                 X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+#                 # Calculate the actual correlation
+#                 actual_corr = np.corrcoef(y, X[:, i])[0, 1]
+
+#                 # Calculate the difference between the actual and desired correlations
+#                 diff = abs(actual_corr - desired_corr)
+
+#                 if diff < tol:
+#                     break
+
+#         # Orthogonalize the predictors to make them independent of each other
+#         Q, _ = np.linalg.qr(X)
+
+#         if orthogonal:
+#             # Scale the orthogonalized predictors
+#             Q = scalar * Q
+#             return Q
+#         else:
+#             # Return the orthogonalized predictors without scaling
+#             return Q
+
+#     def generate_X(self):
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N
+#         tol = self.tol
+
+#         # Initialize X with standard normal distribution (vectorized)
+#         X = np.random.normal(0, 1, (n, numTFs))
+
+#         # Standardize y for correlation calculation
+#         y_std = (y - np.mean(y)) / np.std(y)
+
+#         for i in tqdm(range(numTFs), desc="Generating predictors"):
+#             desired_corr = self.corrVals[i]
+
+#             while True:
+#                 # Orthogonalize Xi against all previous predictors
+#                 for j in range(i):
+#                     coef = np.dot(X[:, i], X[:, j]) / np.dot(X[:, j], X[:, j])
+#                     X[:, i] -= coef * X[:, j]
+
+#                 # Create and standardize new predictor (vectorized)
+#                 X[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X[:, i]
+#                 X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+#                 # Calculate actual correlation (vectorized)
+#                 actual_corr = np.dot(y_std, X[:, i]) / n
+
+#                 # Check if actual correlation is close enough to desired correlation
+#                 if abs(actual_corr - desired_corr) < tol:
+#                     break
+
+#         # Orthogonalize X to reduce inter-predictor correlation (if required)
+#         if self.orthogonal_X_bool:
+#             X, _ = np.linalg.qr(X)
+
+#         return X
+    
     def generate_X(self):
+        np.random.seed(self.randSeed)
+        y = self.y
+        n = len(y)
+        numTFs = self.N
+        tol = self.tol
+
+        # Initialize X with standard normal distribution (vectorized)
+        X = np.random.normal(0, 1, (n, numTFs))
+
+        # Standardize y for correlation calculation
+        y_std = (y - np.mean(y)) / np.std(y)
+
+        for i in tqdm(range(numTFs), desc="Generating predictors"):
+            desired_corr = self.corrVals[i]
+
+            while True:
+                # Create and standardize new predictor (vectorized)
+                X[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X[:, i]
+                X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+                # Calculate actual correlation (vectorized)
+                actual_corr = np.dot(y_std, X[:, i]) / n
+
+                # Check if actual correlation is close enough to desired correlation
+                if abs(actual_corr - desired_corr) < tol:
+                    break
+
+        # Orthogonalize X to reduce inter-predictor correlation (if required)
+        if self.orthogonal_X_bool:
+            X, _ = np.linalg.qr(X)
+
+        return X
+    def generate_X7(self):
+        orthogonal = self.orthogonal_X_bool
+        scalar = self.ortho_scalar
+        np.random.seed(self.randSeed)
+        y = self.y
+        n = len(y)
+        numTFs = self.N
+        tol = self.tol
+
+        # Initialize X with standard normal distribution
+        X = np.random.normal(0, 1, (n, numTFs))
+
+        desc_name = "Generating data for " + str(numTFs) + " Predictors with tolerance of " + str(tol) + " :) "
+        for i in tqdm(range(numTFs), desc=desc_name):
+            desired_corr = self.corrVals[i]
+
+            while True:
+                # Create a new predictor as a linear combination of original predictor and y
+                X[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X[:, i]
+
+                # Standardize the predictor to have mean 0 and variance 1
+                X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+                # Calculate the actual correlation
+                actual_corr = np.corrcoef(y, X[:, i])[0, 1]
+
+                # Calculate the difference between the actual and desired correlations
+                diff = abs(actual_corr - desired_corr)
+
+                if diff < tol:
+                    break
+
+        # Step 2: Orthogonalize the predictors to remove inter-predictor correlation
+        X_ortho, _ = np.linalg.qr(X)
+        
+        # Step 3: Scale each orthogonalized predictor to match the desired correlation with y
+        for i in tqdm(range(numTFs), desc="Rescaling orthogonalized predictors"):
+            desired_corr = self.corrVals[i]
+            
+            while True:
+                # Scale the orthogonalized predictor
+                X_ortho[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X_ortho[:, i]
+                
+                # Standardize the predictor
+                X_ortho[:, i] = (X_ortho[:, i] - np.mean(X_ortho[:, i])) / np.std(X_ortho[:, i])
+                
+                # Calculate the actual correlation
+                actual_corr = np.corrcoef(y, X_ortho[:, i])[0, 1]
+                
+                # Calculate the difference between the actual and desired correlations
+                diff = abs(actual_corr - desired_corr)
+                
+                if diff < tol:
+                    break
+
+        if orthogonal:
+            # Compute the QR decomposition of X and take only the Q matrix
+            Q = np.linalg.qr(X_ortho)[0]
+            Q = scalar * Q
+            return Q
+        else:
+            # Return the X matrix without orthogonalization
+            return X_ortho
+
+
+    def generate_X5(self):
+        orthogonal = self.orthogonal_X_bool
+        scalar = self.ortho_scalar
+        np.random.seed(self.randSeed)
+        y = self.y
+        n = len(y)
+        numTFs = self.N
+        tol = self.tol
+        jitter = 0.05  # Noise level to reduce correlation between predictors
+
+        # Initialize X with standard normal distribution
+        X = np.random.normal(0, 1, (n, numTFs))
+
+        desc_name = "Generating data for " + str(numTFs) + " Predictors with tolerance of " + str(tol) + " :) "
+        for i in tqdm(range(numTFs), desc=desc_name):
+            desired_corr = self.corrVals[i]
+
+            while True:
+                # Create a new predictor as a linear combination of original predictor and y
+                X[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X[:, i]
+
+                # Add a small amount of noise to reduce correlation with other predictors
+                X[:, i] += jitter * np.random.normal(0, 1, n)
+
+                # Standardize the predictor to have mean 0 and variance 1
+                X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+                # Calculate the actual correlation
+                actual_corr = np.corrcoef(y, X[:, i])[0, 1]
+
+                # Calculate the difference between the actual and desired correlations
+                diff = abs(actual_corr - desired_corr)
+
+                if diff < tol:
+                    break
+
+        if orthogonal:
+            # Compute the QR decomposition of X and take only the Q matrix
+            Q = np.linalg.qr(X)[0]
+            Q = scalar * Q
+            return Q
+        else:
+            # Return the X matrix without orthogonalization
+            return X
+        
+    def generate_X3(self):
+        orthogonal = self.orthogonal_X_bool
+        scalar = self.ortho_scalar
+        np.random.seed(self.randSeed)
+        y = self.y
+        n = len(y)
+        numTFs = self.N
+        tol = self.tol
+        # Initialize X with standard normal distribution
+        X = np.random.normal(0, 1, (n, numTFs))
+        desc_name = "Generating data for " + str(numTFs) + " Predictors with tolerance of " + str(tol) + " :) "
+        for i in tqdm(range(numTFs), desc=desc_name):
+            desired_corr = self.corrVals[i]
+
+            while True:
+                # Create a new predictor as a linear combination of original predictor and y
+                X[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X[:, i]
+
+                # Standardize the predictor to have mean 0 and variance 1
+                X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+                # Calculate the actual correlation
+                actual_corr = np.corrcoef(y, X[:, i])[0, 1]
+
+                # Calculate the difference between the actual and desired correlations
+                diff = abs(actual_corr - desired_corr)
+
+                if diff < tol:
+                    break
+
+        if orthogonal:
+            # Compute the QR decomposition of X and take only the Q matrix
+            Q = np.linalg.qr(X)[0]
+            Q = scalar * Q
+            return Q
+        else:
+            # Return the X matrix without orthogonalization
+            return X
+
+    # Define the function for generating synthetic data with specific correlations and standard normal predictors
+    def generate_X1(self):
+        orthogonal = self.orthogonal_X_bool
+        scalar = self.ortho_scalar
+        np.random.seed(self.randSeed)
+        y = self.y
+        n = len(y)
+        numTFs = self.N
+
+        # Initialize X with standard normal distribution
+        X = np.random.normal(0, 1, (n, numTFs))
+
+        # Adjust X to achieve the desired correlations with y
+        for i in range(numTFs):
+            corr = self.corrVals[i]
+            # Create a new predictor as a linear combination of original predictor and y
+            X[:, i] = corr * y + np.sqrt(1 - corr ** 2) * X[:, i]
+
+            # Standardize the predictor to have mean 0 and variance 1
+            X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+        if orthogonal:
+            # Compute the QR decomposition of X and take only the Q matrix
+            Q = np.linalg.qr(X)[0]
+            Q = scalar * Q
+            return Q
+        else:
+            # Return the X matrix without orthogonalization
+            return X
+#     def generate_X(self):
+#         orthogonal = self.orthogonal_X_bool
+#         scalar = self.ortho_scalar
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N
+#         numIterations = self.num_iters_to_generate_X
+#         correlations = self.corrVals
+#         corrVals = [correlations[0]] + correlations
+
+#         # Initialize X with standard normal distribution
+#         X = np.random.normal(0, 1, (n, numTFs))
+
+#         for j in range(numIterations):
+#             for i in range(numTFs):
+#                 corr = np.corrcoef(y, X[:, i])[0, 1]
+#                 X[:, i] = X[:, i] + (corrVals[i] - corr) * y
+#                 # Standardize the predictor
+#                 X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+#         if orthogonal:
+#             # Compute the QR decomposition of X and take only the Q matrix
+#             Q = np.linalg.qr(X)[0]
+#             Q = scalar * Q
+#             return Q
+#         else:
+#             # Return the X matrix without orthogonalization
+#             return X
+
+
+#     def generate_X(self):
+#         orthogonal = self.orthogonal_X_bool
+#         scalar = self.ortho_scalar
+#         np.random.seed(self.randSeed)
+#         y = self.y
+#         n = len(y)
+#         numTFs = self.N
+#         tol=self.tol
+#         # Initialize X with standard normal distribution
+#         X = np.random.normal(0, 1, (n, numTFs))
+#         numIterations = self.num_iters_to_generate_X
+#         for iter_count in range(numIterations):
+#             max_diff = 0  # Initialize maximum difference between actual and desired correlations for this iteration
+#             for i in range(numTFs):
+#                 desired_corr = self.corrVals[i]
+
+#                 # Create a new predictor as a linear combination of original predictor and y
+#                 X[:, i] = desired_corr * y + np.sqrt(1 - desired_corr ** 2) * X[:, i]
+
+#                 # Standardize the predictor to have mean 0 and variance 1
+#                 X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+
+#                 # Calculate the actual correlation
+#                 actual_corr = np.corrcoef(y, X[:, i])[0, 1]
+
+#                 # Calculate the difference between the actual and desired correlations
+#                 diff = abs(actual_corr - desired_corr)
+#                 max_diff = max(max_diff, diff)
+
+#             # If the maximum difference between actual and desired correlations is below the tolerance, break the loop
+#             if max_diff < tol:
+#                 break
+
+#         if orthogonal:
+#             # Compute the QR decomposition of X and take only the Q matrix
+#             Q = np.linalg.qr(X)[0]
+#             Q = scalar * Q
+#             return Q
+#         else:
+#             # Return the X matrix without orthogonalization
+#             return X
+
+    def generate_X_old(self):
         """Generates a design matrix X with the given correlations.
         Parameters:
         orthogonal (bool): Whether to generate an orthogonal matrix (default=False).
@@ -330,9 +890,10 @@ def generate_dummy_data(corrVals,
         std_dev = 1,
         iters_to_generate_X = 100,
         orthogonal_X = False,
+                    
         ortho_scalar = 10,
         view_input_corrs_plot = False,
-        verbose = True):
+        verbose = True, rand_seed_x = 123, rand_seed_y = 2023):
     
     # the defaults
     same_train_test_data = False
@@ -347,8 +908,8 @@ def generate_dummy_data(corrVals,
         "mu": mu, "std_dev": std_dev,
         "num_iters_to_generate_X": iters_to_generate_X,
         "same_train_test_data": same_train_test_data,
-        "rng_seed": 2023, # for Y
-        "randSeed": 123, # for X
+        "rng_seed": rand_seed_y, #2023, # for Y
+        "randSeed": rand_seed_x, #123, # for X
         "ortho_scalar": ortho_scalar,
         "orthogonal_X_bool": orthogonal_X,
         "view_input_correlations_plot": view_input_corrs_plot,
