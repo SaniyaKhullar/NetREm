@@ -11,7 +11,7 @@ import scipy
 from scipy.linalg import svd as robust_svd
 from sklearn.model_selection import KFold, train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.decomposition import TruncatedSVD
-from sklearn import linear_model, preprocessing # 9/19
+from sklearn import linear_model
 from sklearn.linear_model import Lasso, LassoCV, LinearRegression, ElasticNetCV, Ridge
 from numpy.typing import ArrayLike
 from typing import Optional, List, Tuple
@@ -29,7 +29,7 @@ randSeed = 123
 # from packages_needed import *
 import essential_functions as ef
 import error_metrics as em # why to do import
-#import Netrem_model_builder as nm
+import Netrem_model_builder as nm
 import DemoDataBuilderXandY as demo
 import PriorGraphNetwork as graph
 import netrem_evaluation_functions as nm_eval
@@ -63,9 +63,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         "num_jobs": (1, 1e10),
         "lasso_selection": ["cyclic", "random"],
         "lassocv_eps": (0, None),
-        "lassocv_n_alphas": (1, None),
-        "standardize_X": [True, False],
-        "center_y": [True, False]
+        "lassocv_n_alphas": (1, None)     
     }
     
     def __init__(self,  **kwargs):
@@ -76,8 +74,6 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.num_jobs = -1 # for LassoCV or LinearRegression (here, -1 is the max possible for CPU)
         self.all_pos_coefs = False # for coefficients
         self.model_type = "Lasso"
-        self.standardize_X = True
-        self.center_y = True
         self.use_network = True
         self.y_intercept = False
         self.max_lasso_iterations = 10000
@@ -119,34 +115,78 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         args = [f"{k}={v}" for k, v in self.__dict__.items() if k != 'param_grid' and k in self.kwargs]
         return f"{self.__class__.__name__}({', '.join(args)})"    
     
-   
+    
+#     def check_overlaps_work(self, X):
+#         X_df = X.sort_index(axis=0).sort_index(axis=1) # sorting the X dataframe by rows and columns. 
+#         final_set = set(self.final_nodes)
+#         network_set = set(self.network_nodes_list) # ppi_net_nodes
+#         if network_set == final_set:
+#             return False
+#         return True
+    
     def check_overlaps_work(self):
         final_set = set(self.final_nodes)
         network_set = set(self.network_nodes_list)
         return network_set != final_set   
     
     
-    def standardize_X_data(self, X_df): # if the user opts to 
-        """ :) If the user opts to standardize the X data (so that predictors have a mean of 0 
-        and a standard deviation of 1), then this method will be run, which uses the preprocessing
-        package StandardScalar() functionality. """
-        if self.standardize_X:
-            # Transform both the training and test data
-            X_scaled = self.scaler.transform(X_df)
-            X_scaled_df = pd.DataFrame(X_scaled, columns=X_df.columns)
-            return X_scaled_df
-        else:
-            return X_df
-        
-    def center_y_data(self, y_df): # if the user opts to
-        """ :) If the user opts to center the response y data:
-        subtracting its mean from each observation."""
-        if self.center_y:
-            # Center the response
-            y_train_centered = y_df - self.mean_y_train
-            return y_train_centered
-        else:
-            return y_df
+#     def updating_network_and_X_during_fitting(self, X, y):   
+#         """ :) Please note that this function will update the prior network information and the 
+#         X input data (training) during the fitting of the model. It will determine if the common predictors
+#         should be used (based on if overlapped_nodes_only is True) or if all of the X input data should be used. """
+#         X_df = X.sort_index(axis=0).sort_index(axis=1) # sorting the X dataframe by rows and columns. 
+#         self.X_df = X_df
+#         self.target_gene_y = y.columns.tolist()[0]
+#         gene_expression_nodes = list(X_df.columns) # these will be sorted
+#         gene_expression_nodes.sort()
+#         ppi_net_nodes = self.network_nodes_list
+#         common_nodes = ef.intersection(ppi_net_nodes, gene_expression_nodes)
+#         # defensive-programming :)
+#         if len(common_nodes) == 0: # may be possible that the X dataframe needs to be transposed if provided incorrectly
+#             print("Please note: we are flipping X dataframe around so that the rows are samples and the columns are gene/TF names :)")
+#             X_df = X_df.transpose()
+#             gene_expression_nodes = list(X_df.columns) # these will be sorted
+#             common_nodes = ef.intersection(ppi_net_nodes, gene_expression_nodes)
+#         common_nodes.sort()
+#         self.gene_expression_nodes = gene_expression_nodes
+#         self.common_nodes = common_nodes 
+#         if self.overlapped_nodes_only == True:
+#             self.final_nodes = common_nodes
+#         elif self.preprocessed_network:
+#             self.final_nodes = self.prior_network.final_nodes
+#         else:
+#             self.final_nodes = gene_expression_nodes
+#         final_nodes = self.final_nodes
+#         ppi_nodes_to_remove = list(set(ppi_net_nodes) - set(final_nodes))
+#         self.gexpr_nodes_added = list(set(gene_expression_nodes) - set(final_nodes))
+#         self.gexpr_nodes_to_add_for_net = list(set(gene_expression_nodes) - set(common_nodes))
+#         if self.verbose:
+#             if len(ppi_nodes_to_remove) > 0:
+#                 if len(ppi_nodes_to_remove) == 1:
+#                     print(f"Please note that we remove 1 node {ppi_nodes_to_remove[0]} found in the input network that is not found in the input gene expression data (X) :)")
+#                 else:
+#                     print(f"Please note that we remove {len(ppi_nodes_to_remove)} nodes found in the input network that are not found in the input gene expression data (X) :)")
+#                     print(ppi_nodes_to_remove)
+#             else:
+#                 print(f":) Please note that all {len(common_nodes)} nodes found in the network are also found in the input gene expression data (X) :)")           
+#         filter_network_bool = self.check_overlaps_work(X_df)
+#         if filter_network_bool:
+#             print("Please note that we need to update the network information")
+#             self.updating_network_A_matrix_given_X() # updating the A matrix given the gene expression data X
+#             if self.view_network:
+#                 ef.draw_arrow()
+#                 self.view_W_network = self.view_W_network()
+#         else:
+#             self.A_df = self.network.A_df
+#             self.A = self.network.A
+#             self.nodes = self.A_df.columns.tolist()
+#         self.network_params = self.prior_network.param_lists
+#         self.network_info = "fitted_network"
+#         self.M = y.shape[0]       
+#         self.N = len(self.final_nodes) # pre-processing:
+#         self.X_train = self.preprocess_X_df(X)
+#         self.y_train = self.preprocess_y_df(y)
+#         return self
     
     def updating_network_and_X_during_fitting(self, X, y):   
         # updated one :)
@@ -154,32 +194,12 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         X input data (training) during the fitting of the model. It determines if the common predictors
         should be used (based on if overlapped_nodes_only is True) or if all of the X input data should be used. """
         X_df = X.sort_index(axis=1)  # sorting the X dataframe by columns. (rows are samples)
-        
-        #X_df = X.sort_index(axis=0).sort_index(axis=1)  # sorting the X dataframe by rows and columns. 
-        #self.X_df = X_df
-        self.target_gene_y = y.columns[0]
-        
-        if self.standardize_X: # we will standardize X then
-            if self.verbose:
-                print(":) Standardizing the X data")
-            self.old_X_df = X_df
-            self.scaler = preprocessing.StandardScaler().fit(X_df) # Fit the scaler to the training data only
-            # this self.scalar will be utilized for the testing data to prevent data leakage and to ensure generalization :)
-            self.X_df = self.standardize_X_data(X_df)
-            X = self.X_df # overwriting and updating the X df
-        else:
-            self.X_df = X_df
-            
-        self.mean_y_train = np.mean(y) # the average y value
-        if self.center_y: # we will center y then
-            if self.verbose:
-                print(":) centering the y data")
-            # Assuming y_train and y_test are your training and test labels
-            self.old_y = y
-            y = self.center_y_data(y)
 
-        gene_expression_nodes = X_df.columns.tolist()  # these are already sorted
-        #gene_expression_nodes = sorted(X_df.columns.tolist())  # these will be sorted
+        #X_df = X.sort_index(axis=0).sort_index(axis=1)  # sorting the X dataframe by rows and columns. 
+        self.X_df = X_df
+        self.target_gene_y = y.columns[0]
+
+        gene_expression_nodes = sorted(X_df.columns.tolist())  # these will be sorted
         ppi_net_nodes = set(self.network_nodes_list)
         common_nodes = list(ppi_net_nodes.intersection(gene_expression_nodes))
 
@@ -234,6 +254,11 @@ class NetREmModel(BaseEstimator, RegressorMixin):
     def organize_B_interaction_list(self): # TF-TF interactions to output :)
         self.B_train = self.compute_B_matrix(self.X_train)
         self.B_interaction_df = pd.DataFrame(self.B_train, index = self.final_nodes, columns = self.final_nodes)
+#         self.B_interaction_df = self.B_interaction_df.reset_index().melt(id_vars='index', var_name='TF2', value_name='B_train_weight')
+#         self.B_interaction_df = self.B_interaction_df.rename(columns = {"index":"TF1"})  
+#         self.B_interaction_df = self.B_interaction_df[self.B_interaction_df["TF1"] != self.B_interaction_df["TF2"]]
+#         self.B_interaction_df = self.B_interaction_df.sort_values(by = ['B_train_weight'], ascending = False)
+#         self.B_interaction_df["beta_net"] = self.beta_net
         return self
     
     
@@ -335,8 +360,6 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             self.combined_df = netrem_model_df
         self.combined_df["TFs_input_to_model"] = len(self.final_nodes)
         self.combined_df["original_TFs_in_X"] = len(self.gene_expression_nodes)
-        self.combined_df["standardized_X"] = self.standardize_X
-        self.combined_df["centered_y"] = self.center_y
         return self
 
     def view_W_network(self):
@@ -412,8 +435,16 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         y_tilde *= scale
         return X_tilde, y_tilde
     
+    
+#     def predict_y_from_y_tilda(self, X, X_tilda, pred_y_tilda):
+#         X = self.preprocess_X_df(X) # calculate transpose of inverse of X
+#         X_inv = np.linalg.inv(X)
+#         X_inv_transpose = X_inv.T
+#         X_tilda_transpose = X_tilda.T # calculate transpose of X_tilda
+#         pred_y = X_inv_transpose.dot(X_tilda_transpose).dot(pred_y_tilda) # calculate matrix multiplication
+#         return pred_y
+    
     def predict_y_from_y_tilda(self, X, X_tilda, pred_y_tilda):
-
         X = self.preprocess_X_df(X)
         # Transposing the matrix before inverting
         X_transpose_inv = np.linalg.inv(X.T)
@@ -446,24 +477,12 @@ class NetREmModel(BaseEstimator, RegressorMixin):
     
     
     def predict(self, X_test):
-        if self.standardize_X:
-            self.X_test_standardized = self.standardize_X_data(X_test)
-            X_test = self.preprocess_X_df(self.X_test_standardized)
-        else:
-            X_test = self.preprocess_X_df(X_test) # X_test
+        X_test = self.preprocess_X_df(X_test) # X_test
         return self.regr.predict(X_test)
 
     
     def test_mse(self, X_test, y_test):
-        X_test = X_test.sort_index(axis=1) # 9/20
-        if self.standardize_X:
-            self.X_test_standardized = self.standardize_X_data(X_test)
-            X_test = self.preprocess_X_df(self.X_test_standardized)
-        else:
-            X_test = self.preprocess_X_df(X_test) # X_test
-        if self.center_y:
-            y_test = self.center_y_data(y_test)
-        #X_test = self.preprocess_X_df(X_test) # X_test
+        X_test = self.preprocess_X_df(X_test) # X_test
         y_test = self.preprocess_y_df(y_test) 
         predY_test = self.regr.predict(X_test) # training data   
         mse_test = self.calculate_mean_square_error(y_test, predY_test) # Calculate MSE
@@ -473,8 +492,6 @@ class NetREmModel(BaseEstimator, RegressorMixin):
     def get_params(self, deep=True):
         params_dict = {"info":self.info, "alpha_lasso": self.alpha_lasso, "beta_net": self.beta_net, 
                 "y_intercept": self.y_intercept, "model_type":self.model_type, 
-                       "standardize_X":self.standardize_X,
-                       "center_y":self.center_y,
                       "max_lasso_iterations":self.max_lasso_iterations, 
                        "network":self.network, "verbose":self.verbose,
                       "all_pos_coefs":self.all_pos_coefs, "model_info":self.model_info,
@@ -772,7 +789,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         
 def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.1,
                   degree_threshold = 0.5, gene_expression_nodes = [], overlapped_nodes_only = False,
-           y_intercept = False, standardize_X = True, center_y = True, view_network = False,
+           y_intercept = False, view_network = False,
            model_type = "Lasso", lasso_selection = "cyclic", all_pos_coefs = False, tolerance = 1e-4, maxit = 10000,
                   num_jobs = -1, num_cv_folds = 5, lassocv_eps = 1e-3,
                    lassocv_n_alphas = 100, # default in sklearn        
@@ -809,8 +826,6 @@ def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.
     greg_dict = {"network": netty,
                 "model_type": model_type,
                  "use_network":True,
-                 "standardize_X":standardize_X,
-                 "center_y":center_y,
                  "y_intercept":y_intercept, 
                  "overlapped_nodes_only":overlapped_nodes_only,
                  "max_lasso_iterations":maxit,
@@ -836,8 +851,7 @@ def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.
 
 
 
-
-def generate_beta_networks(X_train, y_train, standardize_X, prior_network, overlapped_nodes_only = False, num = 10, max_beta = 200):
+def generate_beta_networks(X_train, y_train, prior_network, overlapped_nodes_only = False, num = 10, max_beta = 200):
     """
     Generate a grid of beta_network values to transform X_train.
 
@@ -860,13 +874,7 @@ def generate_beta_networks(X_train, y_train, standardize_X, prior_network, overl
             X_df = X_df.reindex(columns=common_nodes)
         else:
             X_df = X_df.reindex(columns=gene_names_list)
-            
-        if standardize_X:
-            print("standardizing X :)")
-            scaler = preprocessing.StandardScaler().fit(X_df)
-            X_train = scaler.transform(X_df)
-        else:
-            X_train = np.array(X_df.values.tolist())
+        X_train = np.array(X_df.values.tolist())
     if isinstance(y_train, pd.DataFrame):
         y_train = y_train.values.flatten()    
     beta_max = 0.5 * np.max(np.abs(X_train.T.dot(y_train)))
@@ -887,8 +895,6 @@ def generate_alpha_beta_pairs(X_train,
                               y_train, 
                               prior_network, 
                               overlapped_nodes_only: bool = False, 
-                              standardize_X: bool = True,
-                              center_y: bool = True,
                               num_beta: int = 50,
                               num_alpha: int = 10,
                               max_beta: float = 200,
@@ -915,34 +921,16 @@ def generate_alpha_beta_pairs(X_train,
     Returns:
     dict: Dictionary containing grid of alpha_lasso values and beta_network values.
     """
-    beta_grid = generate_beta_networks(X_train, y_train, standardize_X, prior_network, overlapped_nodes_only, num=num_beta, max_beta = max_beta)
+    beta_grid = generate_beta_networks(X_train, y_train, prior_network, overlapped_nodes_only, num=num_beta, max_beta = max_beta)
     beta_alpha_grid_dict = {"beta_network_vals": [], "alpha_lasso_vals": []}
     
     try:
         with tqdm(beta_grid, desc=":) Generating beta_net and alpha_lasso pairs") as pbar:
             for beta in pbar:
-                # please fix it so it reflects what we want more... like the proper defaults
                 netremCV_demo = nm.NetREmModel(beta_network=beta, 
-                               model_type="LassoCV", 
-                               network=prior_network, 
-                               standardize_X = standardize_X,
-                                center_y = center_y,
-                               overlapped_nodes_only=overlapped_nodes_only)
-#                 netremCV_demo = nm.NetREmModel(beta_network=beta, 
-#                                                model_type="LassoCV", 
-#                                                network=prior_network, 
-#                                                overlapped_nodes_only=overlapped_nodes_only,
-#                                                standardize_X = standardize_X,
-#                                               y_intercept = y_intercept, 
-#                               max_lasso_iterations  = maxit,
-#                               all_pos_coefs  = all_pos_coefs,
-#                               tolerance  = tolerance,
-#                               lasso_selection = lasso_selection,
-#                                num_cv_folds = num_cv_folds,
-#                                 #num_jobs = num_jobs,
-#                                 lassocv_eps = lassocv_eps,
-#                                  lassocv_n_alphas = lassocv_n_alphas,
-#                                 lassocv_alphas = lassocv_alphas)
+                                               model_type="LassoCV", 
+                                               network=prior_network, 
+                                               overlapped_nodes_only=overlapped_nodes_only)
                 
                 # Fit the model and compute alpha_max and alpha_min
                 netremCV_demo.fit(X_train, y_train)
@@ -960,29 +948,11 @@ def generate_alpha_beta_pairs(X_train,
                 best_score = float('-inf')
                 for alpha in alpha_grid:
                     #netremCV_demo.regr.set_params(alpha=alpha)
-#                     netremCV_demo = nm.NetREmModel(beta_network=beta, 
-#                                 alpha_lasso = alpha,
-#                                model_type="Lasso", 
-#                                network=prior_network, 
-#                                 standardize_X = standardize_X,
-#                                overlapped_nodes_only=overlapped_nodes_only,
-#                                 y_intercept = y_intercept, 
-#                               max_lasso_iterations  = maxit,
-#                               all_pos_coefs  = all_pos_coefs,
-#                               tolerance  = tolerance,
-#                               lasso_selection = lasso_selection,
-#                                num_cv_folds = num_cv_folds,
-#                                 #num_jobs = num_jobs,
-#                                 lassocv_eps = lassocv_eps,
-#                                  lassocv_n_alphas = lassocv_n_alphas,
-#                                 lassocv_alphas = lassocv_alphas)
                     netremCV_demo = nm.NetREmModel(beta_network=beta, 
-                                                    alpha_lasso = alpha,
-                                                    standardize_X = standardize_X,
-                                                   center_y = center_y,
-                                                   model_type="Lasso", 
-                                                   network=prior_network, 
-                                                   overlapped_nodes_only=overlapped_nodes_only)                   
+                                alpha_lasso = alpha,
+                               model_type="Lasso", 
+                               network=prior_network, 
+                               overlapped_nodes_only=overlapped_nodes_only)
                     scores = cross_val_score(netremCV_demo, X_train, y_train, cv=5)  # You can change cv to your specific cross-validation strategy
                     mean_score = np.mean(scores)
                     if mean_score > best_score:
@@ -995,8 +965,7 @@ def generate_alpha_beta_pairs(X_train,
                 
     except Exception as e:
         print(f"An error occurred: {e}")
-    print("finished generate_alpha_beta_pairs")
-    print(beta_alpha_grid_dict)
+        
     return beta_alpha_grid_dict
 
 
@@ -1016,8 +985,6 @@ def netremCV(edge_list, X, y,
             degree_threshold: float = 0.5,
             gene_expression_nodes = [],
             overlapped_nodes_only: bool = False,
-             standardize_X: bool = True,
-             center_y: bool = True,
             y_intercept: bool = False,
             model_type = "Lasso",
             lasso_selection = "cyclic",
@@ -1048,7 +1015,7 @@ def netremCV(edge_list, X, y,
         y_train = y
         beta_alpha_grid_dict = generate_alpha_beta_pairs(X_train, 
                                       y_train, network_to_use, 
-                                      overlapped_nodes_only, standardize_X, center_y,
+                                      overlapped_nodes_only, 
                                       num_beta, num_alpha,
                                       y_intercept, 
                                       maxit,
@@ -1060,20 +1027,15 @@ def netremCV(edge_list, X, y,
                                         lassocv_eps,
                                          lassocv_n_alphas,
                                         lassocv_alphas)
-        print(f"Length of beta_alpha_grid_dict: {len(beta_alpha_grid_dict['beta_network_vals'])}")
 
         param_grid = [{"alpha_lasso": [alpha_las], "beta_net": [beta_net]} 
                       for alpha_las, beta_net in zip(beta_alpha_grid_dict["alpha_lasso_vals"], 
                                                      beta_alpha_grid_dict["beta_network_vals"])]
-        
-        
 
         print(":) Performing NetREmCV with both beta_network and alpha_lasso as UNKNOWN.")
 
         initial_greg =  nm.NetREmModel(network=network_to_use, 
                                        y_intercept = y_intercept, 
-                                       standardize_X = standardize_X,
-                                       center_y = center_y,
                                        max_lasso_iterations=maxit,
                                        all_pos_coefs=all_pos_coefs,
                                        lasso_selection = lasso_selection,
@@ -1109,8 +1071,6 @@ def netremCV(edge_list, X, y,
                                        beta_net = optimal_beta, 
                                        network = network_to_use,
                                        y_intercept = y_intercept, 
-                                       standardize_X = standardize_X,
-                                       center_y = center_y,
                                        max_lasso_iterations=maxit,
                                        all_pos_coefs=all_pos_coefs,
                                        lasso_selection = lasso_selection,
@@ -1121,7 +1081,6 @@ def netremCV(edge_list, X, y,
         train_mse = newest_netrem.test_mse(X_train, y_train)
         print(f":) Please note that the training Mean Square Error (MSE) from this fitted NetREm model is {train_mse}")
         return newest_netrem
-
 
 def organize_B_interaction_network(netrem_model):
     B_interaction_df = netrem_model.B_interaction_df
@@ -1140,7 +1099,6 @@ def organize_B_interaction_network(netrem_model):
     B_interaction_df["num_final_predictors"] = netrem_model.num_final_predictors
     B_interaction_df["model_type"] = netrem_model.model_type
     B_interaction_df["beta_net"] = netrem_model.beta_net
-    B_interaction_df["X_standardized"] = netrem_model.standardize_X
     B_interaction_df["gene_data"] = "training gene expression data"
 
     # Step 1: Sort the DataFrame
