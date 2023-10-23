@@ -884,12 +884,13 @@ class DemoDataBuilderXandY:
     
     
 def generate_dummy_data(corrVals,
-        num_samples_M = 10000,
+        num_samples_M = 100,
         train_data_percent = 70,
         mu = 0,
         std_dev = 1,
         iters_to_generate_X = 100,
         orthogonal_X = False,
+                    
         ortho_scalar = 10,
         view_input_corrs_plot = False,
         verbose = True, rand_seed_x = 123, rand_seed_y = 2023):

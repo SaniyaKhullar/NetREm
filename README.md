@@ -159,51 +159,6 @@ $$ -->
 | **... (additional parameters)** |Read more in the [User Guide: Additional Parameters](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Additional_NetREm_Parameters.md) for more parameters after **model_type** |
 
 
-<!-- | Parameter | Definition | More information |
-| --------- | ---------- | ---------- |
-| edge_list       | A list of lists corresponding to a prior network involving predictors (nodes) and relationships among them (edges): [[source<sub>1</sub>, target<sub>1</sub>, weight<sub>1</sub>], ..., [source<sub>Z</sub>, target<sub>Z</sub>, weight<sub>Z</sub>]]. Here, weight<sub>1</sub>, ..., weight<sub>Z</sub> are optional. | This prior network constrains our model. We assume that this network is undirected and thereby symmetric, so the user only needs to specify edges in 1 direction (and other directions are assumed automatically). The default edge weight is utilized for any edge with a missing edge weight.|
-| beta_network_val: $\beta_{network}$  | Regularization parameter for network penalization: $\beta_{network} \geq 0$. | Value needed, which scales the strength of network penalization |
-| cv_for_alpha_lasso_model_bool  | Should GRegulNet perform Cross Validation to determine $\alpha_{lasso}$? | Default boolean value: False. <br>* False (default): user wants to specify the value of $\alpha_{lasso}$ <br> * True: GRegulNet will perform cross-validation (CV) on training data to determine optimal $\alpha_{lasso}$  |
-| alpha_lasso_val: $\alpha_{lasso}$  | A numerical regularization parameter for lasso: $\alpha_{lasso} \geq 0$. | Value needed if cv_for_alpha_lasso_model_bool = False; default: 0.1 |
-  -->
-
-
-<!-- | Parameters: |  | 
-| --------- | ---------- | -->
-
-<!-- | Parameter           | Description                                                                                                                      |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| **param_grid**      | Dictionary or list of dictionaries with parameters names (string) as keys and lists of parameter settings to try as values.      |
-| **scoring**         | A single string or a callable to evaluate the predictions on the test set. If None, the estimator's default scorer is used.       |
-| **cv**              | Determines the cross-validation splitting strategy. Possible inputs are:<br> - None: to use the default 5-fold cross-validation<br> - integer: to specify the number of folds in a `(Stratified)KFold`<br> - an object to be used as a cross-validation generator. |
-| **verbose**         | Controls the verbosity: the higher, the more messages.                                                                           |
-| **n_jobs**          | Number of jobs to run in parallel.                                                                                              |
-| **refit**           | If set to True, refit an estimator using the best found parameters on the whole dataset.                                         |
-| **return_train_score** | If `False`, the `cv_results_` attribute will not include training scores.                                                        |
-| **pre_dispatch**    | Controls the number of jobs that get dispatched during parallel execution.                                                        |
-| **error_score**     | Value to assign to the score if an error occurs in estimator fitting.                                                            |
-                                                         | -->
-
-
-
-
-<!-- | degree_threshold  | Edges with weight $w$ > degree_threshold are counted as 1 towards node degree (if *edge_vals_for_d is False*) | -->
-<!-- | sqrt_w_for_d  | Sum $\sqrt{w}$ for a given node degree (if *edge_vals_for_d is True*) |
-| square_w_for_d  | Sum $w^{2}$ for a given node degree (if *edge_vals_for_d is True*) | -->
- <!-- self_loops  | True: Add 1 to each degree ($d$) for each node in the network (for self-loops)| 
- | edge_vals_for_d  | True: edge weights $w$ used for node degree; False: threshold used | default: False| -->
-<!-- | w_transform_for_d | To calculate degree for a given node, we can choose from 1 of 3 options (if *edge_vals_for_d is True*): <br> * "none": sum original $w$ <br> * "sqrt": sum $\sqrt{w}$ <br> * "square": sum $w^{2}$ |  -->
-
-<!-- * Parameters for the network-based regularized model:
-
-| Parameter | Definition | 
-| --------- | ---------- | 
-| use_net  | * True: use a prior graph network for regularization. <br> * False: fit a Lasso model on original $X$ and $y$ data (baseline). | 
-| y_intercept | * True: y-intercept is fitted for the final NetREm model. <br> * False: no y-intercept is fitted (model coefficients are only for predictors)| 
-| maxit  | the maximum # of iterations we will run Lasso regression model for (if `model_type = LassoCV`) |
-| num_cv_folds  | # of cross-validation (cv) folds we fit on training data during model building (if `model_type = LassoCV`) | -->
-
-
 ### Details:
 
 We input an edge list of the prior graph network (constrains the model via network-based regularization) and a beta_net ($\beta_{net} \geq 0$, which scales the network-based regularization penalty). The user may specify the alpha_lasso ($\alpha_{lasso} \geq 0$) manually for the lasso regularization on the overall model (if `model_type = Lasso`) or NetREm may select an optimal $\alpha_{lasso}$ based on cross-validation (CV) on the training data (if `model_type = LasssoCV`). Then, **netrem** builds an estimator object from the class Netrem that can then take in input $X$ and $y$ data: transforms them to $\tilde{X}$ and $\tilde{y}$, respectively, and use them to fit a Lasso regression model with a regularization value of $\alpha_{lasso}$. Ultimately, the trained NetREm machine learning model is more reflective of an underlying network structure among predictors and may be more biologically meaningful and interpretable. Nonetheless, NetREm could be applied in various contexts where a network structure is present among the predictors. Input networks are typically weighted and undirected. We provide details, functions, and help with converting directed networks to undirected networks (of similarity values among nodes) [here](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/directed_to_undirected_network_example.ipynb). 
@@ -301,9 +256,9 @@ $$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
 <br>
 
 ## Demo (Toy Example) of NetREm:
-The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 6$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$, $TF_{6}$] in a particular cell-type. Assume the gene expression values for each TF are [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$, $X_{6}$], respectively. We generate $M = 100$ random samples (rows) of data where the Pearson correlations ($r$) between gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.1, cor(TF<sub>4</sub>, $y$) = -0.2, cor(TF<sub>5</sub>, $y$) = -0.8,  cor(TF<sub>6</sub>, $y$) = -0.3]. 
+The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 5$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$] in a particular cell-type. Assume the gene expression values for each TF are [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$], respectively. We generate $M = 100,000$ random samples (rows) of data where the Pearson correlations ($r$) between gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.4, cor(TF<sub>4</sub>, $y$) = -0.3, cor(TF<sub>5</sub>, $y$) = -0.8]. 
 
-The dimensions of $X$ are therefore 100 rows by 6 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in [Dummy_Data_Demo_Example.ipynb](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Dummy_Data_Demo_Example.ipynb). Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level.
+The dimensions of $X$ are therefore 100,000 rows by 5 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in [Dummy_Data_Demo_Example.pdf](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Dummy_Data_Demo_Example.pdf). Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level.
 
 The code for this demo example is [demo_toy.py](https://github.com/SaniyaKhullar/NetREm/blob/main/demo/demo_toy.py) in the *demo* folder.
 
@@ -315,20 +270,18 @@ import error_metrics as em
 import essential_functions as ef
 import netrem_evaluation_functions as nm_eval
 
-dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.1, -0.2, -0.8, -0.3], # the # of elements in corrVals is the # of predictors (X)
-                                 num_samples_M = 100, # the number of samples M
-                                 standardize_X = False,
-                                 center_y = False,
+dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.4, -0.3, -0.8], # the # of elements in corrVals is the # of predictors (X)
+                                 num_samples_M = 100000, # the number of samples M
                                  train_data_percent = 70) # the remainder out of 100 will be kept for testing. If 100, all data is used for training and testing.
 ```
 The Python console or Jupyter notebook will  print out the following:
 
     same_train_test_data = False
-    We hold out 30.0% of our 100 samples for testing, so that:
-    X_train = 70 rows (samples) and 6 columns (N = 6 predictors) for training.
-    X_test = 30 rows (samples) and 6 columns (N = 6 predictors) for testing.
-    y_train = 70 corresponding rows (samples) for training.
-    y_test = 30 corresponding rows (samples) for testing.
+    Please note that since we hold out 30.0% of our 100000 samples for testing, we have:
+    X_train = 70000 rows (samples) and 5 columns (N = 5 predictors) for training.
+    X_test = 30000 rows (samples) and 5 columns (N = 5 predictors) for testing.
+    y_train = 70000 corresponding rows (samples) for training.
+    y_test = 30000 corresponding rows (samples) for testing.
 
 The $X$ data should be in the form of a Pandas dataframe as below:
 
@@ -339,61 +292,55 @@ X_df.head()
 <div>
 <table border="1" class="dataframe">
   <thead>
-    <tr style="text-align: right;">
+      <tr style="text-align: right;">
       <th></th>
       <th>TF1</th>
       <th>TF2</th>
       <th>TF3</th>
       <th>TF4</th>
       <th>TF5</th>
-      <th>TF6</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>2.020840</td>
-      <td>0.594445</td>
-      <td>-1.443012</td>
-      <td>-0.688777</td>
-      <td>0.900770</td>
-      <td>-2.643671</td>
+      <td>0.067511</td>
+      <td>1.168162</td>
+      <td>0.500052</td>
+      <td>-1.622116</td>
+      <td>-0.827644</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>3.224776</td>
-      <td>-0.270632</td>
-      <td>-0.557771</td>
-      <td>-0.305574</td>
-      <td>0.054708</td>
-      <td>-1.054197</td>
+      <td>1.754397</td>
+      <td>-1.531472</td>
+      <td>0.067630</td>
+      <td>0.857830</td>
+      <td>-1.440013</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>-2.746721</td>
-      <td>1.502236</td>
-      <td>2.043813</td>
-      <td>1.252975</td>
-      <td>2.082159</td>
-      <td>1.227615</td>
+      <td>-1.519240</td>
+      <td>-0.764829</td>
+      <td>0.823048</td>
+      <td>-0.206106</td>
+      <td>0.820908</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>-0.558130</td>
-      <td>1.290771</td>
-      <td>-1.230527</td>
-      <td>-0.678410</td>
-      <td>0.630084</td>
-      <td>-1.508758</td>
+      <td>0.009735</td>
+      <td>2.027954</td>
+      <td>2.092769</td>
+      <td>0.886884</td>
+      <td>0.054337</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>-2.181462</td>
-      <td>-0.657229</td>
-      <td>-2.880186</td>
-      <td>-1.629470</td>
-      <td>0.268042</td>
-      <td>1.207254</td>
+      <td>-0.377406</td>
+      <td>0.905750</td>
+      <td>-1.167745</td>
+      <td>1.350194</td>
+      <td>-0.131234</td>
     </tr>
   </tbody>
 </table>
@@ -444,11 +391,11 @@ y_df.head()
 </div>
 
 ```python
-# 70 samples for training data (used to train and fit GRegulNet model)
+# 70,000 samples for training data (used to train and fit NetREm model)
 X_train = dummy_data.view_X_train_df()
 y_train = dummy_data.view_y_train_df()
 
-# 30 samples for testing data
+# 30,000 samples for testing data
 X_test = dummy_data.view_X_test_df()
 y_test = dummy_data.view_y_test_df()
 ```
