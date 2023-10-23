@@ -475,19 +475,6 @@ X_test.corr() # pairwise correlations among the testing samples
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -624,19 +611,17 @@ netrem_demo.model_coef_df
       <th>TF3</th>
       <th>TF4</th>
       <th>TF5</th>
-      <th>TF6</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>None</td>
-      <td>0.309776</td>
-      <td>0.112297</td>
-      <td>0.001116</td>
-      <td>-0.073603</td>
-      <td>-0.21665</td>
-      <td>0.000375</td>
+      <td>0.567823</td>
+      <td>0.139727</td>
+      <td>0.004833</td>
+      <td>-0.063452</td>
+      <td>-0.286163</td>
     </tr>
   </tbody>
 </table>
@@ -644,7 +629,7 @@ netrem_demo.model_coef_df
 
 In the context of gene regulation (in biology), we predict that predictors with negative NetREm coefficients for target gene (TG) $y$ may be repressors (their activity focuses on reducing expression of $y$) and those with positive coefficients for $y$ may be activators. 
 
-To view the TG-specific TF-TF interactome that NetREm learned for this target gene $y$, in our given cell-type, we can view the `B_interaction_df`.  
+To view the TG-specific TF-TF coordination (of direct and/or indirect interactions among TFs) that NetREm learned for this target gene $y$, in our given cell-type, we can view the `B_interaction_df`.  
 
 ```python
 netrem_demo.B_interaction_df
@@ -660,63 +645,48 @@ netrem_demo.B_interaction_df
       <th>TF3</th>
       <th>TF4</th>
       <th>TF5</th>
-      <th>TF6</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>TF1</th>
-      <td>4.512391</td>
-      <td>0.856197</td>
-      <td>-0.515540</td>
-      <td>-0.262458</td>
-      <td>-2.315411</td>
-      <td>-1.166994</td>
+      <td>1.087912</td>
+      <td>0.380915</td>
+      <td>0.107921</td>
+      <td>-0.282344</td>
+      <td>-0.727907</td>
     </tr>
     <tr>
       <th>TF2</th>
-      <td>0.856197</td>
-      <td>1.644936</td>
-      <td>-0.342697</td>
-      <td>0.169874</td>
-      <td>-0.570895</td>
-      <td>-0.494075</td>
+      <td>0.380915</td>
+      <td>1.087912</td>
+      <td>-0.057565</td>
+      <td>-0.160386</td>
+      <td>-0.406298</td>
     </tr>
     <tr>
       <th>TF3</th>
-      <td>-0.515540</td>
-      <td>-0.342697</td>
-      <td>84.228863</td>
-      <td>-0.470847</td>
-      <td>-0.618672</td>
-      <td>-16.642297</td>
+      <td>0.107921</td>
+      <td>-0.057565</td>
+      <td>33.000000</td>
+      <td>-0.378115</td>
+      <td>-0.573291</td>
     </tr>
     <tr>
       <th>TF4</th>
-      <td>-0.262458</td>
-      <td>0.169874</td>
-      <td>-0.470847</td>
-      <td>1.218198</td>
-      <td>0.070268</td>
-      <td>-0.619841</td>
+      <td>-0.282344</td>
+      <td>-0.160386</td>
+      <td>-0.378115</td>
+      <td>1.099900</td>
+      <td>0.167061</td>
     </tr>
     <tr>
       <th>TF5</th>
-      <td>-2.315411</td>
-      <td>-0.570895</td>
-      <td>-0.618672</td>
-      <td>0.070268</td>
-      <td>2.505441</td>
-      <td>-0.163531</td>
-    </tr>
-    <tr>
-      <th>TF6</th>
-      <td>-1.166994</td>
-      <td>-0.494075</td>
-      <td>-16.642297</td>
-      <td>-0.619841</td>
-      <td>-0.163531</td>
-      <td>84.577403</td>
+      <td>-0.727907</td>
+      <td>-0.406298</td>
+      <td>-0.573291</td>
+      <td>0.167061</td>
+      <td>1.099900</td>
     </tr>
   </tbody>
 </table>
