@@ -692,10 +692,10 @@ netrem_demo.B_interaction_df
 </table>
 </div>
 
-We predict that positive scores between predictors (e.g. $TF_1$ and $TF_2$ have a score of 0.856197) tend to imply potential cooperativity (e.g. cobinding) among them. Negative scores may suggest antagonistic activity between the TFs (e.g. $TF_1$ and $TF_5$ have a score of -2.315411), where these TFs may compete to regulate the $TG$ through biological mechanisms that may be investigated further through experiments.
+We predict that positive scores between predictors (e.g. $TF_1$ and $TF_2$ have a score of 0.380915) tend to imply potential cooperativity (e.g. cobinding) among them. Negative scores may suggest antagonistic activity between the TFs (e.g. $TF_1$ and $TF_5$ have a score of -0.727907), where these TFs may compete to regulate the $TG$ through biological mechanisms that may be investigated further through experiments.
 
 
-We can test the performance of our data on testing data $X_{test}$ ($M = 30$ samples), to understand better the generalizability of our NetREm model on new, unseen, data. 
+We can test the performance of our data on testing data $X_{test}$ ($M = 30,000$ samples), to understand better the generalizability of our NetREm model on new, unseen, data. 
 
 
 ```python
@@ -705,7 +705,7 @@ mse_test = netrem_demo.test_mse(X_test, y_test)
 print(f"The testing Mean Square Error (MSE) is {mse_test}")
 ```
 
-    The testing Mean Square Error (MSE) is 0.10939471847175668
+    The testing Mean Square Error (MSE) is 0.1379447181612968
 
 
 We can analyze more metrics about our NetREm model results as below: 
@@ -713,7 +713,6 @@ We can analyze more metrics about our NetREm model results as below:
 ```python
 netrem_demo.final_corr_vs_coef_df
 ```
-
 <div>
 <table border="1" class="dataframe">
   <thead>
@@ -726,7 +725,6 @@ netrem_demo.final_corr_vs_coef_df
       <th>TF3</th>
       <th>TF4</th>
       <th>TF5</th>
-      <th>TF6</th>
     </tr>
   </thead>
   <tbody>
@@ -734,23 +732,21 @@ netrem_demo.final_corr_vs_coef_df
       <th>0</th>
       <td>network regression coeff. with y: y</td>
       <td>X_train</td>
-      <td>0.309776</td>
-      <td>0.112297</td>
-      <td>0.001116</td>
-      <td>-0.073603</td>
-      <td>-0.21665</td>
-      <td>0.000375</td>
+      <td>0.567823</td>
+      <td>0.139727</td>
+      <td>0.004833</td>
+      <td>-0.063452</td>
+      <td>-0.286163</td>
     </tr>
     <tr>
       <th>0</th>
       <td>corr (r) with y: y</td>
       <td>X_train</td>
-      <td>0.90244</td>
-      <td>0.440681</td>
-      <td>0.058722</td>
-      <td>-0.163072</td>
-      <td>-0.814564</td>
-      <td>-0.252551</td>
+      <td>0.900178</td>
+      <td>0.496234</td>
+      <td>0.402366</td>
+      <td>-0.303588</td>
+      <td>-0.800527</td>
     </tr>
     <tr>
       <th>0</th>
@@ -761,12 +757,10 @@ netrem_demo.final_corr_vs_coef_df
       <td>5</td>
       <td>4</td>
       <td>2</td>
-      <td>6</td>
     </tr>
   </tbody>
 </table>
 </div>
-
 
 In the context of gene regulation, our results may thereby be interpreted in the [following way](https://github.com/SaniyaKhullar/NetREm/blob/main/netrem_final_demo.png):
 <img src="netrem_final_demo.png" style="width: 400px;"/>
@@ -777,6 +771,555 @@ Nonetheless, NetREm can be applied to solve a suite of regression problems where
 We also provide a suite of evaluation functions and explanations of more advanced functionalities in our [User Guide](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/). For instance, we provide more details on our **netrem** and **netremcv** functions in terms of predicting gene regulation in myelinating Schwann cells [here](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/NetREm%20Myelinating%20Schwann%20Cells%20Comprehensive%20Example.ipynb).
 
 
+```python
+netrem_demo.combined_df
+```
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>coef</th>
+      <th>TF</th>
+      <th>TG</th>
+      <th>info</th>
+      <th>train_mse</th>
+      <th>beta_net</th>
+      <th>alpha_lassoCV</th>
+      <th>AbsoluteVal_coefficient</th>
+      <th>Rank</th>
+      <th>final_model_TFs</th>
+      <th>TFs_input_to_model</th>
+      <th>original_TFs_in_X</th>
+      <th>standardized_X</th>
+      <th>centered_y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>None</td>
+      <td>y_intercept</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>NaN</td>
+      <td>6</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.567823</td>
+      <td>TF1</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.567823</td>
+      <td>1</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.139727</td>
+      <td>TF2</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.139727</td>
+      <td>3</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.004833</td>
+      <td>TF3</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.004833</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.063452</td>
+      <td>TF4</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.063452</td>
+      <td>4</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>-0.286163</td>
+      <td>TF5</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.286163</td>
+      <td>2</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+organize_B_interaction_network(netrem_demo)
+```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>B_train_weight</th>
+      <th>sign</th>
+      <th>potential_interaction</th>
+      <th>absVal_B</th>
+      <th>info</th>
+      <th>candidate_TFs_N</th>
+      <th>target_gene_y</th>
+      <th>num_final_predictors</th>
+      <th>model_type</th>
+      <th>beta_net</th>
+      <th>X_standardized</th>
+      <th>gene_data</th>
+      <th>rank</th>
+      <th>percentile</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>20</th>
+      <td>TF1</td>
+      <td>TF5</td>
+      <td>-0.727907</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.727907</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>1.0</td>
+      <td>95.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>TF5</td>
+      <td>TF1</td>
+      <td>-0.727907</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.727907</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>1.0</td>
+      <td>95.0</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>TF3</td>
+      <td>TF5</td>
+      <td>-0.573291</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.573291</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>3.0</td>
+      <td>85.0</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>TF5</td>
+      <td>TF3</td>
+      <td>-0.573291</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.573291</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>3.0</td>
+      <td>85.0</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>TF2</td>
+      <td>TF5</td>
+      <td>-0.406298</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.406298</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>5.0</td>
+      <td>75.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>TF5</td>
+      <td>TF2</td>
+      <td>-0.406298</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.406298</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>5.0</td>
+      <td>75.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>TF1</td>
+      <td>TF2</td>
+      <td>0.380915</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.380915</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>7.0</td>
+      <td>65.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>TF2</td>
+      <td>TF1</td>
+      <td>0.380915</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.380915</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>7.0</td>
+      <td>65.0</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>TF3</td>
+      <td>TF4</td>
+      <td>-0.378115</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.378115</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>9.0</td>
+      <td>55.0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>TF4</td>
+      <td>TF3</td>
+      <td>-0.378115</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.378115</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>9.0</td>
+      <td>55.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>TF4</td>
+      <td>TF1</td>
+      <td>-0.282344</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.282344</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>11.0</td>
+      <td>45.0</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>TF1</td>
+      <td>TF4</td>
+      <td>-0.282344</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.282344</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>11.0</td>
+      <td>45.0</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>TF4</td>
+      <td>TF5</td>
+      <td>0.167061</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.167061</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>13.0</td>
+      <td>35.0</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>TF5</td>
+      <td>TF4</td>
+      <td>0.167061</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.167061</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>13.0</td>
+      <td>35.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>TF4</td>
+      <td>TF2</td>
+      <td>-0.160386</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.160386</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>15.0</td>
+      <td>25.0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>TF2</td>
+      <td>TF4</td>
+      <td>-0.160386</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.160386</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>15.0</td>
+      <td>25.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>TF3</td>
+      <td>TF1</td>
+      <td>0.107921</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.107921</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>17.0</td>
+      <td>15.0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>TF1</td>
+      <td>TF3</td>
+      <td>0.107921</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.107921</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>17.0</td>
+      <td>15.0</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>TF2</td>
+      <td>TF3</td>
+      <td>-0.057565</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.057565</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>19.0</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>TF3</td>
+      <td>TF2</td>
+      <td>-0.057565</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.057565</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>19.0</td>
+      <td>5.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 
 
