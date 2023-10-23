@@ -273,7 +273,7 @@ import netrem_evaluation_functions as nm_eval
 
 dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.4, -0.3, -0.8], # the # of elements in corrVals is the # of predictors (X)
                                  num_samples_M = 100000, # the number of samples M
-                                 train_data_percent = 70) # the remainder out of 100 will be kept for testing. If 100, all data is used for training and testing.
+                                 train_data_percent = 70) # the remainder out of 100,000 will be kept for testing. If 100, then ALL data is used for training and testing.
 ```
 The Python console or Jupyter notebook will  print out the following:
 
@@ -404,20 +404,160 @@ Our generated single-cell gene expression data (X, y) looks like this:
 <img src="netrem_expression_demo.png" style="width: 200px;"/>
 
 ```python
+X_train.corr() # pairwise correlations among the training samples
+```
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>TF1</th>
+      <td>1.000000</td>
+      <td>0.444851</td>
+      <td>0.360777</td>
+      <td>-0.274352</td>
+      <td>-0.719915</td>
+    </tr>
+    <tr>
+      <th>TF2</th>
+      <td>0.444851</td>
+      <td>1.000000</td>
+      <td>0.195290</td>
+      <td>-0.152394</td>
+      <td>-0.398306</td>
+    </tr>
+    <tr>
+      <th>TF3</th>
+      <td>0.360777</td>
+      <td>0.195290</td>
+      <td>1.000000</td>
+      <td>-0.125259</td>
+      <td>-0.320436</td>
+    </tr>
+    <tr>
+      <th>TF4</th>
+      <td>-0.274352</td>
+      <td>-0.152394</td>
+      <td>-0.125259</td>
+      <td>1.000000</td>
+      <td>0.242985</td>
+    </tr>
+    <tr>
+      <th>TF5</th>
+      <td>-0.719915</td>
+      <td>-0.398306</td>
+      <td>-0.320436</td>
+      <td>0.242985</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+X_test.corr() # pairwise correlations among the testing samples
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>TF1</th>
+      <td>1.000000</td>
+      <td>0.440370</td>
+      <td>0.359511</td>
+      <td>-0.269646</td>
+      <td>-0.721168</td>
+    </tr>
+    <tr>
+      <th>TF2</th>
+      <td>0.440370</td>
+      <td>1.000000</td>
+      <td>0.189575</td>
+      <td>-0.146711</td>
+      <td>-0.389451</td>
+    </tr>
+    <tr>
+      <th>TF3</th>
+      <td>0.359511</td>
+      <td>0.189575</td>
+      <td>1.000000</td>
+      <td>-0.119603</td>
+      <td>-0.312932</td>
+    </tr>
+    <tr>
+      <th>TF4</th>
+      <td>-0.269646</td>
+      <td>-0.146711</td>
+      <td>-0.119603</td>
+      <td>1.000000</td>
+      <td>0.241384</td>
+    </tr>
+    <tr>
+      <th>TF5</th>
+      <td>-0.721168</td>
+      <td>-0.389451</td>
+      <td>-0.312932</td>
+      <td>0.241384</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+```python
 # prior network edge_list (missing edges or edges with no edge weight will be added with the default_edge_list so the network is fully-connected):
-edge_list = [["TF1", "TF2", 0.9], ["TF4", "TF5", 0.75], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
+edge_list = [["TF1", "TF2", 0.8], ["TF4", "TF5", 0.95], ["TF1", "TF3"], ["TF1", "TF4"], ["TF1", "TF5"], 
              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
 
-beta_network_val = 3 
-# by default, model_type is Lasso, so alpha_lasso_val will be specified for the alpha_lasso parameter. (Otherwise, if model_type is LassoCV, alpha_lasso is determined by cross-validation on training data).
-alpha_lasso_val = 0.01
+beta_network_val = 1 
+# by default, model_type is Lasso, so alpha_lasso_val will be specified for the alpha_lasso parameter. 
+# However, we will specify model_type = LassoCV, so our alpha_lasso is determined by cross-validation on training data).
 
 # Building the network regularized regression model: 
-# Please note: To include nodes found in the gene expression data that are not found in the PPI Network (e.g. TF6 in our case), we use False for the overlapped_nodes_only argument (otherwise, we would only use TFs 1 to 5).
 # By default, edges are constructed between all of the nodes; nodes with a missing edge are assigned the default_edge_weight. 
 netrem_demo = netrem(edge_list = edge_list, 
                      beta_net = beta_network_val,
-                     alpha_lasso = alpha_lasso_val,
+                     model_type = "LassoCV",
                      view_network = True)
 
 # Fitting the NetREm model on training data: X_train and y_train:
@@ -428,25 +568,12 @@ netrem_demo.fit(X_train, y_train)
 ![png](output_3_1.png)
     
 
-
-
-    
-![png](output_3_2.png)
-    
-
-
-   1 new node(s) added to network based on gene expression data ['TF6']
-    
-
-    
-![png](output_3_5.png)
-
 ![png](netrem_estimator.PNG)
 
 <!-- There is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. The remaining relationships among the other TFs is assumed to be the default (edge weight of 0.1). -->
 <!-- Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using $X_{train}$ and $y_{train}$ data (70 samples). -->
 
-To view and extract the predicted model coefficients for the predictors: 
+To view and extract the predicted model coefficients *c* for the predictors: 
 
 <!-- ```python
 gregulnet_demo.coef
