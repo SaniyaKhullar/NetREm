@@ -5,7 +5,7 @@ layout: default
 {% include mathjax.html %} -->
 
 # NetREm
-## Network regression embeddings reveal cell-type transcription factor interactions for gene regulation
+## Network regression embeddings reveal cell-type transcription factor coordination for gene regulation
 <!-- ##### GRegNet Gene Regular(ized/atory) Network -->
 
 ### By: Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang
@@ -13,7 +13,7 @@ layout: default
 
 ## Summary
 
-NetREm is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes (TGs) in gene regulatory networks (GRNs). NetREm incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, reveal novel regularized embeddings for genes, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. NetREm can incorporate multiple types of network data, including Protein-Protein Interaction (PPI) networks, gene co-expression networks, and metabolic networks. 
+NetREm is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes (TGs) in gene regulatory networks (GRNs). NetREm incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors (e.g. TF-TF coordination: direct/indirect interactions among TFs). This approach can highlight important nodes and edges in the network, reveal novel regularized embeddings for genes, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. NetREm can incorporate multiple types of network data, including Protein-Protein Interaction (PPI) networks, gene co-expression networks, and metabolic networks. 
 
 
 
@@ -238,7 +238,8 @@ We can evaluate our model performance capabilities on data like testing data usi
 *Returns:*
     Numeric value corresponding to the Mean Square Error (MSE). 
   
-$$MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2$$
+$$ MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2 $$
+
 =======
 ### Attributes:
 
