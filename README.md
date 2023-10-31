@@ -1321,6 +1321,12 @@ organize_B_interaction_network(netrem_demo)
 </table>
 </div>
 
+## Manuscript
+Please note that the manuscript associated with NetREm is available as a pre-print on biorxiv: [Link to Paper](https://www.biorxiv.org/content/10.1101/2023.10.25.563769v1)
+
+**Citation:**
+
+- Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang, *NetREm: Network Regression Embeddings reveal cell-type transcription factor coordination for gene regulation*, bioRxiv 2023.10.25.563769; doi: https://doi.org/10.1101/2023.10.25.563769
 
 
 ## References
