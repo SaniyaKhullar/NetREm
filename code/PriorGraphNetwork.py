@@ -78,7 +78,7 @@ class PriorGraphNetwork:
     
     def __init__(self, **kwargs): # define default values for constants
        
-        self.edge_values_for_degree = False # we instead consider a threshold by default (for counting edges into our degrees)
+        self.edge_values_for_degree = True # we instead add edges instead of using a threseshold by default (for counting edges into our degrees)
         self.consider_self_loops = False # no self loops considered
         self.verbose = True # printing out statements
         self.pseudocount_for_degree = 1e-3 # to ensure that we do not have any 0 degrees for any node in our matrix.
