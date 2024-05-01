@@ -25,7 +25,7 @@ NetREm is a software package that utilizes network-constrained regularization fo
 ## Pipeline
 
 *Pipeline image of NetREm*
-![png](NetREm_pipeline_figure.PNG)
+![png](NetREm_pipeline_figure.png)
 
 
 ## Hardware Requirements
