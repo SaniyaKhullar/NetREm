@@ -37,7 +37,6 @@ from numpy.typing import ArrayLike
 import essential_functions as ef
 import error_metrics as em
 import DemoDataBuilderXandY as demo
-import itertools
 
 
 import math
@@ -52,11 +51,6 @@ randSeed = 123
 # Utility functions
 printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
 
-import os
-import subprocess
-
-# Set the PYTHONHASHSEED environment variable
-os.environ['PYTHONHASHSEED'] = '0'
 
 class PriorGraphNetwork:
     """:) Please note that this class focuses on incorporating information from a prior network (in our case, 
@@ -67,9 +61,9 @@ class PriorGraphNetwork:
     an embedding, find the cosine similarity, and then use the node-node similarity values for our network.
     Ultimately, this class builds the W matrix (for the prior network weights to be used for our network 
     regularization penalty), the D matrix (of degrees), and the V matrix (custom for our approach)."""  
-    os.environ['PYTHONHASHSEED'] = '0'
+    
     _parameter_constraints = {
-        "w_transform_for_d": ["none", "sqrt", "square", "avg"],
+        "w_transform_for_d": ["none", "sqrt", "square"],
         "degree_pseudocount": (0, None),
         "default_edge_weight": (0, None),
         "threshold_for_degree": (0, None),   
@@ -77,7 +71,7 @@ class PriorGraphNetwork:
         "verbose":[True, False]}
     
     def __init__(self, **kwargs): # define default values for constants
-       
+
         self.edge_values_for_degree = False # we instead consider a threshold by default (for counting edges into our degrees)
         self.consider_self_loops = False # no self loops considered
         self.verbose = True # printing out statements
@@ -127,21 +121,12 @@ class PriorGraphNetwork:
             self.preprocessed_network = True
             self.gene_expression_nodes.sort()
             gene_expression_nodes = self.gene_expression_nodes
-            self.final_nodes = gene_expression_nodes  # sorted
+            self.final_nodes = gene_expression_nodes
             common_nodes = ef.intersection(self.network_nodes, self.gene_expression_nodes)
             common_nodes.sort()
             self.common_nodes = common_nodes
             self.gex_nodes_to_add = list(set(self.gene_expression_nodes) - set(self.common_nodes))
             self.network_nodes_to_remove = list(set(self.network_nodes) - set(self.common_nodes))
-            
-            if len(self.original_edge_list) == 0: # April 23 2024: we ensure if this is empty we add the missing pairwise nodes
-                pairwise_combinations = list(itertools.combinations(self.final_nodes, 2))
-                # Create a DataFrame with columns 'TF1', 'TF2', and 'score'
-                mini_ppi_df = pd.DataFrame(pairwise_combinations, columns=['TF1', 'TF2'])
-                # Assign a constant score of 0.01 to each pair
-                mini_ppi_df['score'] = 0.01
-                mini_ppi_edge_list = mini_ppi_df.values.tolist()
-                self.original_edge_list = mini_ppi_edge_list
             # filtering the edge_list:
             self.edge_list = [edge for edge in self.original_edge_list if edge[0] in gene_expression_nodes and edge[1] in gene_expression_nodes]
         else:
@@ -152,19 +137,19 @@ class PriorGraphNetwork:
         self.nodes = self.final_nodes
         self.N = len(self.tf_names_list)      
         self.V = self.create_V_matrix()
-        #if self.undirected_graph_bool:
-        self.directed=False
-        self.undirected_edge_list_to_matrix()
-        self.W_original = self.W 
+        if self.undirected_graph_bool:
+            self.directed=False
+            self.undirected_edge_list_to_matrix()
+            self.W_original = self.W 
             #self.edge_df = self.undirected_edge_list_updated().drop_duplicates()
-        # else:
-        #     self.directed=True
-        #     self.W_original = self.directed_node2vec_similarity(self.edge_list, self.dimensions,
-        #                                              self.walk_length, self.num_walks,
-        #                                              self.p, self.q, self.workers,
-        #                                              self.window, self.min_count, self.batch_words)  
-            # self.W = self.generate_symmetric_weight_matrix()
-            # self.W_df = pd.DataFrame(self.W, columns = self.nodes, index = self.nodes)
+        else:
+            self.directed=True
+            self.W_original = self.directed_node2vec_similarity(self.edge_list, self.dimensions,
+                                                     self.walk_length, self.num_walks,
+                                                     self.p, self.q, self.workers,
+                                                     self.window, self.min_count, self.batch_words)  
+            self.W = self.generate_symmetric_weight_matrix()
+            self.W_df = pd.DataFrame(self.W, columns = self.nodes, index = self.nodes)
         if self.view_network:
             self.view_W_network = self.view_W_network()
         else:
@@ -175,18 +160,11 @@ class PriorGraphNetwork:
         degree_df = pd.DataFrame(self.final_nodes, columns = ["TF"])
         degree_df["degree_D"] = self.D  * np.ones(self.N)
         self.inv_sqrt_degree_df = degree_df ########
-        #self.edge_list_from_W = self.return_W_edge_list()
+        self.edge_list_from_W = self.return_W_edge_list()
         self.A = self.create_A_matrix()
-        self.A_df = pd.DataFrame(self.A, columns = self.nodes, index = self.nodes, dtype=np.float32)
-        # added on 2/5/24
-        annotated_D = self.D_df
-        annotated_D.columns = self.nodes
-        annotated_D.index = self.nodes
-        self.D_df = annotated_D
-        self.node_degree_df = pd.DataFrame(self.degree_vector, index = self.nodes, columns = ["d_i"])
-
-        #self.param_lists = self.full_lists()
-        #self.param_df = pd.DataFrame(self.full_lists(), columns = ["parameter", "data type", "description", "value", "class"])
+        self.A_df = pd.DataFrame(self.A, columns = self.nodes, index = self.nodes, dtype=np.float64)
+        self.param_lists = self.full_lists()
+        self.param_df = pd.DataFrame(self.full_lists(), columns = ["parameter", "data type", "description", "value", "class"])
         self.node_status_df = self.find_node_status_df()
         self._apply_parameter_constraints()
         
@@ -225,7 +203,6 @@ class PriorGraphNetwork:
     def network_nodes_from_edge_list(self):
         edge_list = self.edge_list
         network_nodes = list({node for edge in edge_list for node in edge[:2]})
-        #print(network_nodes)
         network_nodes.sort()
         return network_nodes
         
@@ -243,397 +220,81 @@ class PriorGraphNetwork:
                     setattr(self, key, constraints[key][0])
         return self
         
-    # def preprocess_edge_list(self):
-    #     processed_edge_list = []
-    #     default_edge_weight = self.default_edge_weight
-
-    #     for sublst in self.edge_list:
-    #         if len(sublst) == 2:
-    #             processed_edge_list.append(sublst + [default_edge_weight])
-    #         else:
-    #             processed_edge_list.append(sublst)
-
-    #     return processed_edge_list
-    def preprocess_edge_list(self):
-        default_edge_weight = self.default_edge_weight
-        processed_edge_list = []
-
-        for sublst in self.edge_list:
-            if len(sublst) == 2:
-                sublst.append(default_edge_weight)
-            processed_edge_list.append(sublst)
-        #self.processed_edge_list = processed_edge_list
-        return processed_edge_list
-    
-    
-    # def undirected_edge_list_to_matrix(self):
-    #     all_nodes = self.final_nodes
-    #     #default_edge_weight = self.default_edge_weight
-    #     N = len(all_nodes)
-    #     self.N = N
-    #     weight_df = pd.DataFrame(self.edge_list, columns=['source', 'target', 'weight'])
-    #     # self.gex_nodes_to_add
-    #     # Pivot the DataFrame to get a matrix representation
-    #     weight_df = weight_df.pivot(index='source', columns='target', values='weight').fillna(self.default_edge_weight)
-    #     weight_df = weight_df.add(weight_df.T, fill_value=0)
-    #     weight_df = weight_df.reindex(index=all_nodes, columns=all_nodes, fill_value=self.default_edge_weight)
-
-    #     #.loc[all_nodes, all_nodes]
-    #     # Make the DataFrame symmetric
-    #     # Convert DataFrame to NumPy array
-    #     W = weight_df.values
-    #     np.fill_diagonal(W, 0)
-    #     np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-    #     self.W = W
-    #     self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
-    #     return self
-        
-    
-    # def undirected_edge_list_to_matrix(self):
-    #     all_nodes = self.final_nodes
-    #     edge_list = self.preprocess_edge_list()
-    #     #default_edge_weight = self.default_edge_weight
-    #     N = len(all_nodes)
-    #     self.N = N
-    #     weight_df = pd.DataFrame(edge_list, columns=['source', 'target', 'weight'])
-
-    #     # Pivot the DataFrame to get a matrix representation
-    #     weight_df = weight_df.pivot(index='source', columns='target', values='weight').fillna(0)
-    #     weight_df = weight_df.add(weight_df.T, fill_value=0).loc[all_nodes, all_nodes]
-
-    #     # Make the DataFrame symmetric
-    #     #weight_df = weight_df.add(weight_df.T, fill_value=0).sort_index(axis=0).sort_index(axis=1)
-    #     #weight_df = weight_df.fillna(default_edge_weight)
-    #     # Convert DataFrame to NumPy array
-    #     W = weight_df.values
-    #     np.fill_diagonal(W, 0)
-    #     np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-    #     self.W = W
-    #     self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
-    #     return self
-    def undirected_edge_list_to_matrix_old(self):
-        all_nodes = self.final_nodes
-        edge_list = pd.DataFrame(self.edge_list, columns=['source', 'target', 'weight']).fillna(self.default_edge_weight).values
-        #edge_list = self.preprocess_edge_list()
-        #default_edge_weight = self.default_edge_weight
-        N = len(all_nodes)
-        self.N = N
-        weight_mat = np.full((N, N), self.default_edge_weight) # so even gexpr_nodes added will be included here with defaults
-
-        # Create a mapping from node to index
-        node_to_idx = {node: idx for idx, node in enumerate(all_nodes)}
-
-        for edge in edge_list:
-            try:
-                source, target, weight = edge
-                source_idx, target_idx = node_to_idx[source], node_to_idx[target]
-                weight_mat[source_idx, target_idx] = weight
-                weight_mat[target_idx, source_idx] = weight
-            except ValueError as e:
-                print(f"An error occurred: {e}")
-                continue
-
-        np.fill_diagonal(weight_mat, 0)
-        W = weight_mat
-        np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-        self.W = W
-        self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
-        return self
-        
-    def undirected_edge_list_to_matrix_older(self):
-        all_nodes = self.final_nodes
-        try:
-            edge_list = pd.DataFrame(self.edge_list, columns=['source', 'target', 'weight']).fillna(self.default_edge_weight).values
-        except:
-            edge_list = pd.DataFrame(self.edge_list, columns=['source', 'target'])
-            edge_list["weight"] = self.default_edge_weight
-        #edge_list = self.preprocess_edge_list()
-        #default_edge_weight = self.default_edge_weight
-        N = len(all_nodes)
-        self.N = N
-        weight_mat = np.full((N, N), self.default_edge_weight)
-        # Create a mapping from node to index
-        node_to_idx = {node: idx for idx, node in enumerate(self.final_nodes)}
-        
-        # Preprocess to vectorize edge assignments
-        edges = np.array([(node_to_idx[source], node_to_idx[target], weight) for source, target, weight in edge_list])
-        source_indices, target_indices, weights = edges[:, 0].astype(int), edges[:, 1].astype(int), edges[:, 2]
-
-        # Assign weights using advanced indexing
-        weight_mat[source_indices, target_indices] = weights
-        weight_mat[target_indices, source_indices] = weights
-
-        np.fill_diagonal(weight_mat, 0)
-        W = weight_mat
-        np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-        self.W = W
-        self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
-        return self
-    
-    
-    def undirected_edge_list_to_matrix(self):
-        all_nodes = self.final_nodes
-        edge_list = pd.DataFrame(self.edge_list)
-
-        try:
-            edge_list = pd.DataFrame(self.edge_list, columns=['source', 'target', 'weight']).fillna(self.default_edge_weight).values
-        except:
-            edge_list = pd.DataFrame(self.edge_list, columns=['source', 'target'])
-            edge_list["weight"] = self.default_edge_weight
-            edge_list = edge_list.values
-        
-        #edge_list = pd.DataFrame(self.edge_list, columns=['source', 'target', 'weight']).fillna(self.default_edge_weight).values
-        #edge_list = self.preprocess_edge_list()
-        #default_edge_weight = self.default_edge_weight
-        N = len(all_nodes)
-        self.N = N
-        weight_mat = np.full((N, N), self.default_edge_weight)
-        # Create a mapping from node to index
-        node_to_idx = {node: idx for idx, node in enumerate(self.final_nodes)}
-        
-        # Preprocess to vectorize edge assignments
-        edges = np.array([(node_to_idx[source], node_to_idx[target], weight) for source, target, weight in edge_list])
-        source_indices, target_indices, weights = edges[:, 0].astype(int), edges[:, 1].astype(int), edges[:, 2]
-
-        # Assign weights using advanced indexing
-        weight_mat[source_indices, target_indices] = weights
-        weight_mat[target_indices, source_indices] = weights
-
-        np.fill_diagonal(weight_mat, 0)
-        W = weight_mat
-        np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-        self.W = W
-        self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
-        return self
-    
-    
-    def undirected_edge_list_to_matrix_older(self):
-        all_nodes = self.final_nodes
-        edge_list = pd.DataFrame(self.edge_list, columns=['source', 'target', 'weight']).fillna(self.default_edge_weight).values
-        #edge_list = self.preprocess_edge_list()
-        #default_edge_weight = self.default_edge_weight
-        N = len(all_nodes)
- 
-        self.N = N
-        weight_mat = np.full((N, N), self.default_edge_weight, dtype=np.float64)
-
-        # Create a mapping from node to index
-        node_to_idx = {node: idx for idx, node in enumerate(self.final_nodes)}
-
-        # Convert edge_list to indices and weights
-        indices = np.vectorize(node_to_idx.get)(self.edge_list[:, :2]).astype(int)
-        weights = edge_list[:, 2].astype(np.float64)
-
-        # Assign weights to the matrix
-        weight_mat[indices[:, 0], indices[:, 1]] = weights
-        weight_mat[indices[:, 1], indices[:, 0]] = weights  # Make the matrix symmetric
-
-        # Adjust the diagonal if necessary
-        np.fill_diagonal(weight_mat, 0)
-        W = weight_mat
-        np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-        # please check if W matrix is symmetric or not
-        # symmetric_W = ef.check_symmetric(W)
-        # if symmetric_W == False: # defensive programming
-        #     print(":( W matrix is NOT symmetric. We will use the max value for each TF-TF pair.")
-        #     W_symmetric = np.maximum(W, W)
-        #     self.unsymmetric_orig_W = W# to keep track of this
-        #     W = W_symmetric
-        #     # np.maximum(W, W.T) computes the element-wise maximum between W and W.T, thus ensuring that for every pair 
-        #     # (i,j) and (j,i), the larger value is selected.
-
-        self.W = W
-        self.W_df = pd.DataFrame(W, columns=self.final_nodes, index=self.final_nodes)
-        return self
-    # def undirected_edge_list_to_matrix(self):
-    #     all_nodes = self.final_nodes
-    #     edge_list = self.preprocess_edge_list()
-    #     default_edge_weight = self.default_edge_weight
-    #     N = len(all_nodes)
-    #     self.N = N
-    #     weight_df = np.full((N, N), default_edge_weight)
-
-    #     # Create a mapping from node to index
-    #     node_to_idx = {node: idx for idx, node in enumerate(all_nodes)}
-
-    #     for edge in tqdm(edge_list) if self.verbose else edge_list:
-    #         try:
-    #             #source, target, weight = edge
-    #             source, target, *weight = edge
-    #             weight = weight[0] if weight else default_edge_weight
-    #             weight = np.nan_to_num(weight, nan=default_edge_weight)
-    #             source_idx, target_idx = node_to_idx[source], node_to_idx[target]
-    #             weight_df[source_idx, target_idx] = weight
-    #             weight_df[target_idx, source_idx] = weight
-    #         except ValueError as e:
-    #             print(f"An error occurred: {e}")
-    #             continue
-
-    #     np.fill_diagonal(weight_df, 0)
-    #     W = weight_df
-    #     np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-    #     # if not ef.check_symmetric(W):
-    #     #     print(":( W matrix is NOT symmetric")
-
-    #     self.W = W
-    #     self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
-    #     return self
-    
         
     def create_V_matrix(self):
         V = self.N * np.eye(self.N) - np.ones(self.N)
         return V
     
-    # def preprocess_edge_listOLD(self):
-    #     default_edge_weight = self.default_edge_weight
-    #     return [sublst if len(sublst) == 3 else sublst + [default_edge_weight] for sublst in self.edge_list]
-
-    # def undirected_edge_list_to_matrixOLD(self):
-    #     edge_list = self.preprocess_edge_list()
-    #     N = len(self.final_nodes)
-    #     weight_matrix = np.full((N, N), np.inf, dtype=float)  # Use np.inf to better represent unconnected nodes initially
-
-    #     # Create a mapping from node to index
-    #     node_to_idx = {node: idx for idx, node in enumerate(self.final_nodes)}
-
-    #     # Efficient matrix update
-    #     for source, target, weight in edge_list:
-    #         idx1, idx2 = node_to_idx[source], node_to_idx[target]
-    #         weight_matrix[idx1, idx2] = weight_matrix[idx2, idx1] = weight
-
-    #     np.fill_diagonal(weight_matrix, 0)
-    #     # Adjust diagonal based on average weights, only if necessary
-    #     # np.fill_diagonal(weight_matrix, (weight_matrix.sum(axis=0) - np.diag(weight_matrix)) / (N - 1))
-
-    #     self.W = weight_matrix
-    #     self.W_df = pd.DataFrame(weight_matrix, columns=self.final_nodes, index=self.final_nodes, dtype=np.float64)
-
-    #     return self
-    #     # Optimized functions
-        
-    # def preprocess_edge_list(self):
-    #     # Assuming edge_list is a list of tuples or lists (source, target, [weight])
-    #     processed_edge_list = [
-    #     edge if len(edge) == 3 else (*edge, self.default_edge_weight)
-    #     for edge in self.edge_list
-    #     ]
-    #     return processed_edge_list
-    # # def preprocess_edge_list(self):
-    # #     processed_edge_list = []
-    # #     default_edge_weight = self.default_edge_weight
-
-    # #     for sublst in self.edge_list:
-    # #         if len(sublst) == 2:
-    # #             processed_edge_list.append(sublst + [default_edge_weight])
-    # #         else:
-    # #             processed_edge_list.append(sublst)
-
-    # #     return processed_edge_list
-    # # def preprocess_edge_list(self):
-    # #     # Convert to numpy array for efficient processing
-    # #     edge_array = np.array(self.edge_list, dtype=object)
-
-    # #     # Identify edges without a weight
-    # #     no_weight_mask = np.array([len(edge) == 2 for edge in edge_array])
-
-    # #     # Initialize weights with default value
-    # #     weights = np.full(edge_array.shape[0], self.default_edge_weight, dtype=float)
-
-    # #     # Update weights where provided
-    # #     weights[~no_weight_mask] = np.array(edge_array[~no_weight_mask, 2], dtype=float)
-
-    # #     # Create processed edge list with weights included
-    # #     processed_edge_list = np.hstack([edge_array[:, :2], weights[:, None]])
-
-    # #     return processed_edge_list
-    
-    # def undirected_edge_list_to_matrix(self):
-    #     edge_list = self.preprocess_edge_list()
-    #     N = len(self.final_nodes)
-    #     self.N = N
-    #     weight_matrix = np.full((N, N), self.default_edge_weight, dtype=float)
-
-    #     # Create a mapping from node to index
-    #     node_to_idx = {node: idx for idx, node in enumerate(self.final_nodes)}
-
-    #     # Efficient matrix update
-    #     for edge in tqdm(edge_list, disable=not self.verbose):
-    #         source_idx = node_to_idx[edge[0]]
-    #         target_idx = node_to_idx[edge[1]]
-    #         weight = edge[2]
-    #         weight_matrix[source_idx, target_idx] = weight_matrix[target_idx, source_idx] = weight
-
-    #     np.fill_diagonal(weight_matrix, 0)
-    #     W = weight_matrix
-    #     np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-    #     # Check for symmetry could be as simple as this, but it's generally unnecessary with this construction
-    #     # as the matrix is built to be symmetric by design.
-        
-    #     self.W = W
-    #     self.W_df = pd.DataFrame(W, columns=self.final_nodes, index=self.final_nodes, dtype=np.float64)
-    #     return self   
-    # def undirected_edge_list_to_matrix(self):
-    #     all_nodes = self.final_nodes
-    #     edge_list = self.preprocess_edge_list()
-    #     default_edge_weight = self.default_edge_weight
-    #     N = len(all_nodes)
-    #     self.N = N
-    #     weight_df = np.full((N, N), default_edge_weight)
-
-    #     # Create a mapping from node to index
-    #     node_to_idx = {node: idx for idx, node in enumerate(all_nodes)}
-
-    #     for edge in tqdm(edge_list) if self.verbose else edge_list:
-    #         try:
-    #             source, target, *weight = edge
-    #             weight = weight[0] if weight else default_edge_weight
-    #             weight = np.nan_to_num(weight, nan=default_edge_weight)
-    #             source_idx, target_idx = node_to_idx[source], node_to_idx[target]
-    #             weight_df[source_idx, target_idx] = weight
-    #             weight_df[target_idx, source_idx] = weight
-    #         except ValueError as e:
-    #             print(f"An error occurred: {e}")
-    #             continue
-
-    #     np.fill_diagonal(weight_df, 0)
-    #     W = weight_df
-    #     np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
-
-    #     if not ef.check_symmetric(W):
-    #         print(":( W matrix is NOT symmetric")
-
-    #     self.W = W
-    #     self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
-    #     return self
     
     
-    # def generate_symmetric_weight_matrix(self) -> np.ndarray:
-    #     """generate symmetric W matrix. W matrix (Symmetric --> W = W_Transpose).
-    #     Note: each diagonal element is the summation of other non-diagonal elements in the same row divided by (N-1)
-    #     2023.02.14_Xiang. TODO: add parameter descriptions"""
-    #     W = self.W_original
-    #     np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (self.N - 1))
-    #     symmetric_W = ef.check_symmetric(W)
-    #     if symmetric_W == False:
-    #         print(":( W matrix is NOT symmetric")
-    #         return None
-    #     return W
+        # Optimized functions
+    def preprocess_edge_list(self):
+        processed_edge_list = []
+        default_edge_weight = self.default_edge_weight
+
+        for sublst in self.edge_list:
+            if len(sublst) == 2:
+                processed_edge_list.append(sublst + [default_edge_weight])
+            else:
+                processed_edge_list.append(sublst)
+
+        return processed_edge_list
+
+    def undirected_edge_list_to_matrix(self):
+        all_nodes = self.final_nodes
+        edge_list = self.preprocess_edge_list()
+        default_edge_weight = self.default_edge_weight
+        N = len(all_nodes)
+        self.N = N
+        weight_df = np.full((N, N), default_edge_weight)
+
+        # Create a mapping from node to index
+        node_to_idx = {node: idx for idx, node in enumerate(all_nodes)}
+
+        for edge in tqdm(edge_list) if self.verbose else edge_list:
+            try:
+                source, target, *weight = edge
+                weight = weight[0] if weight else default_edge_weight
+                weight = np.nan_to_num(weight, nan=default_edge_weight)
+                source_idx, target_idx = node_to_idx[source], node_to_idx[target]
+                weight_df[source_idx, target_idx] = weight
+                weight_df[target_idx, source_idx] = weight
+            except ValueError as e:
+                print(f"An error occurred: {e}")
+                continue
+
+        np.fill_diagonal(weight_df, 0)
+        W = weight_df
+        np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (N - 1))
+
+        if not ef.check_symmetric(W):
+            print(":( W matrix is NOT symmetric")
+
+        self.W = W
+        self.W_df = pd.DataFrame(W, columns=all_nodes, index=self.final_nodes, dtype=np.float64)
+        return self
     
     
-    # def return_W_edge_list(self):
-    #     wMat = ef.view_matrix_as_dataframe(self.W, column_names_list = self.tf_names_list, row_names_list = self.tf_names_list)
-    #     w_edgeList = wMat.stack().reset_index()
-    #     w_edgeList = w_edgeList[w_edgeList["level_0"] != w_edgeList["level_1"]]
-    #     w_edgeList = w_edgeList.rename(columns = {"level_0":"source", "level_1":"target", 0:"weight"})
-    #     w_edgeList = w_edgeList.sort_values(by = ["weight"], ascending = False)
-    #     return w_edgeList
+    def generate_symmetric_weight_matrix(self) -> np.ndarray:
+        """generate symmetric W matrix. W matrix (Symmetric --> W = W_Transpose).
+        Note: each diagonal element is the summation of other non-diagonal elements in the same row divided by (N-1)
+        2023.02.14_Xiang. TODO: add parameter descriptions"""
+        W = self.W_original
+        np.fill_diagonal(W, (W.sum(axis=0) - W.diagonal()) / (self.N - 1))
+        symmetric_W = ef.check_symmetric(W)
+        if symmetric_W == False:
+            print(":( W matrix is NOT symmetric")
+            return None
+        return W
+    
+    
+    def return_W_edge_list(self):
+        wMat = ef.view_matrix_as_dataframe(self.W, column_names_list = self.tf_names_list, row_names_list = self.tf_names_list)
+        w_edgeList = wMat.stack().reset_index()
+        w_edgeList = w_edgeList[w_edgeList["level_0"] != w_edgeList["level_1"]]
+        w_edgeList = w_edgeList.rename(columns = {"level_0":"source", "level_1":"target", 0:"weight"})
+        w_edgeList = w_edgeList.sort_values(by = ["weight"], ascending = False)
+        return w_edgeList
 
     
     def view_W_network(self):
@@ -674,11 +335,7 @@ class PriorGraphNetwork:
                 W_to_use = self.W ** 2
             else:
                 W_to_use = self.W
-            if self.w_transform_for_d == "avg": # added on 2/8/24
-                d = W_to_use.diagonal() 
-            else:
-                d = W_to_use.diagonal() * (self.N - 1) # summing the edge weights
-        d = np.copy(d) 
+            d = W_to_use.diagonal() * (self.N - 1) # summing the edge weights
         d += self.pseudocount_for_degree
         if self.consider_self_loops:
             d += 1 # we also add in a self-loop :)    
@@ -701,10 +358,8 @@ class PriorGraphNetwork:
         where the entries are 1/sqrt(d). Here, d is a vector corresponding to the degree of each matrix"""
         # we see that the D matrix is higher for nodes that are singletons, a much higher value because it is not connected
         d = self.degree_vector
-        
         d_inv_sqrt = 1 / np.sqrt(d)
         # D = np.diag(d_inv_sqrt)  # full matrix D, only suitable for small scale. Use DiagonalLinearOperator instead.
-        self.D_df = pd.DataFrame(np.diag(d_inv_sqrt))
         D = ef.DiagonalLinearOperator(d_inv_sqrt)
         return D
     
@@ -717,29 +372,12 @@ class PriorGraphNetwork:
         # Please note that this function by Saniya creates the A matrix, which is:
         # (D_transpose) %*% (V*W) %*% (D)        
         """
-
         A = self.D @ (self.V * self.W) @ self.D
-        approxSame = ef.check_symmetric(A) # please see if A is symmetric 
-        
-        if approxSame == False:
-            if ef.check_symmetric(self.W) == False: # defensive programming
-                print(":( W matrix is NOT symmetric. We will use the max value for each TF-TF pair.")
-                W_symmetric = np.maximum(self.W, self.W.T)
-                self.unsymmetric_orig_W = self.W # to keep track of this
-                self.W = W_symmetric
-                # np.maximum(W, W.T) computes the element-wise maximum between W and W.T, thus ensuring that for every pair 
-                # (i,j) and (j,i), the larger value is selected.
-                A = self.D @ (self.V * self.W) @ self.D # please retry
-                approxSame = ef.check_symmetric(A) # please see if A is symmetric 
-        
-        posSemiDef = is_positive_semi_definite(A)
-        if approxSame and posSemiDef: 
+        approxSame = ef.check_symmetric(A) # please see if A is symmetric
+        if approxSame:
             return A
         else:
-            if approxSame == False:
-                print(f":( False. A is NOT a symmetric matrix.")
-            if posSemiDef == False:
-                print(f":( False. A is NOT positive semi-definite.")
+            print(f":( False. A is NOT a symmetric matrix.")
             print(A)
         return False
     
@@ -783,39 +421,14 @@ class PriorGraphNetwork:
         return full_lists
         
         
-# def build_prior_network(edge_list, gene_expression_nodes = [], default_edge_weight = 0.1,
-#                   degree_threshold = 0.5, edge_vals_for_d = False, w_transform_for_d = "none",
-#                   degree_pseudocount = 1e-3, 
-#                   view_network = True,
-#                   verbose = True):
-    
-#     self_loops = False
-    
-#     prior_graph_dict = {"edge_list": edge_list,
-#                         "gene_expression_nodes":gene_expression_nodes,
-#                        "edge_values_for_degree": edge_vals_for_d,
-#                        "consider_self_loops":self_loops,
-#                        "pseudocount_for_degree":degree_pseudocount,
-#                         "default_edge_weight": default_edge_weight,
-#                         "w_transform_for_d":w_transform_for_d,
-#                         "threshold_for_degree": degree_threshold,
-#                        "view_network": view_network,
-#                        "verbose":verbose}
-#     if verbose:
-#         print("building prior network:")
-#         print("prior graph network used")
-#     netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix. ####################
-#     return netty
-
-
-def build_prior_network(edge_list, gene_expression_nodes = [], default_edge_weight = 0.01,
-                  degree_threshold = 0.5, edge_vals_for_d = True, w_transform_for_d = "none",
-                  degree_pseudocount = 0, 
-                  view_network = False,
-                  verbose = False):
-    
+def build_prior_network(edge_list, gene_expression_nodes = [], default_edge_weight = 0.1,
+                  degree_threshold = 0.5,
+                  degree_pseudocount = 1e-3, 
+                  view_network = True,
+                  verbose = True):
+    edge_vals_for_d = False
     self_loops = False
-    
+    w_transform_for_d = "none"
     prior_graph_dict = {"edge_list": edge_list,
                         "gene_expression_nodes":gene_expression_nodes,
                        "edge_values_for_degree": edge_vals_for_d,
@@ -831,7 +444,6 @@ def build_prior_network(edge_list, gene_expression_nodes = [], default_edge_weig
         print("prior graph network used")
     netty = PriorGraphNetwork(**prior_graph_dict) # uses the network to get features like the A matrix. ####################
     return netty
-
 
 
 def directed_node2vec_similarity(edge_list: List[Tuple[int, int, float]],
@@ -933,12 +545,3 @@ def directed_node2vec_similarity(edge_list: List[Tuple[int, int, float]],
     results_dict["NetREm_edgelist"] = similarity_df.values.tolist()
     print(results_dict.keys())
     return results_dict
-
-
-def is_positive_semi_definite(matrix, tol=1e-10):
-    # Calculate the eigenvalues of the matrix
-    eigenvalues = np.linalg.eigvals(matrix)
-    # Check if all eigenvalues are non-negative
-    return np.all(eigenvalues >= -tol)
-
-

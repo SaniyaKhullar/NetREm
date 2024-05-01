@@ -196,7 +196,6 @@ def psnr_custom_score(y_true, y_pred):
     psnrVal = psnr(y_true, y_pred)
     return psnrVal
 
-
 # Create a custom scorer object using make_scorer
 mse_custom_scorer = make_scorer(mse_custom_score)
 nmse_custom_scorer = make_scorer(nmse_custom_score)
@@ -224,27 +223,10 @@ def generate_model_metrics_for_baselines_df(X_train, y_train, X_test, y_test, mo
     selected_row = model_df.iloc[0]
     selected_cols = selected_row[selected_row != 0].index # Filter out the columns with value 0
     model_df = model_df[selected_cols]
-    # Process the DataFrame
     df = model_df.replace("None", np.nan).apply(pd.to_numeric, errors='coerce')
-    # Check if df is not empty and has more than one row/column
-    # Check the structure of df
-    if isinstance(df, pd.DataFrame):
-        if df.size > 1:
-            # If df is a DataFrame with multiple elements
-            sorted_series = df.abs().squeeze().sort_values(ascending=False)
-            sorted_df = pd.DataFrame(sorted_series).reset_index()
-        else:
-            # If df is a single value DataFrame
-            sorted_df = pd.DataFrame([df.abs().values[0]], columns=['Value'])
-    elif isinstance(df, pd.Series):
-        # If df is a Series
-        sorted_series = df.abs().sort_values(ascending=False)
-        sorted_df = pd.DataFrame(sorted_series).reset_index()
-    else:
-        # If df is neither a DataFrame nor a Series (e.g., a scalar)
-        sorted_df = pd.DataFrame([df.abs()], columns=['Value'])
-
+    sorted_series = df.abs().squeeze().sort_values(ascending=False)
     # convert the sorted series back to a DataFrame
+    sorted_df = pd.DataFrame(sorted_series)
     # add a column for the rank
     sorted_df['Rank'] = range(1, len(sorted_df) + 1)
     sorted_df['TF'] = sorted_df.index
@@ -277,7 +259,6 @@ def generate_model_metrics_for_baselines_df(X_train, y_train, X_test, y_test, mo
     sorted_df["test_snr"] = snr(y_test.values.flatten(), predY_test)
     sorted_df["train_psnr"] = psnr(y_train.values.flatten(), predY_train)
     sorted_df["test_psnr"] = psnr(y_test.values.flatten(), predY_test)
-    sorted_df
     return sorted_df
 
 

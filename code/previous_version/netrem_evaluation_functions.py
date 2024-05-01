@@ -30,14 +30,10 @@ randSeed = 123
 from error_metrics import *
 from DemoDataBuilderXandY import *
 from PriorGraphNetwork import *
-#from Netrem_model_builder import *
+from Netrem_model_builder import *
 from sklearn.linear_model import ElasticNetCV, LinearRegression, LassoCV, RidgeCV
 from skopt import gp_minimize, space
 from skopt.utils import use_named_args
-#import Netrem_model_builder as nm
-from sklearn import linear_model, preprocessing # 9/19
-import NetremmerFinal2024 as nm
-from NetremmerFinal2024 import *
 
 class BayesianObjective_Lasso:
     def __init__(self, X, y, cv_folds, model, scorer="mse", print_network=False):
@@ -151,6 +147,90 @@ def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train
     results_dict["result"] = result
     return results_dict
 
+# class BayesianObjective_Lasso:
+#     def __init__(self, X, y, cv_folds, model, scorer = "mse", print_network = False):
+#         self.X = X
+#         self.y = y
+#         self.cv_folds = cv_folds
+#         model.view_network = print_network
+#         self.model = model
+#         self.scorer_obj = 'neg_mean_squared_error' # the default
+#         if scorer == "mse":
+#             self.scorer_obj = mse_custom_scorer
+#         elif scorer == "nmse":
+#             self.scorer_obj = nmse_custom_scorer
+#         elif scorer == "snr":
+#             self.scorer_obj = snr_custom_scorer
+#         elif scorer == "psnr":
+#             self.scorer_obj = psnr_custom_scorer
+
+        
+#     def __call__(self, params):
+        
+#         alpha_lasso, beta_network = params
+#         #network = PriorGraphNetwork(edge_list = edge_list)
+#         netrem_model = self.model
+#         #print(netrem_model.get_params())
+#         netrem_model.alpha_lasso = alpha_lasso 
+#         netrem_model.beta_network = beta_network
+#         #netrem_model.view_network = self.view_network
+#         score = -cross_val_score(netrem_model, self.X, self.y, cv=self.cv_folds, scoring=self.scorer_obj).mean()
+#         return score
+
+    
+# def optimal_netrem_model_via_bayesian_param_tuner(netrem_model, X_train, y_train, 
+#                                       beta_net_min = 0.001, 
+#                                       beta_net_max = 10, 
+#                                       alpha_lasso_min = 0.0001,
+#                                       alpha_lasso_max = 0.1,
+#                                       num_grid_values = 100,
+#                                       gridSearchCV_folds = 5,
+#                                      scorer = "mse",
+#                                      verbose = False):
+#     if verbose:
+#         print(f":) Please note we are running Bayesian optimization (via skopt Python package) for parameter hunting for beta_network and alpha_lasso with model evaluation scorer: {scorer} :)")
+#         print("we use gp_minimize here for hyperparameter tuning")
+#         print(f":) Please note this is a start-to-finish optimizer for NetREm (Network regression embeddings reveal cell-type protein-protein interactions for gene regulation)")
+#     from skopt import gp_minimize, space
+#     model_type = netrem_model.model_type
+# #     param_space = [space.Real(alpha_lasso_min, alpha_lasso_max, name='alpha_lasso', prior='log-uniform'),
+# #            space.Real(beta_net_min, beta_net_max, name='beta_network', prior='log-uniform')]
+
+#     if model_type == "LassoCV": 
+#         print("please note that we can only do this for Lasso model not for LassoCV :(")
+#         print("Thus, we will alter the model_type to make it Lasso")
+#         netrem_model.model_type = "Lasso"
+
+#     param_space = [space.Real(alpha_lasso_min, alpha_lasso_max, name='alpha_lasso', prior='log-uniform'),
+#            space.Real(beta_net_min, beta_net_max, name='beta_network', prior='log-uniform')]
+#     objective = BayesianObjective_Lasso(X_train, y_train, cv_folds = gridSearchCV_folds, model = netrem_model, scorer = scorer)
+
+#     # Perform Bayesian optimization
+#     result = gp_minimize(objective, param_space, n_calls=num_grid_values, random_state=123)
+#     results_dict = {}
+#     optimal_model = netrem_model
+#     if verbose:
+#         print(":) ######################################################################\n")
+#         print(f":) Please note the optimal model based on Bayesian optimization found: ")
+
+#     bayesian_alpha = result.x[0]
+#     bayesian_beta = result.x[1]
+#     optimal_model.alpha_lasso = bayesian_alpha
+#     optimal_model.beta_network = bayesian_beta
+#     results_dict["bayesian_alpha"] = bayesian_alpha
+#     print(f"alpha_lasso = {bayesian_alpha} ; beta_network = {bayesian_beta}")
+#     if verbose:
+#         print(":) ######################################################################\n")
+#         print("Fitting the model using these optimal hyperparameters for beta_net and alpha_lasso...")
+#     dict_ex = optimal_model.get_params()
+#     optimal_model = NetREmModel(**dict_ex)
+#     optimal_model.fit(X_train, y_train)
+#     print(optimal_model.get_params())
+#     results_dict["optimal_model"] = optimal_model
+#     results_dict["bayesian_beta"] = bayesian_beta
+#     results_dict["result"] = result
+#     return results_dict
+
 
 def optimal_netrem_model_via_gridsearchCV_param_tuner(netrem_model, X_train, y_train, num_grid_values, num_cv_jobs = -1):
     beta_max = 0.5 * np.max(np.abs(X_train.T.dot(y_train)))
@@ -219,7 +299,7 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
     tfs_for_tg = scgrnom_step2_df[scgrnom_step2_df["TG"] == focus_gene]["TF"].tolist()
     tfs_for_tg.sort()
 
-    tfs_for_tg = ef.intersection(tfs_for_tg, tfs)
+    tfs_for_tg = intersection(tfs_for_tg, tfs)
     len(tfs_for_tg)
     
     low_TFs_bool = False
@@ -281,6 +361,8 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
             tfs_added_list += js_minier[js_minier["TF1"] == tfs_to_use_list[tf_num]].head(3)["TF2"].tolist()
     
     tfs_added_list.sort()
+
+    
     ####################################
     if verbose:
         print(len(tfs_added_list))
@@ -326,6 +408,7 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
                                            verbose = verbose,
                                       gene_expression_nodes = key_genes,
                                      view_network = view_network)
+
     model_comparison_df1 = pd.DataFrame()
     model_comparison_df2 = pd.DataFrame()
     bayes_optimizer_bool = False
@@ -405,6 +488,8 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
 
         model_comparison_df2["approach"] = "gridSearchCV"
         griddy_optimizer_bool = True
+    # except:
+    #     print(":( gridsearchCV optimizer is not working")
     both_approaches_bool = False
     if bayes_optimizer_bool and griddy_optimizer_bool:
         combined_model_compare_df = pd.concat([model_comparison_df1, model_comparison_df2])
@@ -444,106 +529,7 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
     return combined_model_compare_df
 
 
-def baseline_metrics_function(X_train, y_train, X_test, y_test, tg,  model_name, y_intercept, standardize_X=True, standardize_y = True, center_y=False,verbose = False):
-
-    if verbose:
-        print(f"{model_name} results :) for fitting y_intercept = {y_intercept}")
-    try:
-        if model_name == "ElasticNetCV":
-            regr = ElasticNetCV(cv=5, random_state=0, fit_intercept = y_intercept)
-        elif model_name == "LinearRegression":
-            regr = LinearRegression(fit_intercept = y_intercept)
-        elif model_name == "LassoCV":
-            regr = LassoCV(cv=5, fit_intercept = y_intercept)
-        elif model_name == "RidgeCV":
-            regr = RidgeCV(cv=5, fit_intercept = y_intercept)
-            
-            
-        if standardize_X:
-            scaler_x = preprocessing.StandardScaler().fit(X_train) # Fit the scaler to the training data only
-
-            # Transform both the training and test data
-            X_scaled_train = scaler_x.transform(X_train)
-            X_train = pd.DataFrame(X_scaled_train, columns=X_train.columns)
-
-            X_scaled_test = scaler_x.transform(X_test)
-            X_test = pd.DataFrame(X_scaled_test, columns=X_test.columns)
-
-
-        if standardize_y:
-            scaler_y = preprocessing.StandardScaler().fit(y_train) # Fit the scaler to the training data only
-
-            # Transform both the training and test data
-            y_scaled_train = scaler_y.transform(y_train)
-            y_train = pd.DataFrame(y_scaled_train, columns=y_train.columns)
-
-            y_scaled_test = scaler_y.transform(y_test)
-            y_test = pd.DataFrame(y_scaled_test, columns=y_test.columns)
-            
-            
-        if center_y:
-            mean_y_train = np.mean(y_train) # the average y value
-            y_train = y_train - mean_y_train
-            y_test = y_test - mean_y_train
-            
-        if tg in X_train.columns:  # March 4, 2024
-            X_train = X_train.drop(columns = [tg])
-            X_test = X_test.drop(columns = [tg])
-                    
-        regr.fit(X_train, y_train)
-        if model_name in ["RidgeCV", "LinearRegression"]:
-            model_df = pd.DataFrame(regr.coef_)
-        else:
-            model_df = pd.DataFrame(regr.coef_).transpose()
-        if verbose:
-            print(model_df)
-        model_df.columns = X_train.columns.tolist()
-        selected_row = model_df.iloc[0]
-        selected_cols = selected_row[selected_row != 0].index # Filter out the columns with value 0
-        model_df = model_df[selected_cols]
-        df = model_df.replace("None", np.nan).apply(pd.to_numeric, errors='coerce')
-        sorted_series = df.abs().squeeze().sort_values(ascending=False)
-        original_coef_df = df.T.reset_index().rename(columns = {"index":"TF", 0:"coef"})
-
-        # convert the sorted series back to a DataFrame
-        sorted_df = pd.DataFrame(sorted_series)
-        # add a column for the rank
-        sorted_df['Rank'] = range(1, len(sorted_df) + 1)
-        sorted_df['TF'] = sorted_df.index
-        sorted_df = sorted_df.rename(columns = {0:"AbsoluteVal_coefficient"})
-        sorted_df["Info"] = model_name
-        if y_intercept:
-            sorted_df["y_intercept"] = "True :)"
-        else:
-            sorted_df["y_intercept"] = "False :("
-        sorted_df["final_model_TFs"] = model_df.shape[1]
-        sorted_df["TFs_input_to_model"] = X_train.shape[1]
-        sorted_df["original_TFs_in_X"] =  X_train.shape[1]
-
-        predY_train = regr.predict(X_train)
-        predY_test = regr.predict(X_test)
-        train_mse = em.mse(y_train.values.flatten(), predY_train)
-        test_mse = em.mse(y_test.values.flatten(), predY_test)
-        sorted_df["train_mse"] = train_mse
-        sorted_df["test_mse"] = test_mse
-        sorted_df["train_nmse"]  = em.nmse(y_train.values.flatten(), predY_train)
-        sorted_df["test_nmse"] = em.nmse(y_test.values.flatten(), predY_test)
-        sorted_df["train_snr"] = em.snr(y_train.values.flatten(), predY_train)
-        sorted_df["test_snr"] = em.snr(y_test.values.flatten(), predY_test)
-        sorted_df["train_psnr"] = em.psnr(y_train.values.flatten(), predY_train)
-        sorted_df["test_psnr"] = em.psnr(y_test.values.flatten(), predY_test)
-        sorted_df["standardize_X"] = standardize_X
-        sorted_df["center_y"] = center_y
-
-        sorted_df["TG"] = tg
-        sorted_df = sorted_df.reset_index().drop(columns = ["index"])
-        sorted_df = pd.merge(sorted_df, original_coef_df)
-    except:
-        return pd.DataFrame()
-    return sorted_df
-
-
-def baseline_metrics_functionOLD(X_train, y_train, X_test, y_test, tg, model_name, y_intercept, verbose = False):
+def baseline_metrics_function(X_train, y_train, X_test, y_test, tg, model_name, y_intercept, verbose = False):
 
     if verbose:
         print(f"{model_name} results :) for fitting y_intercept = {y_intercept}")
@@ -569,14 +555,16 @@ def baseline_metrics_functionOLD(X_train, y_train, X_test, y_test, tg, model_nam
         model_df = model_df[selected_cols]
         df = model_df.replace("None", np.nan).apply(pd.to_numeric, errors='coerce')
         sorted_series = df.abs().squeeze().sort_values(ascending=False)
-        original_coef_df = df.T.reset_index().rename(columns = {"index":"TF", 0:"coef"})
-        
         # convert the sorted series back to a DataFrame
         sorted_df = pd.DataFrame(sorted_series)
         # add a column for the rank
         sorted_df['Rank'] = range(1, len(sorted_df) + 1)
         sorted_df['TF'] = sorted_df.index
         sorted_df = sorted_df.rename(columns = {0:"AbsoluteVal_coefficient"})
+        # tfs = sorted_df["TF"].tolist()
+        # if tf_name not in tfs:
+        #     sorted_df = pd.DataFrame(["N/A", tf_name]).transpose()
+        #     sorted_df.columns = ["Rank", "TF"]
         sorted_df["Info"] = model_name
         if y_intercept:
             sorted_df["y_intercept"] = "True :)"
@@ -600,8 +588,7 @@ def baseline_metrics_functionOLD(X_train, y_train, X_test, y_test, tg, model_nam
         sorted_df["test_psnr"] = em.psnr(y_test.values.flatten(), predY_test)
         sorted_df["TG"] = tg
         sorted_df = sorted_df.reset_index().drop(columns = ["index"])
-        
-        sorted_df = pd.merge(sorted_df, original_coef_df)
+        sorted_df
     except:
         return pd.DataFrame()
     return sorted_df
