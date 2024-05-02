@@ -379,6 +379,8 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         if len(selected_cols) == 0:
             self.model_nonzero_coef_df = None
             self.num_final_predictors = 0
+            self.final_corr_vs_coef_df = pd.DataFrame()
+            self.combined_df = pd.DataFrame()
         else:
             self.model_nonzero_coef_df = self.model_coef_df[selected_cols]    
             if len(selected_cols) > 1: # and self.model_type != "Linear":
@@ -386,17 +388,23 @@ class NetREmModel(BaseEstimator, RegressorMixin):
                 self.num_final_predictors = len(selected_cols)
                 if "y_intercept" in selected_cols:
                     self.num_final_predictors = self.num_final_predictors - 1
+            else:
+                self.final_corr_vs_coef_df = pd.DataFrame()
+                self.combined_df = pd.DataFrame()
+                
             self.organize_B_interaction_list()
+        self.TF_coord_scores_pairwise_df = return_TF_coord_scores_df(self)
         return self
     
     
     def netrem_model_predictor_results(self, y): # olders
         """ :) Please note that this function by Saniya works on a netrem model and returns information about the predictors
         such as their Pearson correlations with y, their rankings as well.
-        It returns: sorted_df, final_corr_vs_coef_df, combined_df """
+        It returns: sorted_df, final_corr_vs_coef_df, combined_df """      
         abs_df = self.model_nonzero_coef_df.replace("None", np.nan).apply(pd.to_numeric, errors='coerce').abs()
         if abs_df.shape[0] == 1:
             abs_df = pd.DataFrame([abs_df.squeeze()])
+
         sorted_series = abs_df.squeeze().sort_values(ascending=False)
         sorted_df = pd.DataFrame(sorted_series) # convert the sorted series back to a DataFrame
         sorted_df['Rank'] = range(1, len(sorted_df) + 1) # add a column for the rank
@@ -417,11 +425,11 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         sorting["input_data"] = "X_train"
         all_df = pd.concat([all_df, sorting])
         self.corr_vs_coef_df = all_df
-        self.final_corr_vs_coef_df = self.corr_vs_coef_df[["info", "input_data"] + self.model_nonzero_coef_df.columns.tolist()[1:]]
         netrem_model_df = self.model_nonzero_coef_df.transpose()
         netrem_model_df.columns = ["coef"]
         netrem_model_df["TF"] = netrem_model_df.index.tolist()
         netrem_model_df["TG"] = tg
+        self.final_corr_vs_coef_df = self.corr_vs_coef_df[["info", "input_data"] + self.model_nonzero_coef_df.columns.tolist()[1:]]
         if self.y_intercept:
             netrem_model_df["info"] = "netrem_with_intercept"
         else:
@@ -1167,6 +1175,13 @@ def netremCV(edge_list, X, y,
     return newest_netrem
 
 
+# Function to lookup coefficient
+def lookup_coef(tf, netrem_model):
+    model_nonzero_coef_df = netrem_model.model_nonzero_coef_df
+    coef_series = model_nonzero_coef_df.iloc[0].drop('y_intercept')
+    return coef_series.get(tf, 0)  # Returns 0 if TF is not found
+
+
 def organize_predictor_interaction_network(netrem_model):
     if "model_nonzero_coef_df" not in vars(netrem_model).keys():
         print(":( No NetREm model was built")
@@ -1175,6 +1190,9 @@ def organize_predictor_interaction_network(netrem_model):
     if "model_type" in TF_interaction_df.columns.tolist():
         TF_interaction_df = TF_interaction_df.drop(columns = ["model_type"])
     num_TFs = TF_interaction_df.shape[0]
+    TF_coord_scores_pairwise_df = netrem_model.TF_coord_scores_pairwise_df
+    if TF_coord_scores_pairwise_df.shape[0] == 0:
+        return None
     TF_interaction_df = netrem_model.TF_coord_scores_pairwise_df.drop(columns = ["absVal_coord_score"])
     TF_interaction_df = TF_interaction_df.rename(columns = {"coordination_score":"coord_score_cs"})
 
@@ -1205,8 +1223,9 @@ def organize_predictor_interaction_network(netrem_model):
 
     # Step 3: Calculate the percentile
     TF_interaction_df['cs_magnitude_percentile'] = (1 - (TF_interaction_df['cs_magnitude_rank'] / TF_interaction_df['absVal_coordScore'].count())) * 100
+    TF_interaction_df["TF_TF"] = TF_interaction_df["node_1"] + "_" + TF_interaction_df["node_2"]
 
-    TF_interaction_df["TF_TF"] = TF_interaction_df["TF1"] + "_" + TF_interaction_df["TF2"]
+    #TF_interaction_df["TF_TF"] = TF_interaction_df["TF1"] + "_" + TF_interaction_df["TF2"]
 
     standardized_data = True
     if "old_X_df" in vars(netrem_model).keys():
@@ -1216,43 +1235,36 @@ def organize_predictor_interaction_network(netrem_model):
         original_X_corr_mat = netrem_model.X_df.corr()
         standardized_data = False
     # Melting the DataFrame into a 3-column edge list
-    original_X_corr_df = original_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="TF2", value_name="original_corr")
-    original_X_corr_df.rename(columns={"index": "TF1"}, inplace=True)
-    original_X_corr_df = original_X_corr_df[original_X_corr_df["TF1"] != original_X_corr_df["TF2"]]
-    original_X_corr_df["TF_TF"] = original_X_corr_df["TF1"] + "_" + original_X_corr_df["TF2"]
+    original_X_corr_df = original_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="node_2", value_name="original_corr")
+    original_X_corr_df.rename(columns={"index": "node_1"}, inplace=True)
+    original_X_corr_df = original_X_corr_df[original_X_corr_df["node_1"] != original_X_corr_df["node_2"]]
+    original_X_corr_df["TF_TF"] = original_X_corr_df["node_1"] + "_" + original_X_corr_df["node_2"]
     # Display the first few rows to verify the format
 
     if standardized_data:
         # Melting the DataFrame into a 3-column edge list
-        standardized_X_corr_df = standardized_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="TF2", value_name="standardized_corr")
-        standardized_X_corr_df.rename(columns={"index": "TF1"}, inplace=True)
-        standardized_X_corr_df = standardized_X_corr_df[standardized_X_corr_df["TF1"] != standardized_X_corr_df["TF2"]]
-        standardized_X_corr_df["TF_TF"] = standardized_X_corr_df["TF1"] + "_" + standardized_X_corr_df["TF2"]
-        standardized_X_corr_df.drop(columns = ["TF1", "TF2"], inplace = True)
-        original_X_corr_df = pd.merge(original_X_corr_df, standardized_X_corr_df).drop(columns = ["TF1", "TF2"])
-
-
+        standardized_X_corr_df = standardized_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="node_2", value_name="standardized_corr")
+        standardized_X_corr_df.rename(columns={"index": "node_1"}, inplace=True)
+        standardized_X_corr_df = standardized_X_corr_df[standardized_X_corr_df["node_1"] != standardized_X_corr_df["node_2"]]
+        standardized_X_corr_df["TF_TF"] = standardized_X_corr_df["node_1"] + "_" + standardized_X_corr_df["node_2"]
+        standardized_X_corr_df.drop(columns = ["node_1", "node_2"], inplace = True)
+        original_X_corr_df = pd.merge(original_X_corr_df, standardized_X_corr_df).drop(columns = ["node_1", "node_2"])
     TF_interaction_df = pd.merge(TF_interaction_df, original_X_corr_df)
-
     default_edge_w = netrem_model.network.default_edge_weight
     if "W_df" in vars(netrem_model.network).keys():
         W_df = netrem_model.network.W_df
     else:
         W_df = netrem_model.W_df
-
-    ppi_net_df = W_df.reset_index().melt(id_vars=["index"], var_name="TF2", value_name="PPI_score")
-    ppi_net_df.rename(columns={"index": "TF1"}, inplace=True)
-
+    ppi_net_df = W_df.reset_index().melt(id_vars=["index"], var_name="node_2", value_name="PPI_score")
+    ppi_net_df.rename(columns={"index": "node_1"}, inplace=True)
     ppi_net_df["novel_link"] = np.where((ppi_net_df.PPI_score == default_edge_w), "yes", "no")
-    ppi_net_df["TF_TF"] = ppi_net_df["TF1"] + "_" + ppi_net_df["TF2"]
-    ppi_net_df = ppi_net_df[ppi_net_df["TF1"] != ppi_net_df["TF2"]] # 42849 rows × 3 columns
-    ppi_net_df = ppi_net_df.drop(columns = ["TF1", "TF2"])
-
+    ppi_net_df["TF_TF"] = ppi_net_df["node_1"] + "_" + ppi_net_df["node_2"]
+    ppi_net_df = ppi_net_df[ppi_net_df["node_1"] != ppi_net_df["node_2"]] # 42849 rows × 3 columns
+    ppi_net_df = ppi_net_df.drop(columns = ["node_1", "node_2"])
     TF_interaction_df = pd.merge(TF_interaction_df, ppi_net_df)
     TF_interaction_df["absVal_diff_cs_and_originalCorr"] = abs(TF_interaction_df["coord_score_cs"] - TF_interaction_df["standardized_corr"])
-
-    TF_interaction_df['c_1'] = TF_interaction_df['TF1'].apply(lookup_coef, args=(netrem_model,))
-    TF_interaction_df['c_2'] = TF_interaction_df['TF2'].apply(lookup_coef, args=(netrem_model,))
+    TF_interaction_df['c_1'] = TF_interaction_df['node_1'].apply(lookup_coef, args=(netrem_model,))
+    TF_interaction_df['c_2'] = TF_interaction_df['node_2'].apply(lookup_coef, args=(netrem_model,))
     return TF_interaction_df
 
 
