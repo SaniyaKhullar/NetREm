@@ -1885,6 +1885,7 @@ d_i = \sum_{\substack{j=1 \\ j \neq i}}^N w_{ij}
 $$
 
 Instead of self-loops, we have: 
+
 $$
 w_{ii} = \frac{d_i}{N-1}
 $$
