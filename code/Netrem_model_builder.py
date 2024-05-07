@@ -329,8 +329,8 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             max_other = np.max(np.abs(result)).max()
             coord_matrix = 100.0*result/max_other
             self.coord_score_df = coord_matrix
-            self.TF_interaction_df = self.coord_score_df
-            self.B_interaction_df = self.coord_score_df
+        self.TF_interaction_df = self.coord_score_df
+        self.B_interaction_df = self.coord_score_df
         return self   
     
     
