@@ -299,6 +299,8 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         else:
             self.A_df = self.network.A_df
             self.A = self.network.A
+            self.W_df = self.network.W_df
+            self.final_input_W_df = self.W_df 
             self.nodes = self.A_df.columns.tolist()
         self.network_info = "fitted_network"
         self.M = y.shape[0]       
@@ -327,7 +329,8 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             max_other = np.max(np.abs(result)).max()
             coord_matrix = 100.0*result/max_other
             self.coord_score_df = coord_matrix
-        self.TF_interaction_df = self.coord_score_df
+            self.TF_interaction_df = self.coord_score_df
+            self.B_interaction_df = self.coord_score_df
         return self   
     
     
@@ -743,6 +746,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
 
         self.W = W
         self.W_df = W_df
+        self.final_input_W_df = W_df
         # Feb 12, 2024
         edge_list = (
             W_df

@@ -13,12 +13,14 @@ layout: default
 
 ## Summary
 
-NetREm is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes (TGs) in gene regulatory networks (GRNs). NetREm incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors (e.g. TF-TF coordination: direct/indirect interactions among TFs). This approach can highlight important nodes and edges in the network, reveal novel regularized embeddings for genes, provide insights into underlying biological processes, identify subnetworks of predictors that group together to influence the response variable, and improve model accuracy and biological/clinical significance of the models. NetREm can incorporate multiple types of network data, including Protein-Protein Interaction (PPI) networks, gene co-expression networks, and metabolic networks. In summary, network-constrained regularization may bolster the construction of more accurate and interpretable models that incorporate prior knowledge of the network structure among predictors.
+NetREm is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes (TGs) in gene regulatory networks (GRNs). NetREm incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors (e.g. TF-TF coordination: direct/indirect interactions among TFs). This approach can highlight important nodes and edges in the network, reveal novel regularized embeddings for genes, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. NetREm can incorporate multiple types of network data, including Protein-Protein Interaction (PPI) networks, gene co-expression networks, and metabolic networks. 
+
+
 
 
 <!-- GRegNet is a software package that utilizes network-constrained regularization for biological applications and other network-based learning tasks. In biology, traditional regression methods can struggle with correlated predictors, particularly transcription factors (TFs) that regulate target genes in gene regulatory networks (GRNs). GRegNet incorporates information from prior biological networks to improve predictions and identify complex relationships among predictors. This approach can highlight important nodes and edges in the network, provide insights into underlying biological processes, and improve model accuracy and biological/clinical significance of the models. GRegNet can incorporate multiple types of network data, including PPI networks, gene co-expression networks, and metabolic networks. -->
 
-<!-- s. -->
+<!-- In summary, network-constrained regularization may bolster the construction of more accurate and interpretable models that incorporate prior knowledge of the network structure among predictors. -->
 
 ## Pipeline
 
@@ -256,15 +258,15 @@ $$ MSE = \frac{1}{m} \sum_{i=1}^m (y_i - \hat{y_i})^2 $$
 | **sorted_coef_df** | [Pandas](https://pandas.pydata.org/) dataframe that sorts the final model coefficients (including the y-intercept) based on their absolute values. The rank is provided from least (most important: highest absolute value coefficient) to highest (least important in model). | 
 | **final_corr_vs_coef_df** | [Pandas](https://pandas.pydata.org/) dataframe with 3 rows. <br> • NetREm regression coefficient for predictor <br> • correlation of each predictor with y based on the training data <br> • absolute value ranking of the coefficients for the predictors |
 | **combined_df** | [Pandas](https://pandas.pydata.org/) dataframe with a row for each predictor and several columns detailing:<br> • general NEtREm model information: `y_intercept`, train MSE, `beta_net`, `alpha_lasso`, original number of predictors in $X$, filtered number of predictors input to NetREm (based on pre-processing by user), final number of non-zero predictors selected <br> • predictor-specific results: NetREm coefficient for predictor, absolute value of NetREm coefficient, rank of the absolute value of the coefficient (low ranks imply higher absolute value for the NetREm coefficient) |
-| **B_interaction_df** | [Pandas](https://pandas.pydata.org/) dataframe with a row for each pair of final predictors selected in the final model (with nonzero efficients) and several columns detailing the $y$-specific predictor-predictor interaction metric value:<br> • general NEtREm model information: `model_type`,  `beta_net` <br> • predictor-predictor specific results: coord_score_cs (this is the key value we focus on as it is the coordination score), original_corr (that is the same as standardized_corr), input network weight, NetREm coefficient for each predictor, novel_link (if yes, it is artifical default edge added to the input network) |
+
 <br>
 
 ## Demo (Toy Example) of NetREm:
-The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 5$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$] in a particular cell-type. Assume the gene expression values for each TF are [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$], respectively. We generate $10,000$ random cells (rows: samples) of data where the Pearson correlations ($r$) between the gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.4, cor(TF<sub>4</sub>, $y$) = -0.3, cor(TF<sub>5</sub>, $y$) = -0.8]. We note that the `sparsity_factor_perc` is 40%, so roughly 4,000 out of the 10,000 cells for each variable will be ≈0; we incorporate these dropoout, so that the underlying data mimics single-cell expression data. Thus, $M$ is $7,000$ cells since that is what is used for training the NetREm model. 
+The goal is to build a machine learning model to predict the gene expression levels of our target gene (TG) $y$ based on the gene expression levels of $N = 5$ Transcription Factors (TFs) [TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$] in a particular cell-type. Assume the gene expression values for each TF are [X<sub>1</sub>, $X_{2}$, $X_{3}$, $X_{4}$, $X_{5}$], respectively. We generate $M = 100,000$ random samples (rows) of data where the Pearson correlations ($r$) between gene expression of each TF ($X$) with gene expression of TG $y$ as *corrVals*: [cor(TF<sub>1</sub>, $y$) = 0.9, cor(TF<sub>2</sub>, $y$) = 0.5, cor(TF<sub>3</sub>, $y$) = 0.4, cor(TF<sub>4</sub>, $y$) = -0.3, cor(TF<sub>5</sub>, $y$) = -0.8]. 
 
-The dimensions of $X$ are therefore 10,000 rows by 5 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in [Dummy_Data_Demo_Example.pdf](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Dummy_Data_Demo_Example.pdf). Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological direct and/or indirect pairwise interactions among TFs at the protein-level. These linked TFs may be involved in several shared functions at the molecular level, such as coordinating and co-regulating shared target genes (TGs). 
+The dimensions of $X$ are therefore 100,000 rows by 5 columns (predictors). More details about our *generate_dummy_data* function (and additional parameters we can adjust for) are in [Dummy_Data_Demo_Example.pdf](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/Dummy_Data_Demo_Example.pdf). Our NetREm estimator also incorporates a constraint of an **undirected weighted prior graph network** of biological relationships among only 5 TFs based on a weighted Protein-Protein Interaction (PPI) network ([TF<sub>1</sub>, $TF_{2}$, $TF_{3}$, $TF_{4}$, $TF_{5}$]), where higher edge weights $w$ indicate stronger biological interactions at the protein-level.
 
-Please note that the code for this demo example is [demo_toy.py](https://github.com/SaniyaKhullar/NetREm/blob/main/demo/demo_toy.py) in the *demo* folder.
+The code for this demo example is [demo_toy.py](https://github.com/SaniyaKhullar/NetREm/blob/main/demo/demo_toy.py) in the *demo* folder.
 
 ```python 
 from DemoDataBuilderXandY import generate_dummy_data
@@ -274,29 +276,24 @@ import error_metrics as em
 import essential_functions as ef
 import netrem_evaluation_functions as nm_eval
 
-num_samples = 10000 # number of samples (e.g. single-cells)
-corrs_list =  [0.9, 0.5, 0.4, -0.3, -0.8] # the individual correlations (r) of each X variable with y
-train_p = 70 # the % of original data we use for M
-dummy_data = generate_dummy_data(corrVals = corrs_list, # the # of elements in corrVals is the # of predictors (X)
-                                 num_samples_M = num_samples, # the number of samples M is: (num_samples_M)*(train_data_percent)
-                                 sparsity_factor_perc = 40, # approximately what % of data for each variable is sparse (0)
-                                 train_data_percent = train_p) # the remainder out of 10,000 will be kept for testing. If 100, then ALL data is used for training and testing.
-
+dummy_data = generate_dummy_data(corrVals = [0.9, 0.5, 0.4, -0.3, -0.8], # the # of elements in corrVals is the # of predictors (X)
+                                 num_samples_M = 100000, # the number of samples M
+                                 train_data_percent = 70) # the remainder out of 100,000 will be kept for testing. If 100, then ALL data is used for training and testing.
 ```
 The Python console or Jupyter notebook will  print out the following:
 
     same_train_test_data = False
     Please note that since we hold out 30.0% of our 100000 samples for testing, we have:
-    X_train = 7,000 rows (samples) and 5 columns (N = 5 predictors) for training.
-    X_test = 3,000 rows (samples) and 5 columns (N = 5 predictors) for testing.
-    y_train = 7,000 corresponding rows (samples) for training.
-    y_test = 3,000 corresponding rows (samples) for testing.
+    X_train = 70000 rows (samples) and 5 columns (N = 5 predictors) for training.
+    X_test = 30000 rows (samples) and 5 columns (N = 5 predictors) for testing.
+    y_train = 70000 corresponding rows (samples) for training.
+    y_test = 30000 corresponding rows (samples) for testing.
 
 The $X$ data should be in the form of a Pandas dataframe as below:
 
 ```python
 X_df = dummy_data.X_df
-X_df.head(10) # please view the first 10 rows
+X_df.head()
 ```
 <div>
 <table border="1" class="dataframe">
@@ -313,83 +310,43 @@ X_df.head(10) # please view the first 10 rows
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.000000</td>
-      <td>1.431629</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
+      <td>0.067511</td>
+      <td>1.168162</td>
+      <td>0.500052</td>
+      <td>-1.622116</td>
+      <td>-0.827644</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.000000</td>
-      <td>0.992102</td>
-      <td>0.774417</td>
-      <td>-1.464686</td>
-      <td>0.000000</td>
+      <td>1.754397</td>
+      <td>-1.531472</td>
+      <td>0.067630</td>
+      <td>0.857830</td>
+      <td>-1.440013</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>-0.856293</td>
-      <td>0.000000</td>
-      <td>-1.682493</td>
-      <td>0.906734</td>
-      <td>-0.557047</td>
+      <td>-1.519240</td>
+      <td>-0.764829</td>
+      <td>0.823048</td>
+      <td>-0.206106</td>
+      <td>0.820908</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>-0.657480</td>
-      <td>1.008181</td>
-      <td>0.000000</td>
-      <td>1.426829</td>
-      <td>-0.699446</td>
+      <td>0.009735</td>
+      <td>2.027954</td>
+      <td>2.092769</td>
+      <td>0.886884</td>
+      <td>0.054337</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>0.000000</td>
-      <td>-1.001249</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>1.882605</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>1.258316</td>
-      <td>1.228853</td>
-      <td>1.789500</td>
-      <td>-1.373181</td>
-      <td>-3.245509</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>1.090277</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-      <td>1.250911</td>
-      <td>-0.683330</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>0.666747</td>
-      <td>0.000000</td>
-      <td>0.654979</td>
-      <td>0.573183</td>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>-3.076390</td>
-      <td>-1.082092</td>
-      <td>-1.573686</td>
-      <td>0.742459</td>
-      <td>3.025879</td>
+      <td>-0.377406</td>
+      <td>0.905750</td>
+      <td>-1.167745</td>
+      <td>1.350194</td>
+      <td>-0.131234</td>
     </tr>
   </tbody>
 </table>
@@ -400,7 +357,7 @@ X_df.head(10) # please view the first 10 rows
 
 ```python
 y_df = dummy_data.y_df
-y_df.head(10) # please view the first 10 rows
+y_df.head()
 ```
 
 
@@ -417,54 +374,34 @@ y_df.head(10) # please view the first 10 rows
   <tbody>
     <tr>
       <th>0</th>
-      <td>0.711674</td>
+      <td>0.601721</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.000000</td>
+      <td>1.151619</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>-1.001871</td>
+      <td>-1.359462</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.000000</td>
+      <td>0.222055</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>-1.141293</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>2.654407</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>1.440605</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>-3.121532</td>
+      <td>-0.775868</td>
     </tr>
   </tbody>
 </table>
 </div>
 
 ```python
-# M = 7,000 samples (cells) for training data (used to train and fit NetREm model)
+# 70,000 samples for training data (used to train and fit NetREm model)
 X_train = dummy_data.view_X_train_df()
 y_train = dummy_data.view_y_train_df()
 
-# 3,000 samples (cells) for testing data
+# 30,000 samples for testing data
 X_test = dummy_data.view_X_test_df()
 y_test = dummy_data.view_y_test_df()
 ```
@@ -491,41 +428,41 @@ X_train.corr() # pairwise correlations among the training samples
     <tr>
       <th>TF1</th>
       <td>1.000000</td>
-      <td>0.438854</td>
-      <td>0.360903</td>
-      <td>-0.269164</td>
-      <td>-0.708270</td>
+      <td>0.444851</td>
+      <td>0.360777</td>
+      <td>-0.274352</td>
+      <td>-0.719915</td>
     </tr>
     <tr>
       <th>TF2</th>
-      <td>0.438854</td>
+      <td>0.444851</td>
       <td>1.000000</td>
-      <td>0.176441</td>
-      <td>-0.139661</td>
-      <td>-0.391539</td>
+      <td>0.195290</td>
+      <td>-0.152394</td>
+      <td>-0.398306</td>
     </tr>
     <tr>
       <th>TF3</th>
-      <td>0.360903</td>
-      <td>0.176441</td>
+      <td>0.360777</td>
+      <td>0.195290</td>
       <td>1.000000</td>
-      <td>-0.128266</td>
-      <td>-0.329087</td>
+      <td>-0.125259</td>
+      <td>-0.320436</td>
     </tr>
     <tr>
       <th>TF4</th>
-      <td>-0.269164</td>
-      <td>-0.139661</td>
-      <td>-0.128266</td>
+      <td>-0.274352</td>
+      <td>-0.152394</td>
+      <td>-0.125259</td>
       <td>1.000000</td>
-      <td>0.234778</td>
+      <td>0.242985</td>
     </tr>
     <tr>
       <th>TF5</th>
-      <td>-0.708270</td>
-      <td>-0.391539</td>
-      <td>-0.329087</td>
-      <td>0.234778</td>
+      <td>-0.719915</td>
+      <td>-0.398306</td>
+      <td>-0.320436</td>
+      <td>0.242985</td>
       <td>1.000000</td>
     </tr>
   </tbody>
@@ -558,237 +495,46 @@ X_test.corr() # pairwise correlations among the testing samples
     <tr>
       <th>TF1</th>
       <td>1.000000</td>
-      <td>0.426107</td>
-      <td>0.336718</td>
-      <td>-0.266472</td>
-      <td>-0.759382</td>
+      <td>0.440370</td>
+      <td>0.359511</td>
+      <td>-0.269646</td>
+      <td>-0.721168</td>
     </tr>
     <tr>
       <th>TF2</th>
-      <td>0.426107</td>
+      <td>0.440370</td>
       <td>1.000000</td>
-      <td>0.153369</td>
-      <td>-0.136285</td>
-      <td>-0.379380</td>
+      <td>0.189575</td>
+      <td>-0.146711</td>
+      <td>-0.389451</td>
     </tr>
     <tr>
       <th>TF3</th>
-      <td>0.336718</td>
-      <td>0.153369</td>
+      <td>0.359511</td>
+      <td>0.189575</td>
       <td>1.000000</td>
-      <td>-0.088676</td>
-      <td>-0.294519</td>
+      <td>-0.119603</td>
+      <td>-0.312932</td>
     </tr>
     <tr>
       <th>TF4</th>
-      <td>-0.266472</td>
-      <td>-0.136285</td>
-      <td>-0.088676</td>
+      <td>-0.269646</td>
+      <td>-0.146711</td>
+      <td>-0.119603</td>
       <td>1.000000</td>
-      <td>0.243514</td>
+      <td>0.241384</td>
     </tr>
     <tr>
       <th>TF5</th>
-      <td>-0.759382</td>
-      <td>-0.379380</td>
-      <td>-0.294519</td>
-      <td>0.243514</td>
+      <td>-0.721168</td>
+      <td>-0.389451</td>
+      <td>-0.312932</td>
+      <td>0.241384</td>
       <td>1.000000</td>
     </tr>
   </tbody>
 </table>
 </div>
-
-
-```python
-dummy_data.combined_correlations_df # breakdown of the correlations in training, testing, and overall data
-```
-<div>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>i</th>
-      <th>predictor</th>
-      <th>expected_corr_with_Y</th>
-      <th>actual_corr</th>
-      <th>difference</th>
-      <th>X_group</th>
-      <th>num_samples</th>
-      <th>sparsity_factor_perc</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>TF1</td>
-      <td>0.9</td>
-      <td>0.922158</td>
-      <td>0.022158</td>
-      <td>Overall</td>
-      <td>unique 10000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>TF2</td>
-      <td>0.5</td>
-      <td>0.462752</td>
-      <td>0.037248</td>
-      <td>Overall</td>
-      <td>unique 10000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>TF3</td>
-      <td>0.4</td>
-      <td>0.363821</td>
-      <td>0.036179</td>
-      <td>Overall</td>
-      <td>unique 10000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>TF4</td>
-      <td>-0.3</td>
-      <td>-0.272976</td>
-      <td>0.027024</td>
-      <td>Overall</td>
-      <td>unique 10000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>TF5</td>
-      <td>-0.8</td>
-      <td>-0.802524</td>
-      <td>0.002524</td>
-      <td>Overall</td>
-      <td>unique 10000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>TF1</td>
-      <td>0.9</td>
-      <td>0.920876</td>
-      <td>0.020876</td>
-      <td>Training</td>
-      <td>unique 7000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>TF2</td>
-      <td>0.5</td>
-      <td>0.459479</td>
-      <td>0.040521</td>
-      <td>Training</td>
-      <td>unique 7000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>TF3</td>
-      <td>0.4</td>
-      <td>0.365248</td>
-      <td>0.034752</td>
-      <td>Training</td>
-      <td>unique 7000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>TF4</td>
-      <td>-0.3</td>
-      <td>-0.267220</td>
-      <td>0.032780</td>
-      <td>Training</td>
-      <td>unique 7000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>TF5</td>
-      <td>-0.8</td>
-      <td>-0.795406</td>
-      <td>0.004594</td>
-      <td>Training</td>
-      <td>unique 7000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>TF1</td>
-      <td>0.9</td>
-      <td>0.925128</td>
-      <td>0.025128</td>
-      <td>Testing</td>
-      <td>unique 3000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>TF2</td>
-      <td>0.5</td>
-      <td>0.470230</td>
-      <td>0.029770</td>
-      <td>Testing</td>
-      <td>unique 3000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>TF3</td>
-      <td>0.4</td>
-      <td>0.360628</td>
-      <td>0.039372</td>
-      <td>Testing</td>
-      <td>unique 3000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>TF4</td>
-      <td>-0.3</td>
-      <td>-0.285976</td>
-      <td>0.014024</td>
-      <td>Testing</td>
-      <td>unique 3000</td>
-      <td>70</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>TF5</td>
-      <td>-0.8</td>
-      <td>-0.818860</td>
-      <td>0.018860</td>
-      <td>Testing</td>
-      <td>unique 3000</td>
-      <td>70</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-We note that NetREm will make this input TF-TF Protein-Protein Interaction (PPI) Network (PPIN) fully connected by adding a default edge weight ŋ = 0.01 for missing edges. This is for numerical stability and to also help propel the discovery of novel TF-TF coordination links. 
 
 ```python
 # prior network edge_list (missing edges or edges with no edge weight will be added with the default_edge_list so the network is fully-connected):
@@ -796,26 +542,25 @@ edge_list = [["TF1", "TF2", 0.8], ["TF4", "TF5", 0.95], ["TF1", "TF3"], ["TF1", 
              ["TF2", "TF3"], ["TF2", "TF4"], ["TF2", "TF5"], ["TF3", "TF4"], ["TF3", "TF5"]]
 
 beta_network_val = 1 
-alpha_lasso_val = 0.1 # the default, so we do not need to specify it. 
 # by default, model_type is Lasso, so alpha_lasso_val will be specified for the alpha_lasso parameter. 
-# However, if we specify model_type = Lasso, so our alpha_lasso is determined by cross-validation on training data).
+# However, we will specify model_type = LassoCV, so our alpha_lasso is determined by cross-validation on training data).
 
 # Building the network regularized regression model: 
 # By default, edges are constructed between all of the nodes; nodes with a missing edge are assigned the default_edge_weight. 
 netrem_demo = netrem(edge_list = edge_list, 
                      beta_net = beta_network_val,
-                     alpha_lasso = alpha_lasso_val, # the default is 0.1. 
-                     model_type = "Lasso",
+                     model_type = "LassoCV",
                      view_network = True)
 
 # Fitting the NetREm model on training data: X_train and y_train:
 netrem_demo.fit(X_train, y_train)
 ```
 
-![png](output_3_1_new.png)
+    
+![png](output_3_1.png)
     
 
-![png](netrem_estimator_new.PNG)
+![png](netrem_estimator.PNG)
 
 <!-- There is a particularly strong relationship between $TF_{1} \leftrightarrow TF_{2}$ of 0.9 and between $TF_{4} \leftrightarrow TF_{5}$ of 0.75. The remaining relationships among the other TFs is assumed to be the default (edge weight of 0.1). -->
 <!-- Here, $gregulnet_{demo}$ is an object of the *GRegulNet* class. We fit a model using $X_{train}$ and $y_{train}$ data (70 samples). -->
@@ -833,6 +578,32 @@ gregulnet_demo.coef
 netrem_demo.model_coef_df
 ```
 
+<!-- <div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>y_intercept</th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>TF3</th>
+      <th>TF4</th>
+      <th>TF5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>None</td>
+      <td>0.236556</td>
+      <td>0.114307</td>
+      <td>0.001488</td>
+      <td>-0.035129</td>
+      <td>-0.160095</td>
+    </tr>
+  </tbody>
+</table>
+</div> -->
 
 <div>
 <table border="1" class="dataframe">
@@ -851,11 +622,11 @@ netrem_demo.model_coef_df
     <tr>
       <th>0</th>
       <td>None</td>
-      <td>0.376611</td>
-      <td>0.249198</td>
-      <td>0.034235</td>
-      <td>-0.091983</td>
-      <td>-0.188037</td>
+      <td>0.567823</td>
+      <td>0.139727</td>
+      <td>0.004833</td>
+      <td>-0.063452</td>
+      <td>-0.286163</td>
     </tr>
   </tbody>
 </table>
@@ -884,65 +655,52 @@ netrem_demo.B_interaction_df
   <tbody>
     <tr>
       <th>TF1</th>
-      <td>0.000000</td>
-      <td>71.466718</td>
-      <td>41.657612</td>
-      <td>-38.149829</td>
-      <td>-97.923796</td>
+      <td>1.087912</td>
+      <td>0.380915</td>
+      <td>0.107921</td>
+      <td>-0.282344</td>
+      <td>-0.727907</td>
     </tr>
     <tr>
       <th>TF2</th>
-      <td>71.466718</td>
-      <td>0.000000</td>
-      <td>16.547463</td>
-      <td>-20.520985</td>
-      <td>-54.808259</td>
+      <td>0.380915</td>
+      <td>1.087912</td>
+      <td>-0.057565</td>
+      <td>-0.160386</td>
+      <td>-0.406298</td>
     </tr>
     <tr>
       <th>TF3</th>
-      <td>41.657612</td>
-      <td>16.547463</td>
-      <td>0.000000</td>
-      <td>-24.335893</td>
-      <td>-51.672959</td>
+      <td>0.107921</td>
+      <td>-0.057565</td>
+      <td>33.000000</td>
+      <td>-0.378115</td>
+      <td>-0.573291</td>
     </tr>
     <tr>
       <th>TF4</th>
-      <td>-38.149829</td>
-      <td>-20.520985</td>
-      <td>-24.335893</td>
-      <td>0.000000</td>
-      <td>100.000000</td>
+      <td>-0.282344</td>
+      <td>-0.160386</td>
+      <td>-0.378115</td>
+      <td>1.099900</td>
+      <td>0.167061</td>
     </tr>
     <tr>
       <th>TF5</th>
-      <td>-97.923796</td>
-      <td>-54.808259</td>
-      <td>-51.672959</td>
-      <td>100.000000</td>
-      <td>0.000000</td>
+      <td>-0.727907</td>
+      <td>-0.406298</td>
+      <td>-0.573291</td>
+      <td>0.167061</td>
+      <td>1.099900</td>
     </tr>
   </tbody>
 </table>
 </div>
 
-Based on the NetREm model, we predict:
-* TF predictors with positive $c^{*} > 0$ coefficient signs are activators of TG: linked to increased gene expression levels $y$ of the TG. 
-* TF predictors with negative $c^{*} < 0$ coefficient signs are repressors of TG: linked to decreased gene expression levels $y$ of the TG. 
-* TF predictors with negative $c^{*} = 0$ coefficient signs are not selected as final TFs for the TG based on the input data.  
+We predict that positive scores between predictors (e.g. $TF_1$ and $TF_2$ have a score of 0.380915) tend to imply potential cooperativity (e.g. cobinding) among them. Negative scores may suggest antagonistic activity between the TFs (e.g. $TF_1$ and $TF_5$ have a score of -0.727907), where these TFs may compete to regulate the $TG$ through biological mechanisms that may be investigated further through experiments.
 
-Our TG-specific TF-TF coordination network (i.e. coordination network among predictors for this $y$ variable) has coordination scores $B$ that are between -100 and 100.  That is, -100 ≤ $B$ ≤ 100. 
 
-These tend to reflect the grouped variable selection property of network-regularized regression models that tend to select TF predictors that also group together in biological pathways in the original Protein-Protein Interaction Network (PPIN). 
-
-We predict positive scores 0 < $B$ ≤ 100 between predictors with the same coefficient sign (e.g. $TF_1$ and $TF_2$ have a score of 71.466718, which is higher than their links with $TF3$ since TF3 has weak links with them in the input TF-TF PPIN). This implies potential cooperativity (e.g. cobinding, pioneer/settler models) among them. They have a shared goal and $B > 0$:
-* TF1, TF2, TF3 have a common goal of co-activating TG expression levels $y$ :arrow_right: increased $y$
-* TF4 and TF5 have a common goal of co-repressing TG expression levels $y$ :arrow_right: decreased $y$
-
-We predict negative scores  -100 ≤ $B$ < 0 between predictors with different coefficients sign (e.g. $TF_1$ and $TF_5$ have a score of -97.923796). This implies potential antagonistic activity (e.g. competition for binding sites, sequestration) among them: activator-repressor antagonism. For instance, these TFs may compete to regulate the $TG$ through biological mechanisms that may be investigated further through experiments. They have opposing goals that may partly cancel each other out so $B < 0$:
-* TF1, TF2, TF3 each have antagonistic relations with TF4 and TF5. 
-
-We can test the performance of our data on testing data $X_{test}$ (3,000 samples), to understand better the generalizability of our NetREm model on new, unseen, data. 
+We can test the performance of our data on testing data $X_{test}$ ($M = 30,000$ samples), to understand better the generalizability of our NetREm model on new, unseen, data. 
 
 
 ```python
@@ -952,39 +710,11 @@ mse_test = netrem_demo.test_mse(X_test, y_test)
 print(f"The testing Mean Square Error (MSE) is {mse_test}")
 ```
 
-    The testing Mean Square Error (MSE) is 0.21834495195611514
+    The testing Mean Square Error (MSE) is 0.1379447181612968
 
 
-We can analyze more metrics about our NetREm model results as below, where:
-* low NMSE values are great
-* high values for SNR and PSNR are ideal: 
+We can analyze more metrics about our NetREm model results as below: 
 
-```python
-nmse_test  = em.nmse(y_test.values.flatten(), pred_y_test)
-print(f"The testing Normalized Mean Square Error (NMSE) is {nmse_test}")
-```
-
-    The testing Normalized Mean Square Error (NMSE) is 0.22013278683483584
-
-```python
-snr_test  = em.snr(y_test.values.flatten(), pred_y_test)
-print(f"The testing Signal-to-Noise Ratio (SNR) is {snr_test}")
-
-```
-
-    The testing Signal-to-Noise Ratio (SNR) is 6.573152683008163
-    
-
-
-```python
-psnr_test  = em.psnr(y_test.values.flatten(), pred_y_test)
-print(f"The testing Peak Signal-to-Noise Ratio (PSNR) is {psnr_test}")
-
-```
-
-    The testing Peak Signal-to-Noise Ratio (PSNR) is 17.629710652383
-    
-These are additional metrics: 
 ```python
 netrem_demo.final_corr_vs_coef_df
 ```
@@ -1007,31 +737,31 @@ netrem_demo.final_corr_vs_coef_df
       <th>0</th>
       <td>network regression coeff. with y: y</td>
       <td>X_train</td>
-      <td>0.376611</td>
-      <td>0.249198</td>
-      <td>0.034235</td>
-      <td>-0.091983</td>
-      <td>-0.188037</td>
+      <td>0.567823</td>
+      <td>0.139727</td>
+      <td>0.004833</td>
+      <td>-0.063452</td>
+      <td>-0.286163</td>
     </tr>
     <tr>
       <th>0</th>
       <td>corr (r) with y: y</td>
       <td>X_train</td>
-      <td>0.893875</td>
-      <td>0.494397</td>
-      <td>0.401819</td>
-      <td>-0.295085</td>
-      <td>-0.792749</td>
+      <td>0.900178</td>
+      <td>0.496234</td>
+      <td>0.402366</td>
+      <td>-0.303588</td>
+      <td>-0.800527</td>
     </tr>
     <tr>
       <th>0</th>
       <td>Absolute Value NetREm Coefficient Ranking</td>
       <td>X_train</td>
       <td>1</td>
-      <td>2</td>
+      <td>3</td>
       <td>5</td>
       <td>4</td>
-      <td>3</td>
+      <td>2</td>
     </tr>
   </tbody>
 </table>
@@ -1041,7 +771,7 @@ In the context of gene regulation, our results may thereby be interpreted in the
 <img src="netrem_final_demo.png" style="width: 400px;"/>
 
 
-Nonetheless, NetREm can be applied to solve a suite of regression problems where there is an underlying connection among the predictors (that group together in meaningful subnetworks to influence the outcome $y$) and their correlation with one another may be utilized jointly for the predictive task rather than discarded. 
+Nonetheless, NetREm can be applied to solve a suite of regression problems where there is an underlying connection among the predictors and their correlation with one another may be utilized jointly for the predictive task rather than discarded. 
 
 We also provide a suite of evaluation functions and explanations of more advanced functionalities in our [User Guide](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/). For instance, we provide more details on our **netrem** and **netremcv** functions in terms of predicting gene regulation in myelinating Schwann cells [here](https://github.com/SaniyaKhullar/NetREm/blob/main/user_guide/NetREm%20Myelinating%20Schwann%20Cells%20Comprehensive%20Example.ipynb).
 
@@ -1060,18 +790,14 @@ netrem_demo.combined_df
       <th>TG</th>
       <th>info</th>
       <th>train_mse</th>
-      <th>train_nmse</th>
-      <th>train_snr</th>
-      <th>train_psnr</th>
       <th>beta_net</th>
-      <th>alpha_lasso</th>
+      <th>alpha_lassoCV</th>
       <th>AbsoluteVal_coefficient</th>
       <th>Rank</th>
       <th>final_model_TFs</th>
       <th>TFs_input_to_model</th>
       <th>original_TFs_in_X</th>
       <th>standardized_X</th>
-      <th>standardized_y</th>
       <th>centered_y</th>
     </tr>
   </thead>
@@ -1082,12 +808,9 @@ netrem_demo.combined_df
       <td>y_intercept</td>
       <td>y</td>
       <td>netrem_no_intercept</td>
-      <td>0.219221</td>
-      <td>0.219221</td>
-      <td>6.591179</td>
-      <td>17.777226</td>
+      <td>0.136657</td>
       <td>1</td>
-      <td>0.1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
       <td>NaN</td>
       <td>6</td>
       <td>5</td>
@@ -1095,289 +818,104 @@ netrem_demo.combined_df
       <td>5</td>
       <td>True</td>
       <td>True</td>
-      <td>False</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>0.376611</td>
+      <td>0.567823</td>
       <td>TF1</td>
       <td>y</td>
       <td>netrem_no_intercept</td>
-      <td>0.219221</td>
-      <td>0.219221</td>
-      <td>6.591179</td>
-      <td>17.777226</td>
+      <td>0.136657</td>
       <td>1</td>
-      <td>0.1</td>
-      <td>0.376611</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.567823</td>
       <td>1</td>
       <td>5</td>
       <td>5</td>
       <td>5</td>
       <td>True</td>
       <td>True</td>
-      <td>False</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.249198</td>
+      <td>0.139727</td>
       <td>TF2</td>
       <td>y</td>
       <td>netrem_no_intercept</td>
-      <td>0.219221</td>
-      <td>0.219221</td>
-      <td>6.591179</td>
-      <td>17.777226</td>
+      <td>0.136657</td>
       <td>1</td>
-      <td>0.1</td>
-      <td>0.249198</td>
-      <td>2</td>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.034235</td>
-      <td>TF3</td>
-      <td>y</td>
-      <td>netrem_no_intercept</td>
-      <td>0.219221</td>
-      <td>0.219221</td>
-      <td>6.591179</td>
-      <td>17.777226</td>
-      <td>1</td>
-      <td>0.1</td>
-      <td>0.034235</td>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.091983</td>
-      <td>TF4</td>
-      <td>y</td>
-      <td>netrem_no_intercept</td>
-      <td>0.219221</td>
-      <td>0.219221</td>
-      <td>6.591179</td>
-      <td>17.777226</td>
-      <td>1</td>
-      <td>0.1</td>
-      <td>0.091983</td>
-      <td>4</td>
-      <td>5</td>
-      <td>5</td>
-      <td>5</td>
-      <td>True</td>
-      <td>True</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>-0.188037</td>
-      <td>TF5</td>
-      <td>y</td>
-      <td>netrem_no_intercept</td>
-      <td>0.219221</td>
-      <td>0.219221</td>
-      <td>6.591179</td>
-      <td>17.777226</td>
-      <td>1</td>
-      <td>0.1</td>
-      <td>0.188037</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.139727</td>
       <td>3</td>
       <td>5</td>
       <td>5</td>
       <td>5</td>
       <td>True</td>
       <td>True</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-```python
-netrem_demo.TF_coord_scores_pairwise_df
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <tbody>
-    <tr>
-      <th>23</th>
-      <td>TF4</td>
-      <td>TF5</td>
-      <td>100.000000</td>
-      <td>100.000000</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>TF5</td>
-      <td>TF4</td>
-      <td>100.000000</td>
-      <td>100.000000</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>TF1</td>
-      <td>TF5</td>
-      <td>-97.923796</td>
-      <td>97.923796</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>TF5</td>
-      <td>TF1</td>
-      <td>-97.923796</td>
-      <td>97.923796</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>TF2</td>
-      <td>TF1</td>
-      <td>71.466718</td>
-      <td>71.466718</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>TF1</td>
-      <td>TF2</td>
-      <td>71.466718</td>
-      <td>71.466718</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>TF5</td>
-      <td>TF2</td>
-      <td>-54.808259</td>
-      <td>54.808259</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>TF2</td>
-      <td>TF5</td>
-      <td>-54.808259</td>
-      <td>54.808259</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>TF5</td>
-      <td>TF3</td>
-      <td>-51.672959</td>
-      <td>51.672959</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>TF3</td>
-      <td>TF5</td>
-      <td>-51.672959</td>
-      <td>51.672959</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>TF1</td>
-      <td>TF3</td>
-      <td>41.657612</td>
-      <td>41.657612</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>TF3</td>
-      <td>TF1</td>
-      <td>41.657612</td>
-      <td>41.657612</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>TF1</td>
-      <td>TF4</td>
-      <td>-38.149829</td>
-      <td>38.149829</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>TF4</td>
-      <td>TF1</td>
-      <td>-38.149829</td>
-      <td>38.149829</td>
-    </tr>
-    <tr>
-      <th>17</th>
+      <td>0.004833</td>
       <td>TF3</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.004833</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.063452</td>
       <td>TF4</td>
-      <td>-24.335893</td>
-      <td>24.335893</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.063452</td>
+      <td>4</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
     </tr>
     <tr>
-      <th>13</th>
-      <td>TF4</td>
-      <td>TF3</td>
-      <td>-24.335893</td>
-      <td>24.335893</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>TF4</td>
-      <td>TF2</td>
-      <td>-20.520985</td>
-      <td>20.520985</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>TF2</td>
-      <td>TF4</td>
-      <td>-20.520985</td>
-      <td>20.520985</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>TF3</td>
-      <td>TF2</td>
-      <td>16.547463</td>
-      <td>16.547463</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>TF2</td>
-      <td>TF3</td>
-      <td>16.547463</td>
-      <td>16.547463</td>
+      <th>5</th>
+      <td>-0.286163</td>
+      <td>TF5</td>
+      <td>y</td>
+      <td>netrem_no_intercept</td>
+      <td>0.136657</td>
+      <td>1</td>
+      <td>Cross-Validation optimal alpha lasso: 0.000898...</td>
+      <td>0.286163</td>
+      <td>2</td>
+      <td>5</td>
+      <td>5</td>
+      <td>5</td>
+      <td>True</td>
+      <td>True</td>
     </tr>
   </tbody>
 </table>
 </div>
 
 
+
+
 ```python
-organize_predictor_interaction_network(netrem_demo)
+organize_B_interaction_network(netrem_demo)
 ```
+
+
 
 
 <div>
@@ -1385,528 +923,408 @@ organize_predictor_interaction_network(netrem_demo)
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>node_1</th>
-      <th>node_2</th>
-      <th>coord_score_cs</th>
+      <th>TF1</th>
+      <th>TF2</th>
+      <th>B_train_weight</th>
       <th>sign</th>
       <th>potential_interaction</th>
-      <th>absVal_coordScore</th>
-      <th>model_type</th>
+      <th>absVal_B</th>
       <th>info</th>
       <th>candidate_TFs_N</th>
       <th>target_gene_y</th>
-      <th>...</th>
-      <th>cs_magnitude_rank</th>
-      <th>cs_magnitude_percentile</th>
-      <th>TF_TF</th>
-      <th>original_corr</th>
-      <th>standardized_corr</th>
-      <th>PPI_score</th>
-      <th>novel_link</th>
-      <th>absVal_diff_cs_and_originalCorr</th>
-      <th>c_1</th>
-      <th>c_2</th>
+      <th>num_final_predictors</th>
+      <th>model_type</th>
+      <th>beta_net</th>
+      <th>X_standardized</th>
+      <th>gene_data</th>
+      <th>rank</th>
+      <th>percentile</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
-      <td>TF4</td>
-      <td>TF5</td>
-      <td>100.000000</td>
-      <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>100.000000</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>1.0</td>
-      <td>95.0</td>
-      <td>TF4_TF5</td>
-      <td>0.234778</td>
-      <td>0.234778</td>
-      <td>0.95</td>
-      <td>no</td>
-      <td>99.765222</td>
-      <td>-0.091983</td>
-      <td>-0.188037</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>TF5</td>
-      <td>TF4</td>
-      <td>100.000000</td>
-      <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>100.000000</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>1.0</td>
-      <td>95.0</td>
-      <td>TF5_TF4</td>
-      <td>0.234778</td>
-      <td>0.234778</td>
-      <td>0.95</td>
-      <td>no</td>
-      <td>99.765222</td>
-      <td>-0.188037</td>
-      <td>-0.091983</td>
-    </tr>
-    <tr>
-      <th>2</th>
+      <th>20</th>
       <td>TF1</td>
       <td>TF5</td>
-      <td>-97.923796</td>
+      <td>-0.727907</td>
       <td>:(</td>
       <td>:( competitive (-)</td>
-      <td>97.923796</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>0.727907</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
-      <td>3.0</td>
-      <td>85.0</td>
-      <td>TF1_TF5</td>
-      <td>-0.708270</td>
-      <td>-0.708270</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>97.215526</td>
-      <td>0.376611</td>
-      <td>-0.188037</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>TF5</td>
-      <td>TF1</td>
-      <td>-97.923796</td>
-      <td>:(</td>
-      <td>:( competitive (-)</td>
-      <td>97.923796</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
       <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>3.0</td>
-      <td>85.0</td>
-      <td>TF5_TF1</td>
-      <td>-0.708270</td>
-      <td>-0.708270</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>97.215526</td>
-      <td>-0.188037</td>
-      <td>0.376611</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>1.0</td>
+      <td>95.0</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>TF2</td>
+      <td>TF5</td>
       <td>TF1</td>
-      <td>71.466718</td>
-      <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>71.466718</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>-0.727907</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.727907</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>1.0</td>
+      <td>95.0</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>TF3</td>
+      <td>TF5</td>
+      <td>-0.573291</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.573291</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>3.0</td>
+      <td>85.0</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>TF5</td>
+      <td>TF3</td>
+      <td>-0.573291</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.573291</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>3.0</td>
+      <td>85.0</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>TF2</td>
+      <td>TF5</td>
+      <td>-0.406298</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.406298</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
       <td>5.0</td>
       <td>75.0</td>
-      <td>TF2_TF1</td>
-      <td>0.438854</td>
-      <td>0.438854</td>
-      <td>0.80</td>
-      <td>no</td>
-      <td>71.027863</td>
-      <td>0.249198</td>
-      <td>0.376611</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>TF5</td>
+      <td>TF2</td>
+      <td>-0.406298</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.406298</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>5.0</td>
+      <td>75.0</td>
     </tr>
     <tr>
       <th>5</th>
       <td>TF1</td>
       <td>TF2</td>
-      <td>71.466718</td>
+      <td>0.380915</td>
       <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>71.466718</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>5.0</td>
-      <td>75.0</td>
-      <td>TF1_TF2</td>
-      <td>0.438854</td>
-      <td>0.438854</td>
-      <td>0.80</td>
-      <td>no</td>
-      <td>71.027863</td>
-      <td>0.376611</td>
-      <td>0.249198</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>TF5</td>
-      <td>TF2</td>
-      <td>-54.808259</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
-      <td>54.808259</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>0.380915</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
       <td>7.0</td>
       <td>65.0</td>
-      <td>TF5_TF2</td>
-      <td>-0.391539</td>
-      <td>-0.391539</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>54.416720</td>
-      <td>-0.188037</td>
-      <td>0.249198</td>
     </tr>
     <tr>
-      <th>7</th>
+      <th>1</th>
       <td>TF2</td>
-      <td>TF5</td>
-      <td>-54.808259</td>
+      <td>TF1</td>
+      <td>0.380915</td>
+      <td>:)</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
-      <td>54.808259</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>0.380915</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
       <td>7.0</td>
       <td>65.0</td>
-      <td>TF2_TF5</td>
-      <td>-0.391539</td>
-      <td>-0.391539</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>54.416720</td>
-      <td>0.249198</td>
-      <td>-0.188037</td>
     </tr>
     <tr>
-      <th>8</th>
-      <td>TF5</td>
+      <th>17</th>
       <td>TF3</td>
-      <td>-51.672959</td>
-      <td>:(</td>
-      <td>:( competitive (-)</td>
-      <td>51.672959</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>9.0</td>
-      <td>55.0</td>
-      <td>TF5_TF3</td>
-      <td>-0.329087</td>
-      <td>-0.329087</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>51.343872</td>
-      <td>-0.188037</td>
-      <td>0.034235</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>TF3</td>
-      <td>TF5</td>
-      <td>-51.672959</td>
-      <td>:(</td>
-      <td>:( competitive (-)</td>
-      <td>51.672959</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>9.0</td>
-      <td>55.0</td>
-      <td>TF3_TF5</td>
-      <td>-0.329087</td>
-      <td>-0.329087</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>51.343872</td>
-      <td>0.034235</td>
-      <td>-0.188037</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>TF3</td>
-      <td>TF1</td>
-      <td>41.657612</td>
-      <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>41.657612</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>11.0</td>
-      <td>45.0</td>
-      <td>TF3_TF1</td>
-      <td>0.360903</td>
-      <td>0.360903</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>41.296709</td>
-      <td>0.034235</td>
-      <td>0.376611</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>TF1</td>
-      <td>TF3</td>
-      <td>41.657612</td>
-      <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>41.657612</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>11.0</td>
-      <td>45.0</td>
-      <td>TF1_TF3</td>
-      <td>0.360903</td>
-      <td>0.360903</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>41.296709</td>
-      <td>0.376611</td>
-      <td>0.034235</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>TF1</td>
       <td>TF4</td>
-      <td>-38.149829</td>
+      <td>-0.378115</td>
       <td>:(</td>
       <td>:( competitive (-)</td>
-      <td>38.149829</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>0.378115</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
-      <td>13.0</td>
-      <td>35.0</td>
-      <td>TF1_TF4</td>
-      <td>-0.269164</td>
-      <td>-0.269164</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>37.880665</td>
-      <td>0.376611</td>
-      <td>-0.091983</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>9.0</td>
+      <td>55.0</td>
     </tr>
     <tr>
       <th>13</th>
       <td>TF4</td>
-      <td>TF1</td>
-      <td>-38.149829</td>
+      <td>TF3</td>
+      <td>-0.378115</td>
       <td>:(</td>
       <td>:( competitive (-)</td>
-      <td>38.149829</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>0.378115</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
-      <td>13.0</td>
-      <td>35.0</td>
-      <td>TF4_TF1</td>
-      <td>-0.269164</td>
-      <td>-0.269164</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>37.880665</td>
-      <td>-0.091983</td>
-      <td>0.376611</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>9.0</td>
+      <td>55.0</td>
     </tr>
     <tr>
-      <th>14</th>
-      <td>TF3</td>
+      <th>3</th>
       <td>TF4</td>
-      <td>-24.335893</td>
+      <td>TF1</td>
+      <td>-0.282344</td>
       <td>:(</td>
       <td>:( competitive (-)</td>
-      <td>24.335893</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>0.282344</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
-      <td>15.0</td>
-      <td>25.0</td>
-      <td>TF3_TF4</td>
-      <td>-0.128266</td>
-      <td>-0.128266</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>24.207627</td>
-      <td>0.034235</td>
-      <td>-0.091983</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>11.0</td>
+      <td>45.0</td>
     </tr>
     <tr>
       <th>15</th>
+      <td>TF1</td>
       <td>TF4</td>
-      <td>TF3</td>
-      <td>-24.335893</td>
+      <td>-0.282344</td>
       <td>:(</td>
       <td>:( competitive (-)</td>
-      <td>24.335893</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>0.282344</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
-      <td>15.0</td>
-      <td>25.0</td>
-      <td>TF4_TF3</td>
-      <td>-0.128266</td>
-      <td>-0.128266</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>24.207627</td>
-      <td>-0.091983</td>
-      <td>0.034235</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>11.0</td>
+      <td>45.0</td>
     </tr>
     <tr>
-      <th>16</th>
+      <th>23</th>
       <td>TF4</td>
-      <td>TF2</td>
-      <td>-20.520985</td>
-      <td>:(</td>
-      <td>:( competitive (-)</td>
-      <td>20.520985</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>17.0</td>
-      <td>15.0</td>
-      <td>TF4_TF2</td>
-      <td>-0.139661</td>
-      <td>-0.139661</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>20.381324</td>
-      <td>-0.091983</td>
-      <td>0.249198</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>TF2</td>
-      <td>TF4</td>
-      <td>-20.520985</td>
-      <td>:(</td>
-      <td>:( competitive (-)</td>
-      <td>20.520985</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
-      <td>5</td>
-      <td>y</td>
-      <td>...</td>
-      <td>17.0</td>
-      <td>15.0</td>
-      <td>TF2_TF4</td>
-      <td>-0.139661</td>
-      <td>-0.139661</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>20.381324</td>
-      <td>0.249198</td>
-      <td>-0.091983</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>TF3</td>
-      <td>TF2</td>
-      <td>16.547463</td>
+      <td>TF5</td>
+      <td>0.167061</td>
       <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>16.547463</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>:(</td>
+      <td>0.167061</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
-      <td>19.0</td>
-      <td>5.0</td>
-      <td>TF3_TF2</td>
-      <td>0.176441</td>
-      <td>0.176441</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>16.371022</td>
-      <td>0.034235</td>
-      <td>0.249198</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>13.0</td>
+      <td>35.0</td>
     </tr>
     <tr>
       <th>19</th>
-      <td>TF2</td>
-      <td>TF3</td>
-      <td>16.547463</td>
+      <td>TF5</td>
+      <td>TF4</td>
+      <td>0.167061</td>
       <td>:)</td>
-      <td>:) cooperative (+)</td>
-      <td>16.547463</td>
-      <td>Lasso</td>
-      <td>matrix of TF-TF interactions</td>
+      <td>:(</td>
+      <td>0.167061</td>
+      <td>B matrix of TF-TF interactions</td>
       <td>5</td>
       <td>y</td>
-      <td>...</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>13.0</td>
+      <td>35.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>TF4</td>
+      <td>TF2</td>
+      <td>-0.160386</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.160386</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>15.0</td>
+      <td>25.0</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>TF2</td>
+      <td>TF4</td>
+      <td>-0.160386</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.160386</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>15.0</td>
+      <td>25.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>TF3</td>
+      <td>TF1</td>
+      <td>0.107921</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.107921</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>17.0</td>
+      <td>15.0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>TF1</td>
+      <td>TF3</td>
+      <td>0.107921</td>
+      <td>:)</td>
+      <td>:(</td>
+      <td>0.107921</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>17.0</td>
+      <td>15.0</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>TF2</td>
+      <td>TF3</td>
+      <td>-0.057565</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.057565</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
       <td>19.0</td>
       <td>5.0</td>
-      <td>TF2_TF3</td>
-      <td>0.176441</td>
-      <td>0.176441</td>
-      <td>0.01</td>
-      <td>yes</td>
-      <td>16.371022</td>
-      <td>0.249198</td>
-      <td>0.034235</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>TF3</td>
+      <td>TF2</td>
+      <td>-0.057565</td>
+      <td>:(</td>
+      <td>:( competitive (-)</td>
+      <td>0.057565</td>
+      <td>B matrix of TF-TF interactions</td>
+      <td>5</td>
+      <td>y</td>
+      <td>5</td>
+      <td>LassoCV</td>
+      <td>1</td>
+      <td>True</td>
+      <td>training gene expression data</td>
+      <td>19.0</td>
+      <td>5.0</td>
     </tr>
   </tbody>
 </table>
-<p>20 rows × 25 columns</p>
 </div>
-
-We also note that since `w_transform_for_d` = "none", then to calculate the degree of each TF predictor node, we calculate the sum of all edges $w_{ij}$ for $j = 1$ to $N$ where $j \neq i$. Then, the degree $d$ of $TF_i$ is denoted as $d_i$, and it can be expressed as:
-
-$$
-d_i = \sum_{\substack{j=1 \\ j \neq i}}^N w_{ij}
-$$
-
-Instead of self-loops, we have: 
-$$
-w_{ii} = \frac{d_i}{N-1}
-$$
-
-We preprocess the input TF-TF PPI network to make it fully-connected for all pairwise TF-TF edges (`default_edge_weight` of 0.01) and diagonals reflecting averaged connectivity values. 
-
 
 ## Manuscript
 Please note that the manuscript associated with NetREm is available as a pre-print on biorxiv: [Link to Paper](https://www.biorxiv.org/content/10.1101/2023.10.25.563769v1)
