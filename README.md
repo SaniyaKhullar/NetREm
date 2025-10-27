@@ -1213,6 +1213,15 @@ netrem_demo.TF_coord_scores_pairwise_df
 
 <div>
 <table border="1" class="dataframe">
+    <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>node_1</th>
+          <th>node_2</th>
+          <th>coordination_score</th>
+          <th>absVal_coord_score</th>
+    </tr>
+  </thead>
   <tbody>
     <tr>
       <th>23</th>
