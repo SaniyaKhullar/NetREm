@@ -36,8 +36,8 @@ from skopt import gp_minimize, space
 from skopt.utils import use_named_args
 #import Netrem_model_builder as nm
 from sklearn import linear_model, preprocessing # 9/19
-import NetremmerFinal2024 as nm
-from NetremmerFinal2024 import *
+import Netrem_model_builder as nm
+from Netrem_model_builder import *
 
 class BayesianObjective_Lasso:
     def __init__(self, X, y, cv_folds, model, scorer="mse", print_network=False):
@@ -281,8 +281,6 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
             tfs_added_list += js_minier[js_minier["TF1"] == tfs_to_use_list[tf_num]].head(3)["TF2"].tolist()
     
     tfs_added_list.sort()
-
-    
     ####################################
     if verbose:
         print(len(tfs_added_list))
@@ -328,7 +326,6 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
                                            verbose = verbose,
                                       gene_expression_nodes = key_genes,
                                      view_network = view_network)
-
     model_comparison_df1 = pd.DataFrame()
     model_comparison_df2 = pd.DataFrame()
     bayes_optimizer_bool = False
@@ -408,8 +405,6 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
 
         model_comparison_df2["approach"] = "gridSearchCV"
         griddy_optimizer_bool = True
-    # except:
-    #     print(":( gridsearchCV optimizer is not working")
     both_approaches_bool = False
     if bayes_optimizer_bool and griddy_optimizer_bool:
         combined_model_compare_df = pd.concat([model_comparison_df1, model_comparison_df2])
@@ -449,240 +444,8 @@ def model_comparison_metrics_for_target_gene_with_BayesianOpt_andOr_GridSearchCV
     return combined_model_compare_df
 
 
+def baseline_metrics_function(X_train, y_train, X_test, y_test, tg,  model_name, y_intercept, standardize_X=True, standardize_y = True, center_y=False,verbose = False):
 
-def baseline_metrics_function(X_train, y_train, X_test, y_test, tg, model_name, y_intercept, standardize_X=True, standardize_y=True, center_y=False, cv_num = 5, verbose=False):
-    
-    if verbose:
-        print(f"{model_name} results :) for fitting y_intercept = {y_intercept}")
-    
-    try:
-        # Initialize the model based on the model name
-        if model_name == "ElasticNetCV":
-            regr = ElasticNetCV(cv=cv_num, random_state=0, fit_intercept=y_intercept)
-        elif model_name == "LinearRegression":
-            regr = LinearRegression(fit_intercept=y_intercept)
-        elif model_name == "LassoCV":
-            regr = LassoCV(cv=cv_num, fit_intercept=y_intercept)
-        elif model_name == "RidgeCV":
-            regr = RidgeCV(cv=cv_num, fit_intercept=y_intercept)
-        
-        # Standardize X if specified
-        if standardize_X:
-            scaler_x = preprocessing.StandardScaler().fit(X_train)  # Fit only on training data
-            X_train = pd.DataFrame(scaler_x.transform(X_train), columns=X_train.columns)
-            X_test = pd.DataFrame(scaler_x.transform(X_test), columns=X_test.columns)
-
-        # Reshape y to ensure it's a 1D array (convert to NumPy array first)
-        y_train = y_train.values.ravel()
-        y_test = y_test.values.ravel()
-
-        # Standardize y if specified
-        if standardize_y:
-            y_train = y_train.reshape(-1, 1)  # Ensure y is a 2D array for scaling
-            y_test = y_test.reshape(-1, 1)
-            scaler_y = preprocessing.StandardScaler().fit(y_train)  # Fit only on training data
-            y_train = scaler_y.transform(y_train).ravel()  # Flatten back to 1D
-            y_test = scaler_y.transform(y_test).ravel()  # Flatten back to 1D
-        
-        # Center y if specified
-        if center_y:
-            mean_y_train = np.mean(y_train)
-            y_train = y_train - mean_y_train
-            y_test = y_test - mean_y_train
-        
-        # Drop the target gene from X_train and X_test if present
-        if tg in X_train.columns:
-            X_train = X_train.drop(columns=[tg])
-            X_test = X_test.drop(columns=[tg])
-        
-        # Fit the model
-        regr.fit(X_train, y_train)
-        
-        # Ensure the coefficients are correctly shaped
-        model_df = pd.DataFrame(regr.coef_.reshape(1, -1), columns=X_train.columns)
-
-        if verbose:
-            print(model_df)
-        
-        # Process the coefficients
-        non_zero_coefs = model_df.loc[:, model_df.iloc[0] != 0]  # Filter out zero coefficients
-
-        # Check if there are any non-zero coefficients
-        if non_zero_coefs.empty:
-            print(f"Warning: All coefficients are zero for model {model_name} and gene {tg}.")
-            return pd.DataFrame()  # Return empty DataFrame if all coefficients are zero
-
-        # Convert the DataFrame to a sorted Series
-        sorted_series = non_zero_coefs.abs().iloc[0].sort_values(ascending=False)
-
-        # Continue processing
-        original_coef_df = non_zero_coefs.T.reset_index()
-
-        # Debugging: Print original_coef_df structure
-        if verbose:  # Always print for debugging
-            print(f"original_coef_df for gene {tg}:\n", original_coef_df.head())
-
-        # Rename columns correctly
-        original_coef_df.columns = ["TF", "coef"]
-
-        # Check if 'TF' column exists after renaming
-        if "TF" not in original_coef_df.columns:
-            raise ValueError(f"'TF' column not found in original_coef_df for gene {tg}. Check the DataFrame structure.")
-
-        # Convert the sorted series back to a DataFrame
-        sorted_df = pd.DataFrame(sorted_series).reset_index()
-        sorted_df.columns = ["TF", "AbsoluteVal_coefficient"]
-        sorted_df['Rank'] = range(1, len(sorted_df) + 1)
-        sorted_df["Info"] = model_name
-        sorted_df["y_intercept"] = "True :)" if y_intercept else "False :("
-        sorted_df["final_model_TFs"] = model_df.shape[1]
-        sorted_df["TFs_input_to_model"] = X_train.shape[1]
-        sorted_df["original_TFs_in_X"] = X_train.shape[1]
-        
-        # Predictions and performance metrics
-        predY_train = regr.predict(X_train)
-        predY_test = regr.predict(X_test)
-        train_mse = em.mse(y_train, predY_train)
-        test_mse = em.mse(y_test, predY_test)
-        sorted_df["train_mse"] = train_mse
-        sorted_df["test_mse"] = test_mse
-        sorted_df["train_nmse"] = em.nmse(y_train, predY_train)
-        sorted_df["test_nmse"] = em.nmse(y_test, predY_test)
-        sorted_df["train_snr"] = em.snr(y_train, predY_train)
-        sorted_df["test_snr"] = em.snr(y_test, predY_test)
-        sorted_df["train_psnr"] = em.psnr(y_train, predY_train)
-        sorted_df["test_psnr"] = em.psnr(y_test, predY_test)
-        sorted_df["standardize_X"] = standardize_X
-        sorted_df["center_y"] = center_y
-        sorted_df["TG"] = tg
-        
-        # Merge with the original coefficients DataFrame
-        sorted_df = pd.merge(sorted_df, original_coef_df, on="TF")
-        
-    except Exception as e:
-        print(f"An error occurred in {model_name} for gene {tg}: {str(e)}")
-        return pd.DataFrame()  # Return an empty DataFrame on error
-    
-    return sorted_df
-
-def baseline_metrics_function_V3(X_train, y_train, X_test, y_test, tg, model_name, y_intercept, standardize_X=True, standardize_y=True, center_y=False, cv_num = 5, verbose=False):
-    
-    if verbose:
-        print(f"{model_name} results :) for fitting y_intercept = {y_intercept}")
-    
-    try:
-        # Initialize the model based on the model name
-        if model_name == "ElasticNetCV":
-            regr = ElasticNetCV(cv=cv_num, random_state=0, fit_intercept=y_intercept)
-        elif model_name == "LinearRegression":
-            regr = LinearRegression(fit_intercept=y_intercept)
-        elif model_name == "LassoCV":
-            regr = LassoCV(cv=cv_num, fit_intercept=y_intercept)
-        elif model_name == "RidgeCV":
-            regr = RidgeCV(cv=cv_num, fit_intercept=y_intercept)
-        
-        # Standardize X if specified
-        if standardize_X:
-            scaler_x = preprocessing.StandardScaler().fit(X_train)  # Fit only on training data
-            X_train = pd.DataFrame(scaler_x.transform(X_train), columns=X_train.columns)
-            X_test = pd.DataFrame(scaler_x.transform(X_test), columns=X_test.columns)
-
-        # Reshape y to ensure it's a 1D array
-        y_train = y_train.ravel()
-        y_test = y_test.ravel()
-
-        # Standardize y if specified
-        if standardize_y:
-            y_train = y_train.reshape(-1, 1)  # Ensure y is a 2D array for scaling
-            y_test = y_test.reshape(-1, 1)
-            scaler_y = preprocessing.StandardScaler().fit(y_train)  # Fit only on training data
-            y_train = scaler_y.transform(y_train).ravel()  # Flatten back to 1D
-            y_test = scaler_y.transform(y_test).ravel()  # Flatten back to 1D
-        
-        # Center y if specified
-        if center_y:
-            mean_y_train = np.mean(y_train)
-            y_train = y_train - mean_y_train
-            y_test = y_test - mean_y_train
-        
-        # Drop the target gene from X_train and X_test if present
-        if tg in X_train.columns:
-            X_train = X_train.drop(columns=[tg])
-            X_test = X_test.drop(columns=[tg])
-        
-        # Fit the model
-        regr.fit(X_train, y_train)
-        
-        # Ensure the coefficients are correctly shaped
-        model_df = pd.DataFrame(regr.coef_.reshape(1, -1), columns=X_train.columns)
-
-        if verbose:
-            print(model_df)
-        
-        # Process the coefficients
-        non_zero_coefs = model_df.loc[:, model_df.iloc[0] != 0]  # Filter out zero coefficients
-
-        # Check if there are any non-zero coefficients
-        if non_zero_coefs.empty:
-            print(f"Warning: All coefficients are zero for model {model_name} and gene {tg}.")
-            return pd.DataFrame()  # Return empty DataFrame if all coefficients are zero
-
-        # Convert the DataFrame to a sorted Series
-        sorted_series = non_zero_coefs.abs().iloc[0].sort_values(ascending=False)
-
-        # Continue processing
-        original_coef_df = non_zero_coefs.T.reset_index()
-
-        # Debugging: Print original_coef_df structure
-        if verbose:  # Always print for debugging
-            print(f"original_coef_df for gene {tg}:\n", original_coef_df.head())
-
-        # Rename columns correctly
-        original_coef_df.columns = ["TF", "coef"]
-
-        # Check if 'TF' column exists after renaming
-        if "TF" not in original_coef_df.columns:
-            raise ValueError(f"'TF' column not found in original_coef_df for gene {tg}. Check the DataFrame structure.")
-
-        # Convert the sorted series back to a DataFrame
-        sorted_df = pd.DataFrame(sorted_series).reset_index()
-        sorted_df.columns = ["TF", "AbsoluteVal_coefficient"]
-        sorted_df['Rank'] = range(1, len(sorted_df) + 1)
-        sorted_df["Info"] = model_name
-        sorted_df["y_intercept"] = "True :)" if y_intercept else "False :("
-        sorted_df["final_model_TFs"] = model_df.shape[1]
-        sorted_df["TFs_input_to_model"] = X_train.shape[1]
-        sorted_df["original_TFs_in_X"] = X_train.shape[1]
-        
-        # Predictions and performance metrics
-        predY_train = regr.predict(X_train)
-        predY_test = regr.predict(X_test)
-        train_mse = em.mse(y_train, predY_train)
-        test_mse = em.mse(y_test, predY_test)
-        sorted_df["train_mse"] = train_mse
-        sorted_df["test_mse"] = test_mse
-        sorted_df["train_nmse"] = em.nmse(y_train, predY_train)
-        sorted_df["test_nmse"] = em.nmse(y_test, predY_test)
-        sorted_df["train_snr"] = em.snr(y_train, predY_train)
-        sorted_df["test_snr"] = em.snr(y_test, predY_test)
-        sorted_df["train_psnr"] = em.psnr(y_train, predY_train)
-        sorted_df["test_psnr"] = em.psnr(y_test, predY_test)
-        sorted_df["standardize_X"] = standardize_X
-        sorted_df["center_y"] = center_y
-        sorted_df["TG"] = tg
-        
-        # Merge with the original coefficients DataFrame
-        sorted_df = pd.merge(sorted_df, original_coef_df, on="TF")
-        
-    except Exception as e:
-        print(f"An error occurred in {model_name} for gene {tg}: {str(e)}")
-        return pd.DataFrame()  # Return an empty DataFrame on error
-    
-    return sorted_df
-
-
-def baseline_metrics_functionV2(X_train, y_train, X_test, y_test, tg,  model_name, y_intercept, standardize_X=True, standardize_y = True, center_y=False,verbose = False):
-    # discarded August 20 2024
     if verbose:
         print(f"{model_name} results :) for fitting y_intercept = {y_intercept}")
     try:
@@ -748,10 +511,6 @@ def baseline_metrics_functionV2(X_train, y_train, X_test, y_test, tg,  model_nam
         sorted_df['Rank'] = range(1, len(sorted_df) + 1)
         sorted_df['TF'] = sorted_df.index
         sorted_df = sorted_df.rename(columns = {0:"AbsoluteVal_coefficient"})
-        # tfs = sorted_df["TF"].tolist()
-        # if tf_name not in tfs:
-        #     sorted_df = pd.DataFrame(["N/A", tf_name]).transpose()
-        #     sorted_df.columns = ["Rank", "TF"]
         sorted_df["Info"] = model_name
         if y_intercept:
             sorted_df["y_intercept"] = "True :)"
@@ -818,10 +577,6 @@ def baseline_metrics_functionOLD(X_train, y_train, X_test, y_test, tg, model_nam
         sorted_df['Rank'] = range(1, len(sorted_df) + 1)
         sorted_df['TF'] = sorted_df.index
         sorted_df = sorted_df.rename(columns = {0:"AbsoluteVal_coefficient"})
-        # tfs = sorted_df["TF"].tolist()
-        # if tf_name not in tfs:
-        #     sorted_df = pd.DataFrame(["N/A", tf_name]).transpose()
-        #     sorted_df.columns = ["Rank", "TF"]
         sorted_df["Info"] = model_name
         if y_intercept:
             sorted_df["y_intercept"] = "True :)"

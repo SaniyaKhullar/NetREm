@@ -48,10 +48,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import StandardScaler
 from gensim.models import Word2Vec
 import subprocess
-from datetime import datetime
-import shutil
-from rich.console import Console
-from rich.panel import Panel
 #import dask.dataframe as dd
 
 os.environ['PYTHONHASHSEED'] = '0'
@@ -220,7 +216,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         tg_name = self.tg_name
         if self.standardize_X: # we will standardize X then
             if self.verbose:
-                ef.print_with_timestamp(":) Please note that we are standardizing the X data")
+                print(":) Standardizing the X data")
             self.old_X_df = X_df
             self.scaler_X = preprocessing.StandardScaler().fit(X_df) # Fit the scaler to the training data only
             # this self.scalar will be utilized for the testing data to prevent data leakage and to ensure generalization :)
@@ -233,14 +229,14 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         if self.center_y: # we will center y then
             self.mean_y_train = np.mean(y) # the average y value
             if self.verbose:
-                ef.print_with_timestamp(":) Please note that we are scentering the y data")
+                print(":) centering the y data")
             # Assuming y_train and y_test are your training and test labels
             self.old_y = y
             y = self.center_y_data(y)
 
         if self.standardize_y: # we will standardize y then
             if self.verbose:
-                ef.print_with_timestamp(":) Please note that we are standardizing the y data")
+                print(":) Standardizing the y data")
             self.old_y_df = y
             self.scaler_y = preprocessing.StandardScaler().fit(y) # Fit the scaler to the training data only
             # this self.scalar will be utilized for the testing data to prevent data leakage and to ensure generalization :)
@@ -257,9 +253,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         common_nodes = list(ppi_net_nodes.intersection(gene_expression_nodes))
 
         if not common_nodes:  # may be possible that the X dataframe needs to be transposed if provided incorrectly
-            message = "Please note: we are flipping X dataframe around so that the rows are samples and the columns are gene/TF names :)"
-            ef.pretty_warning(message)
-            #print("Please note: we are flipping X dataframe around so that the rows are samples and the columns are gene/TF names :)")
+            print("Please note: we are flipping X dataframe around so that the rows are samples and the columns are gene/TF names :)")
             X_df = X_df.transpose()
             gene_expression_nodes = sorted(X_df.columns.tolist())
             common_nodes = list(ppi_net_nodes.intersection(gene_expression_nodes))
@@ -276,10 +270,6 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.final_nodes_set = set(self.final_nodes)
         final_nodes_set = self.final_nodes_set
         ppi_nodes_to_remove = list(ppi_net_nodes - final_nodes_set)
-        #print("ppi_net_nodes", ppi_net_nodes)
-        #print("final_nodes_set", final_nodes_set)
-
-        #print("ppi_nodes_to_remove", ppi_nodes_to_remove)
         self.ppi_nodes_to_remove = ppi_nodes_to_remove
         if self.tg_name in self.final_nodes: 
             self.tg_is_tf = True
@@ -301,7 +291,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         if self.tg_is_tf:
             self.filter_network_bool = True
         if self.filter_network_bool:
-            ef.print_with_timestamp("Please note that we need to update the network information")
+            print("Please note that we need to update the network information")
             self.updating_network_A_matrix_given_X()  # updating the A matrix given the gene expression data X
             if self.view_network:
                 ef.draw_arrow()
@@ -319,58 +309,30 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.y_train = self.preprocess_y_df(y) # dataframe to array
         return self
     
-    # def organize_B_interaction_list(self): # TF-TF interactions to output :)
-    #     final_tfs = self.model_nonzero_coef_df
-    #     final_tfs = final_tfs.drop(columns = ["y_intercept"]).columns.tolist()
-    #     if len(final_tfs) == 0:
-    #         self.coord_score_df = pd.DataFrame()
-    #     else:
-    #         X_tilda_train_df = self.X_tilda_train_df
-    #         c_df = self.model_coef_df
-    #         c_df = c_df.drop(columns = ["y_intercept"])
-    #         coeff_vector = c_df.iloc[0].values
-    #         cos_sim = cosine_similarity(X_tilda_train_df.T)  # Transpose DataFrame to calculate column-wise similarity
-    #         cos_sim_df = pd.DataFrame(cos_sim, index = c_df.columns, columns = c_df.columns)
-    #         coeff_matrix = np.outer(coeff_vector, coeff_vector)
-    #         sign_matrix = np.sign(coeff_matrix).astype(int)
-    #         coord_matrix = abs(cos_sim_df) * sign_matrix
-    #         result = coord_matrix.loc[final_tfs, final_tfs]
-    #         np.fill_diagonal(result.values, 0)
-    #         max_other = np.max(np.abs(result)).max()
-    #         coord_matrix = 100.0*result/max_other
-    #         self.coord_score_df = coord_matrix
-    #     self.TF_interaction_df = self.coord_score_df
-    #     self.B_interaction_df = self.coord_score_df
-    #     return self   
-    
     def organize_B_interaction_list(self): # TF-TF interactions to output :)
-        # updated as of July 7, 2024
         final_tfs = self.model_nonzero_coef_df
-        final_tfs = final_tfs.drop(columns=["y_intercept"]).columns.tolist()
+        final_tfs = final_tfs.drop(columns = ["y_intercept"]).columns.tolist()
         if len(final_tfs) == 0:
             self.coord_score_df = pd.DataFrame()
         else:
             X_tilda_train_df = self.X_tilda_train_df
             c_df = self.model_coef_df
-            c_df = c_df.drop(columns=["y_intercept"])
+            c_df = c_df.drop(columns = ["y_intercept"])
             coeff_vector = c_df.iloc[0].values
             cos_sim = cosine_similarity(X_tilda_train_df.T)  # Transpose DataFrame to calculate column-wise similarity
-            cos_sim_df = pd.DataFrame(cos_sim, index=c_df.columns, columns=c_df.columns)
+            cos_sim_df = pd.DataFrame(cos_sim, index = c_df.columns, columns = c_df.columns)
             coeff_matrix = np.outer(coeff_vector, coeff_vector)
             sign_matrix = np.sign(coeff_matrix).astype(int)
             coord_matrix = abs(cos_sim_df) * sign_matrix
             result = coord_matrix.loc[final_tfs, final_tfs]
             np.fill_diagonal(result.values, 0)
-            
-            # Update this line to avoid using .max() on a float
-            max_other = np.max(np.abs(result.values))
-            
-            coord_matrix = 100.0 * result / max_other
+            max_other = np.max(np.abs(result)).max()
+            coord_matrix = 100.0*result/max_other
             self.coord_score_df = coord_matrix
         self.TF_interaction_df = self.coord_score_df
         self.B_interaction_df = self.coord_score_df
-        return self
-
+        return self   
+    
     
     def fit(self, X, y): # fits a model Function used for model training 
         tg_name = y.columns.tolist()[0]
@@ -380,10 +342,6 @@ class NetREmModel(BaseEstimator, RegressorMixin):
                 print(f":) dropping TG {tg_name} from list of TF predictors!")
             X.drop(columns = [tg_name], inplace = True)
             self.tg_is_tf = True  # 1/31/24
-        # October 12, 2024:
-        X.fillna(0, inplace = True)
-        y.fillna(0, inplace = True)
-        #####################
         self.tg_name = tg_name
         self.updating_network_and_X_during_fitting(X, y)
         self.E_train = self.compute_E_matrix(self.X_train)
@@ -546,75 +504,40 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.E_part_netReg = pd.DataFrame(part_2, index = self.final_nodes, columns = self.final_nodes)
         return B
     
-
-    def compute_X_tilde_y_tilde(self, B, X, y, cond_thresh=1e6, truncation_thresh=1e-6):
-        """
-        Compute X_tilde, y_tilde such that X_tilde.T @ X_tilde = B, y_tilde.T @ X_tilde = y.T @ X.
-        For large condition numbers, applies truncated SVD by setting small singular values to 0.
-        """
+    
+    def compute_X_tilde_y_tilde(self, B, X, y):
+        """Compute X_tilde, y_tilde such that X_tilde.T @ X_tilde = B,   y_tilde.T @ X_tilde = y.T @ X """
         U, s, _Vh = np.linalg.svd(B, hermitian=True)  # B = U @ np.diag(s) @ _Vh
         self.U = U
         self.s = s
         self.B = B
-        
-        # Check condition number
-        cond = s[0] / s[-1]
-        if cond > cond_thresh:
-            message = f'Please note: we have a large conditional number for our B matrix: {cond: .2f}\nso we try out truncated Singular Value Decomposition (SVD)'
-            #print(f'Please note: we have a large conditional number for our B matrix: {cond: .2f}')
-            # Apply truncated SVD: set small singular values to 0
-            s_max = np.max(s)
-            min_trunc_limit = truncation_thresh * s_max
-            s_trunc = np.where(s < min_trunc_limit, 0, s)  # Truncate small singular values
-            message += f' where we set singular values < {min_trunc_limit} to 0 to help make our NetREm model stable and robust.'
-            ef.pretty_warning(message)
-            S_sqrt = ef.DiagonalLinearOperator(np.sqrt(s_trunc))
-            S_inv_sqrt = ef.DiagonalLinearOperator(np.where(s_trunc == 0, 0, 1 / np.sqrt(s_trunc)))  # Set inverse of small values to 0
-        else:
-            # Regular SVD if condition number is acceptable
-            S_sqrt = ef.DiagonalLinearOperator(np.sqrt(s))
-            S_inv_sqrt = ef.DiagonalLinearOperator(1 / np.sqrt(s))
-        
+        if (cond := s[0] / s[-1]) > 1e10:
+            print(f'Large conditional number of B matrix: {cond: .2f}')
+        S_sqrt = ef.DiagonalLinearOperator(np.sqrt(s))
+        S_inv_sqrt = ef.DiagonalLinearOperator(1 / np.sqrt(s))
         X_tilde = S_sqrt @ U.T
-        svd_problem_bool = np.isnan(U.T).any()
-        
+        svd_problem_bool = np.isnan(U.T).any() # we may have problems here 
         if svd_problem_bool:
             B_df = self.B_df
             updated_B_df = B_df.dropna(how='all')
             B = updated_B_df.values
             U, s, _Vh = np.linalg.svd(B, hermitian=True)  # B = U @ np.diag(s) @ _Vh
-            
-            # Check condition number again after dropping NaNs
-            cond = s[0] / s[-1]
-            if cond > cond_thresh:
-                msg = f'Please note: we have a large conditional number for our B matrix even after removing NaN terms: {cond: .2f}\n--> thus, we apply truncated Singular Value Decomposition (SVD)'
-
-                #print(f'Large conditional number of B matrix after NaN removal: {cond: .2f} --> applying truncated SVD')
-                s_max = np.max(s)              
-                ####
-                min_trunc_limit = truncation_thresh * s_max
-                s_trunc = np.where(s < min_trunc_limit, 0, s)  # Truncate small singular values
-                msg += f' where we set singular values < {min_trunc_limit} to 0 to help make our NetREm model stable and robust.'
-                ef.pretty_warning(msg)
-                S_sqrt = ef.DiagonalLinearOperator(np.sqrt(s_trunc))
-                S_inv_sqrt = ef.DiagonalLinearOperator(np.where(s_trunc == 0, 0, 1 / np.sqrt(s_trunc)))  # Set inverse of small values to 0
-            else:
-                S_sqrt = ef.DiagonalLinearOperator(np.sqrt(s))
-                S_inv_sqrt = ef.DiagonalLinearOperator(1 / np.sqrt(s))
-            
+            if (cond := s[0] / s[-1]) > 1e10:
+                print(f'Large conditional number of B matrix: {cond: .2f}')
+            S_sqrt = ef.DiagonalLinearOperator(np.sqrt(s))
+            S_inv_sqrt = ef.DiagonalLinearOperator(1 / np.sqrt(s))
             X_tilde = S_sqrt @ U.T
             self.revised_B_train = B
-        
         y_tilde = (y @ X @ U @ S_inv_sqrt).T
-        
-        # Normalize by scaling factor
-        scale = np.sqrt(self.N) / self.M
+        # assert(np.allclose(y.T @ X, y_tilde.T @ X_tilde))
+        # assert(np.allclose(B, X_tilde.T @ X_tilde))
+        # scale: we normalize by 1/M, but sklearn.linear_model.Lasso normalize by 1/N because X_tilde is N*N matrix,
+        # so Lasso thinks the number of sample is N instead of M, to use lasso solve our desired problem, correct the scale
+        scale = np.sqrt(self.N)/ self.M
         X_tilde *= np.sqrt(self.N)
         y_tilde *= scale
-        
         return X_tilde, y_tilde
-
-      
+    
     
     def standardize_X_tilde_y_tilde(self):
         """Compute X_tilde, y_tilde such that X_tilde.T @ X_tilde = B,   y_tilde.T @ X_tilde = y.T @ X """
@@ -891,9 +814,9 @@ class NetREmModel(BaseEstimator, RegressorMixin):
             A_df = A_df.reindex(columns=sorted(gene_expression_nodes), index=sorted(gene_expression_nodes))
         else:
             if len(nodes_to_add) == 1:
-                ef.print_with_timestamp(f"Please note that we remove 1 node {nodes_to_add[0]} found in the input gene expression data (X) that is not found in the input network :)")
+                print(f"Please note that we remove 1 node {nodes_to_add[0]} found in the input gene expression data (X) that is not found in the input network :)")
             elif len(nodes_to_add) > 1:
-                ef.print_with_timestamp(f":) Since overlapped_nodes_only = True, please note that we remove {len(nodes_to_add)} gene expression nodes that are not found in the input network.")
+                print(f":) Since overlapped_nodes_only = True, please note that we remove {len(nodes_to_add)} gene expression nodes that are not found in the input network.")
                 print(nodes_to_add)
             A_df = A_df.sort_index(axis=0).sort_index(axis=1)
 
@@ -978,13 +901,11 @@ def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.
     default_beta = False
     default_alpha = False
     if beta_net == 1:
-        if verbose:
-            ef.print_with_timestamp(":) netrem (may have prior knowledge): using beta_net default of", 1)
+        print(":) netrem (may have prior knowledge): using beta_net default of", 1)
         default_beta = True
     if alpha_lasso == 0.01:
         if model_type != "LassoCV":
-            if verbose:
-                ef.print_with_timestamp(":) netrem (may have prior knowledge): using alpha_lasso default of", 0.01)
+            print(":) netrem (may have prior knowledge): using alpha_lasso default of", 0.01)
             default_alpha = True
     self_loops = False  
     prior_graph_dict = {"edge_list": edge_list,
@@ -1026,9 +947,6 @@ def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.
         greg_dict["lassocv_n_alphas"] = lassocv_n_alphas
         greg_dict["lassocv_alphas"] = lassocv_alphas
     greggy = NetREmModel(**greg_dict)
-    if verbose:
-        ef.pretty_message(greggy, "Parameters/settings for the NetREm model setup with netrem")
-
     return greggy
 
 
@@ -1205,7 +1123,7 @@ def netremCV(edge_list, X, y,
                   for alpha_las, beta_net in zip(beta_alpha_grid_dict["alpha_lasso_vals"], 
                                                  beta_alpha_grid_dict["beta_network_vals"])]
     if verbose:
-        ef.print_with_timestamp(":) Performing NetREmCV with both beta_network and alpha_lasso as UNKNOWN.")
+        print(":) Performing NetREmCV with both beta_network and alpha_lasso as UNKNOWN.")
     initial_greg =  NetREmModel(network=prior_network, 
                                    y_intercept = y_intercept, 
                                    standardize_X = standardize_X,
@@ -1221,7 +1139,7 @@ def netremCV(edge_list, X, y,
     if reduced_cv_search:
     # Run RandomizedSearchCV
         if verbose:
-            ef.print_with_timestamp(f":) since reduced_cv_search = {reduced_cv_search}, we perform RandomizedSearchCV on a reduced search space")
+            print(f":) since reduced_cv_search = {reduced_cv_search}, we perform RandomizedSearchCV on a reduced search space")
         grid_search= RandomizedSearchCV(initial_greg, 
                                    param_grid, 
                                    n_iter=num_alpha, 
@@ -1241,7 +1159,7 @@ def netremCV(edge_list, X, y,
     best_params = grid_search.best_params_
     optimal_alpha = best_params["alpha_lasso"]
     optimal_beta = best_params["beta_net"]
-    ef.print_with_timestamp(f":) NetREmCV found that the optimal alpha_lasso = {optimal_alpha} and optimal beta_net = {optimal_beta}")
+    print(f":) NetREmCV found that the optimal alpha_lasso = {optimal_alpha} and optimal beta_net = {optimal_beta}")
 
     newest_netrem = NetREmModel(alpha_lasso = optimal_alpha,
                                    beta_net = optimal_beta, 
@@ -1257,7 +1175,7 @@ def netremCV(edge_list, X, y,
                                     overlapped_nodes_only=overlapped_nodes_only)
     newest_netrem.fit(X_train, y_train)
     train_mse = newest_netrem.test_mse(X_train, y_train)
-    ef.print_with_timestamp(f":) Please note that the training Mean Square Error (MSE) from this fitted NetREm model is {train_mse}")
+    print(f":) Please note that the training Mean Square Error (MSE) from this fitted NetREm model is {train_mse}")
     return newest_netrem
 
 
@@ -1272,12 +1190,7 @@ def organize_predictor_interaction_network(netrem_model):
     if "model_nonzero_coef_df" not in vars(netrem_model).keys():
         print(":( No NetREm model was built")
         return None
-    
-    # Adjustment on Nov 1, 2025:
-    if "TF_interaction_df" not in vars(netrem_model).keys():
-        netrem_model.organize_B_interaction_list()
     TF_interaction_df = netrem_model.TF_interaction_df
-    
     if "model_type" in TF_interaction_df.columns.tolist():
         TF_interaction_df = TF_interaction_df.drop(columns = ["model_type"])
     num_TFs = TF_interaction_df.shape[0]
@@ -1326,31 +1239,16 @@ def organize_predictor_interaction_network(netrem_model):
         original_X_corr_mat = netrem_model.X_df.corr()
         standardized_data = False
     # Melting the DataFrame into a 3-column edge list
-    # Adjustment on Nov 1, 2025 :)
-    original_index_name = original_X_corr_mat.index.name
-    if original_index_name == None:
-        original_index_name = "index"
-    original_X_corr_df = original_X_corr_mat.reset_index().melt(id_vars=[original_index_name], var_name="node_2", value_name="original_corr")
-    original_X_corr_df.rename(columns={original_index_name: "node_1"}, inplace=True)
-    # original_X_corr_df = original_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="node_2", value_name="original_corr")
-    # original_X_corr_df.rename(columns={"index": "node_1"}, inplace=True)
-    # end of adjustment on Nov 1, 2025 :)
-
+    original_X_corr_df = original_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="node_2", value_name="original_corr")
+    original_X_corr_df.rename(columns={"index": "node_1"}, inplace=True)
     original_X_corr_df = original_X_corr_df[original_X_corr_df["node_1"] != original_X_corr_df["node_2"]]
     original_X_corr_df["TF_TF"] = original_X_corr_df["node_1"] + "_" + original_X_corr_df["node_2"]
     # Display the first few rows to verify the format
 
     if standardized_data:
         # Melting the DataFrame into a 3-column edge list
-        # Adjustment on Nov 1, 2025 :)
-        standardized_index_name = standardized_X_corr_mat.index.name
-        if standardized_index_name == None:
-            standardized_index_name = "index"
-        standardized_X_corr_df = standardized_X_corr_mat.reset_index().melt(id_vars=[standardized_index_name], var_name="node_2", value_name="standardized_corr")
-        standardized_X_corr_df.rename(columns={standardized_index_name: "node_1"}, inplace=True)
-        # standardized_X_corr_df = standardized_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="node_2", value_name="standardized_corr")
-        # standardized_X_corr_df.rename(columns={"index": "node_1"}, inplace=True)
-        # end of adjustment on Nov 1, 2025 :)
+        standardized_X_corr_df = standardized_X_corr_mat.reset_index().melt(id_vars=["index"], var_name="node_2", value_name="standardized_corr")
+        standardized_X_corr_df.rename(columns={"index": "node_1"}, inplace=True)
         standardized_X_corr_df = standardized_X_corr_df[standardized_X_corr_df["node_1"] != standardized_X_corr_df["node_2"]]
         standardized_X_corr_df["TF_TF"] = standardized_X_corr_df["node_1"] + "_" + standardized_X_corr_df["node_2"]
         standardized_X_corr_df.drop(columns = ["node_1", "node_2"], inplace = True)
@@ -1456,6 +1354,7 @@ def netrem_info_breakdown_df(netrem_model):
     return main_parts_df
 
 
+
 def multiply_frobenius_norm(norm, matrix, ignore_main_diag=False):
     """
     Multiply the matrix by its Frobenius norm. If ignore_main_diag is True,
@@ -1515,6 +1414,7 @@ def is_standardized(df, tol=1e-4):
     return np.all(np.abs(means) < tol) and np.all(np.abs(stds - 1) < tol)
 
 
+
 def return_TF_coord_scores_df(netrem_model):
         TF_coord_scores_df = (
             netrem_model.TF_interaction_df
@@ -1554,13 +1454,11 @@ def simprem(prior_network, beta_net = 1, alpha_lasso = 0.01, overlapped_nodes_on
     default_beta = False
     default_alpha = False
     if beta_net == 1:
-        if verbose:
-            ef.print_with_timestamp(":) simprem (no prior knowledge): using beta_net default of", 1)
+        print(":) simprem (no prior knowledge): using beta_net default of", 1)
         default_beta = True
     if alpha_lasso == 0.01:
         if model_type != "LassoCV":
-            if verbose:
-                ef.print_with_timestamp(":) simprem (no prior knowledge): using alpha_lasso default of", 0.01)
+            print(":) simprem (no prior knowledge): using alpha_lasso default of", 0.01)
             default_alpha = True
   
     greg_dict = {"network": prior_network,
@@ -1591,6 +1489,4 @@ def simprem(prior_network, beta_net = 1, alpha_lasso = 0.01, overlapped_nodes_on
         greg_dict["lassocv_n_alphas"] = lassocv_n_alphas
         greg_dict["lassocv_alphas"] = lassocv_alphas
     greggy = NetREmModel(**greg_dict)
-    if verbose:
-        ef.pretty_message(greggy, "Parameters/settings for the NetREm model trained using simprem (pre-loaded Prior PPI Network for efficiency)")
     return greggy

@@ -21,8 +21,7 @@ import plotly.express as px
 from sklearn.base import RegressorMixin, ClassifierMixin, BaseEstimator
 import matplotlib.pyplot as plt
 from numpy.typing import ArrayLike
-from scipy.sparse.linalg import LinearOperator
-#from scipy.sparse.linalg.interface import LinearOperator
+from scipy.sparse.linalg.interface import LinearOperator
 import warnings
 from sklearn.exceptions import ConvergenceWarning
 printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
@@ -37,7 +36,7 @@ def calculate_mean_square_error(actual_values, predicted_values):
     return mean_squared_diff
 
 
-def mse(REF: np.ndarray, X: np.ndarray, axis: Optional[int] = None) -> float:
+def mse(REF: np.ndarray, X: np.ndarray, axis: Optional[int] = None) -> np.float:
     """Compute mean square error between array with a reference array -
     If REF or X is complex, compute mse(REF.real, X.real) + 1j * mse(REF.imag, X.imag)
 
@@ -68,7 +67,7 @@ def mse(REF: np.ndarray, X: np.ndarray, axis: Optional[int] = None) -> float:
         return mse(REF.real, X.real, axis) + 1j * mse(REF.imag, X.imag, axis)
 
 
-def nmse(REF: np.ndarray, X: np.ndarray, axis: Optional[int] = None) -> float:
+def nmse(REF: np.ndarray, X: np.ndarray, axis: Optional[int] = None) -> np.float:
     """Compute normalized mean square error between array with a reference array -
     If REF or X is complex, compute nmse(REF.real, X.real) + 1j * nmse(REF.imag, X.imag)
 
@@ -197,6 +196,7 @@ def psnr_custom_score(y_true, y_pred):
     psnrVal = psnr(y_true, y_pred)
     return psnrVal
 
+
 # Create a custom scorer object using make_scorer
 mse_custom_scorer = make_scorer(mse_custom_score)
 nmse_custom_scorer = make_scorer(nmse_custom_score)
@@ -244,9 +244,7 @@ def generate_model_metrics_for_baselines_df(X_train, y_train, X_test, y_test, mo
         # If df is neither a DataFrame nor a Series (e.g., a scalar)
         sorted_df = pd.DataFrame([df.abs()], columns=['Value'])
 
-    #sorted_series = df.abs().squeeze().sort_values(ascending=False)
     # convert the sorted series back to a DataFrame
-    #sorted_df = pd.DataFrame(sorted_series)
     # add a column for the rank
     sorted_df['Rank'] = range(1, len(sorted_df) + 1)
     sorted_df['TF'] = sorted_df.index

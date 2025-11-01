@@ -23,10 +23,6 @@ from numpy.typing import ArrayLike
 from scipy.sparse.linalg.interface import LinearOperator
 import warnings
 from sklearn.exceptions import ConvergenceWarning
-import shutil
-from rich.console import Console
-from rich.panel import Panel
-from datetime import datetime
 printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
 rng_seed = 2023 # random seed for reproducibility
 randSeed = 123

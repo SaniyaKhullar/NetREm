@@ -24,54 +24,16 @@ from numpy.typing import ArrayLike
 from scipy.sparse.linalg.interface import LinearOperator
 import warnings
 from sklearn.exceptions import ConvergenceWarning
-import shutil
-from rich.console import Console
-from rich.panel import Panel
-from datetime import datetime
-import warnings
-
 printdf = lambda *args, **kwargs: print(pd.DataFrame(*args, **kwargs))
 rng_seed = 2023 # random seed for reproducibility
 randSeed = 123
 
 # Python program to illustrate the intersection
-# of two lists in a simple way
+# of two lists in most simple way
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
 
-
-def print_with_timestamp(message):
-    # Please get the current time and format it as desired
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f"{timestamp}: {message}")
-    
-
-def pretty_warning(message):
-    console = Console()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    panel = Panel(
-        f"[red]:( WARNING:[/red] [blue]{timestamp}[/blue]: {message}",  # Change color to red
-        title="Please read this warning (to be careful):",
-        border_style="red",  # Set border style to red for consistency
-        title_align="center"
-    )
-    console.print(panel)
-    
-    
-def pretty_message(message, context):
-    console = Console()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #context = context.upper()
-    panel = Panel(
-        f"[red]{context}:[/red] [green]{message}[/green]",  # Change color to red
-        title=":) Please note that this is for your kind reference:",
-        border_style="red",  # Set border style to red for consistency
-        title_align="center"
-    )
-    console.print(panel)
-    
 
 def view_matrix_as_dataframe(matrix, column_names_list = [], row_names_list = []):
     # :) Please note this function by Saniya returns a dataframe representation of the numpy matrix
