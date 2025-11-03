@@ -1907,7 +1907,7 @@ Please note that the manuscript associated with NetREm is published in the Bioin
 **Citation:**
 - Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang, *NetREm: Network Regression Embeddings reveal cell-type transcription factor coordination for gene regulation*, Bioinformatics Advances; doi: https://doi.org/10.1093/bioadv/vbae206
 
-## Videos/Tutorials: 😁**
+## Videos/Tutorials: 😁
 Please note that there are online videos and tutorials about NetREm available on Saniya's educational YouTube channel under the [NetREm](https://youtube.com/playlist?list=PL_3UUp3wcnVZm3BH8nH5HwDkX15w4ZPIz&si=ezkgHDPk996KQg36) playlist. 
 
 * Saniya's Talk on NetREm at the Intelligent Systems in Molecular Biology (ISMB) and European Conference on Computational Biology (ECCB) Joint Conference in July 2025 in Liverpool, England: [ISMB/ECCB: NetREm Network Regression Embeddings Reveal Cell-Type TF Coordination for Gene Regulation
@@ -1916,7 +1916,7 @@ Please note that there are online videos and tutorials about NetREm available on
 <!-- - Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang, *NetREm: Network Regression Embeddings reveal cell-type transcription factor coordination for gene regulation*, bioRxiv 2023.10.25.563769; doi: https://doi.org/10.1101/2023.10.25.563769 -->
 
 
-## Projects using NetREm:**
+## Projects using NetREm:
 Please note that NetREm has been applied to the following on-going projects to reveal insights into how predictors work together in coordination networks with each other to influence the response variable:
 
 - Raghu Ramesh, Saniya Khullar, Seogsik Won, Alena J. Hanson, Camila Lopez-Anido, Daifeng Wang, John Svaren, Integration of Nuclear Receptors into a Schwann cell Gene Regulatory Network, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.1101/2025.10.30.685409v1)
