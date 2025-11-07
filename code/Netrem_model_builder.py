@@ -1301,6 +1301,7 @@ def organize_predictor_interaction_network(netrem_model):
         TF_interaction_df["num_final_predictors"] = "No final model :("
     TF_interaction_df["model_type"] = netrem_model.model_type
     TF_interaction_df["beta_net"] = netrem_model.beta_net
+    TF_interaction_df["alpha_lasso"] = netrem_model.alpha_lasso
     TF_interaction_df["X_standardized"] = netrem_model.standardize_X
     TF_interaction_df["y_standardized"] = netrem_model.standardize_y
 
