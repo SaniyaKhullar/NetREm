@@ -36,8 +36,8 @@ from skopt import gp_minimize, space
 from skopt.utils import use_named_args
 #import Netrem_model_builder as nm
 from sklearn import linear_model, preprocessing # 9/19
-import NetremmerFinal2024 as nm
-from NetremmerFinal2024 import *
+import Netrem_model_builder as nm
+from Netrem_model_builder import *
 
 class BayesianObjective_Lasso:
     def __init__(self, X, y, cv_folds, model, scorer="mse", print_network=False):
