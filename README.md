@@ -1456,7 +1456,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF5</td>
       <td>-97.923796</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>97.923796</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1480,7 +1480,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF1</td>
       <td>-97.923796</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>97.923796</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1552,7 +1552,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF2</td>
       <td>-54.808259</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>54.808259</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1576,7 +1576,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF5</td>
       <td>-54.808259</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>54.808259</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1600,7 +1600,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF3</td>
       <td>-51.672959</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>51.672959</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1624,7 +1624,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF5</td>
       <td>-51.672959</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>51.672959</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1696,7 +1696,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF4</td>
       <td>-38.149829</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>38.149829</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1720,7 +1720,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF1</td>
       <td>-38.149829</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>38.149829</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1744,7 +1744,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF4</td>
       <td>-24.335893</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>24.335893</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1768,7 +1768,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF3</td>
       <td>-24.335893</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>24.335893</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1792,7 +1792,7 @@ organize_predictor_interaction_network(netrem_demo)
       <td>TF2</td>
       <td>-20.520985</td>
       <td>:(</td>
-      <td>:( competitive (-)</td>
+      <td>:( antagonistic (-)</td>
       <td>20.520985</td>
       <td>Lasso</td>
       <td>matrix of TF-TF interactions</td>
@@ -1912,6 +1912,9 @@ Please note that there are online videos and tutorials about NetREm available on
 
 * Saniya's Talk on NetREm at the Intelligent Systems in Molecular Biology (ISMB) and European Conference on Computational Biology (ECCB) Joint Conference in July 2025 in Liverpool, England: [ISMB/ECCB: NetREm Network Regression Embeddings Reveal Cell-Type TF Coordination for Gene Regulation
 ](https://www.youtube.com/watch?v=ZHnGgtAsF2A&list=PL_3UUp3wcnVZm3BH8nH5HwDkX15w4ZPIz&index=1&t=4s)
+
+* Saniya's Talk on NetREm at the International Society for Computational Biology (ISCB) - UK: Sequences, Structures, Systems Conference in April 2026 at Robinson College, University of Cambridge, England: [ISCB-UK: NetREm Network Regression Embeddings Reveal Cell-Type TF Coordination for Gene Regulation
+](https://www.youtube.com/watch?v=Bt8upYTXYNg)
 
 <!-- - Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang, *NetREm: Network Regression Embeddings reveal cell-type transcription factor coordination for gene regulation*, bioRxiv 2023.10.25.563769; doi: https://doi.org/10.1101/2023.10.25.563769 -->
 

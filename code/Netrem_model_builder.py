@@ -1289,7 +1289,7 @@ def organize_predictor_interaction_network(netrem_model):
 
     TF_interaction_df["sign"] = np.where((TF_interaction_df.coord_score_cs > 0), ":)", ":(")
     TF_interaction_df["potential_interaction"] = np.where((TF_interaction_df.coord_score_cs > 0), ":) cooperative (+)",
-                                                        ":( competitive (-)")
+                                                        ":( antagonistic (-)")
     TF_interaction_df["absVal_coordScore"] = abs(TF_interaction_df["coord_score_cs"])
     TF_interaction_df["model_type"] = netrem_model.model_type
     TF_interaction_df["info"] = "matrix of TF-TF interactions"
