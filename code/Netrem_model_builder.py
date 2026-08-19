@@ -123,7 +123,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         self.__dict__.update(kwargs)
         required_keys = ["network", "beta_net"]#, "gamma_net"] 
         if self.model_type == "Lasso":
-            self.alpha_lasso = kwargs.get('alpha_lasso', 0.01)
+            self.alpha_lasso = kwargs.get('alpha_lasso', 0.1)
             self.optimal_alpha = "User-specified optimal alpha lasso: " + str(self.alpha_lasso)
             required_keys += ["alpha_lasso"]
         elif self.model_type == "LassoCV": 
@@ -962,7 +962,7 @@ class NetREmModel(BaseEstimator, RegressorMixin):
         return model_to_return
         
         
-def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.01,
+def netrem(edge_list, beta_net = 1, alpha_lasso = 0.1, default_edge_weight = 0.01,
                    edge_vals_for_d = True, w_transform_for_d = "none", degree_threshold = 0.5,
                   gene_expression_nodes = [], overlapped_nodes_only = False,
            y_intercept = False, standardize_X = True, standardize_y = True, center_y = False, view_network = False,
@@ -981,10 +981,10 @@ def netrem(edge_list, beta_net = 1, alpha_lasso = 0.01, default_edge_weight = 0.
         if verbose:
             ef.print_with_timestamp(":) netrem (may have prior knowledge): using beta_net default of", 1)
         default_beta = True
-    if alpha_lasso == 0.01:
+    if alpha_lasso == 0.1:
         if model_type != "LassoCV":
             if verbose:
-                ef.print_with_timestamp(":) netrem (may have prior knowledge): using alpha_lasso default of", 0.01)
+                ef.print_with_timestamp(":) netrem (may have prior knowledge): using alpha_lasso default of", 0.1)
             default_alpha = True
     self_loops = False  
     prior_graph_dict = {"edge_list": edge_list,
@@ -1533,7 +1533,7 @@ def return_TF_coord_scores_df(netrem_model):
     
    
 
-def simprem(prior_network, beta_net = 1, alpha_lasso = 0.01, overlapped_nodes_only = False,
+def simprem(prior_network, beta_net = 1, alpha_lasso = 0.1, overlapped_nodes_only = False,
            y_intercept = False, standardize_X = True, standardize_y = True, center_y = False, view_network = False,
            model_type = "Lasso", lasso_selection = "cyclic", all_pos_coefs = False, tolerance = 1e-4, maxit = 10000,
                   num_jobs = -1, num_cv_folds = 5, lassocv_eps = 1e-3, 
@@ -1558,10 +1558,10 @@ def simprem(prior_network, beta_net = 1, alpha_lasso = 0.01, overlapped_nodes_on
         if verbose:
             ef.print_with_timestamp(":) simprem (no prior knowledge): using beta_net default of", 1)
         default_beta = True
-    if alpha_lasso == 0.01:
+    if alpha_lasso == 0.1:
         if model_type != "LassoCV":
             if verbose:
-                ef.print_with_timestamp(":) simprem (no prior knowledge): using alpha_lasso default of", 0.01)
+                ef.print_with_timestamp(":) simprem (no prior knowledge): using alpha_lasso default of", 0.1)
             default_alpha = True
   
     greg_dict = {"network": prior_network,
