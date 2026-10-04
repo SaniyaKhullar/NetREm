@@ -1902,7 +1902,9 @@ $$
 We preprocess the input TF-TF PPI network to make it fully-connected for all pairwise TF-TF edges (`default_edge_weight` of 0.01) and diagonals reflecting averaged connectivity values. 
 
 ## Manuscript
-Please note that the manuscript associated with NetREm is published in the Bioinformatics Advances journal: [Link to Paper](https://academic.oup.com/bioinformaticsadvances/article/5/1/vbae206/7929807)
+If you use our NetREm code and/or methodology in your work, please cite us ☺️.
+Please note that the manuscript associated with NetREm is published in the Bioinformatics Advances journal: [Link to Paper](https://academic.oup.com/bioinformaticsadvances/article/5/1/vbae206/7929807).
+
 
 **Citation:**
 - Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang, *NetREm: Network Regression Embeddings reveal cell-type transcription factor coordination for gene regulation*, Bioinformatics Advances; doi: https://doi.org/10.1093/bioadv/vbae206
