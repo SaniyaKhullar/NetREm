@@ -1919,12 +1919,20 @@ Please note that there are online videos and tutorials about NetREm available on
 <!-- - Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang, *NetREm: Network Regression Embeddings reveal cell-type transcription factor coordination for gene regulation*, bioRxiv 2023.10.25.563769; doi: https://doi.org/10.1101/2023.10.25.563769 -->
 
 
+## Interactive Tools:
+Please note that you can access an interative tool to better understand NetREm under-the-hood, step-by-step through this web-application: [https://netrem.netlify.app/](https://netrem.netlify.app/). This tool also presents additional use cases for NetREm beyond the field of biology. 
+
+
 ## Projects using NetREm:
 Please note that NetREm has been applied to the following on-going projects to reveal insights into how predictors work together in coordination networks with each other to influence the response variable:
 
-- Raghu Ramesh, Saniya Khullar, Seogsik Won, Alena J. Hanson, Camila Lopez-Anido, Daifeng Wang, John Svaren, Integration of Nuclear Receptors into a Schwann cell Gene Regulatory Network, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.1101/2025.10.30.685409v1)
+- Raghu Ramesh, Saniya Khullar, Seogsik Won, Alena J. Hanson, Camila Lopez-Anido, Daifeng Wang, John Svaren, *Integration of Nuclear Receptors into a Schwann cell Gene Regulatory Network*, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.1101/2025.10.30.685409v1)
 
-- James A. Kentro, Gunjan Singh, Tuan M. Pham, Justin Currie, Saniya Khullar, Audrey T. Medeiros, Erica Larschan, Kate M. O’Connor-Giles, Conserved transcription factors coordinate synaptic gene expression through repression, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.1101/2024.10.30.621128v2)
+- James A. Kentro, Gunjan Singh, Tuan M. Pham, Justin Currie, Saniya Khullar, Audrey T. Medeiros, Erica Larschan, Kate M. O’Connor-Giles, *Deaf1 regulates the coordinated repression of synaptic genes to limit synaptogenesis*, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.1101/2024.10.30.621128v4.full)
+
+-	Maija Rozenberga, Rihards Saksis, Lauma Jagare, Saniya Khullar, Ilze Konrāde, Zane Straume, Ilze Birka, Monta Brīvība, Ilze Elbere, Jānis Kloviņš, *Sex-specific immune signatures in irritable bowel syndrome reveal reduced neutrophil-associated activity in males and altered interferon signalling in females*, Submitted. 
+
+- Negin Rahimzadeh, Samuel Morabito, Saniya Khullar, Zechuan Shi, Zhenkun Cao, Vivek Swarup, *An Integrated Single-Nucleus Atlas Resolves Cell-Type-Specific Programs and Molecular Subtypes in Alzheimer’s Disease*, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.64898/2026.09.03.747935v1.full)
 
 
 ## References
