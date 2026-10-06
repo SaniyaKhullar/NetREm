@@ -1040,6 +1040,7 @@ netrem_demo.final_corr_vs_coef_df
 In the context of gene regulation, our results may thereby be interpreted in the [following way](https://github.com/SaniyaKhullar/NetREm/blob/main/netrem_final_demo.png):
 <img src="netrem_final_demo.png" style="width: 400px;"/>
 
+As you can see, gene regulation can be quite *complex* in eukaryotic organisms, such as humans, *pun intended* 😅. 
 
 Nonetheless, NetREm can be applied to solve a suite of regression problems where there is an underlying connection among the predictors (that group together in meaningful subnetworks to influence the outcome $y$) and their correlation with one another may be utilized jointly for the predictive task rather than discarded. 
 
@@ -1915,14 +1916,17 @@ Please note that there are online videos and tutorials about NetREm available on
 * Saniya's Talk on NetREm at the Intelligent Systems in Molecular Biology (ISMB) and European Conference on Computational Biology (ECCB) Joint Conference in July 2025 in Liverpool, England: [ISMB/ECCB: NetREm Network Regression Embeddings Reveal Cell-Type TF Coordination for Gene Regulation
 ](https://www.youtube.com/watch?v=ZHnGgtAsF2A&list=PL_3UUp3wcnVZm3BH8nH5HwDkX15w4ZPIz&index=1&t=4s)
 
+* Negin (a collaborator) gave a talk for the  UCI (University of California, Irvine) GenPALS (Genomics Practical Applications and Learning Seminar) in March 2026 where she mentioned how NetREm was used for her work: [Gene Regulatory Network Inference with Data-Driven and Prior-Informed Methods](https://www.youtube.com/watch?v=R-G2cok6oAU&list=PL_3UUp3wcnVZm3BH8nH5HwDkX15w4ZPIz&index=4&t=1087s)
+
 * Saniya's Talk on NetREm at the International Society for Computational Biology (ISCB) - UK: Sequences, Structures, Systems Conference in April 2026 at Robinson College, University of Cambridge, England: [ISCB-UK: NetREm Network Regression Embeddings Reveal Cell-Type TF Coordination for Gene Regulation
 ](https://www.youtube.com/watch?v=Bt8upYTXYNg)
+
 
 <!-- - Saniya Khullar, Xiang Huang, Raghu Ramesh, John Svaren, Daifeng Wang, *NetREm: Network Regression Embeddings reveal cell-type transcription factor coordination for gene regulation*, bioRxiv 2023.10.25.563769; doi: https://doi.org/10.1101/2023.10.25.563769 -->
 
 
 ## Interactive Tools:
-Please note that you can access an interative tool to better understand NetREm under-the-hood, step-by-step through this web-application: [https://netrem.netlify.app/](https://netrem.netlify.app/). This tool also presents additional use cases for NetREm beyond the field of biology. 
+Please note that you can access an interative tool to better understand NetREm under-the-hood, step-by-step through this web-application: [https://netrem.netlify.app/](https://netrem.netlify.app/). This tool also presents additional use cases for NetREm beyond the field of biology 🧬🧑‍🔬. 
 
 
 ## Projects using NetREm:
@@ -1935,6 +1939,10 @@ Please note that NetREm has been applied to the following on-going projects to r
 -	Maija Rozenberga, Rihards Saksis, Lauma Jagare, Saniya Khullar, Ilze Konrāde, Zane Straume, Ilze Birka, Monta Brīvība, Ilze Elbere, Jānis Kloviņš, *Sex-specific immune signatures in irritable bowel syndrome reveal reduced neutrophil-associated activity in males and altered interferon signalling in females*, Submitted. 
 
 - Negin Rahimzadeh, Samuel Morabito, Saniya Khullar, Zechuan Shi, Zhenkun Cao, Vivek Swarup, *An Integrated Single-Nucleus Atlas Resolves Cell-Type-Specific Programs and Molecular Subtypes in Alzheimer’s Disease*, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.64898/2026.09.03.747935v1.full)
+
+
+## Testimonials and Feedback:
+Please see the [NetREm Voices](https://saniyakhullar.github.io/netrem_voices/) from the community - people who have used NetREm and/or have learned about the tool! Please add your voice too, so we can grow our Network (pun intended) 📊💂‍♂️!
 
 
 ## References
