@@ -1941,7 +1941,7 @@ Please note that NetREm has been applied to the following on-going projects to r
 - Negin Rahimzadeh, Samuel Morabito, Saniya Khullar, Zechuan Shi, Zhenkun Cao, Vivek Swarup, *An Integrated Single-Nucleus Atlas Resolves Cell-Type-Specific Programs and Molecular Subtypes in Alzheimer’s Disease*, BioRxiv. [Pre-print Link](https://www.biorxiv.org/content/10.64898/2026.09.03.747935v1.full)
 
 
-## Testimonials and Feedback:
+## Testimonials and Feedback 🎤🤔: 
 Please see the [NetREm Voices](https://saniyakhullar.github.io/netrem_voices/) from the community - people who have used NetREm and/or have learned about the tool! Please add your voice too, so we can grow our Network (pun intended) 📊💂‍♂️!
 
 
